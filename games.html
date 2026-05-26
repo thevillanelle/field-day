@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commons: Prototype — Game Library</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .games-page { padding-top: 120px; padding-bottom: 80px; }
+  .games-hero { padding: 60px 0 48px; }
+  .games-hero h1 { font-size: clamp(36px,5vw,60px); font-weight:700; margin-bottom:12px; }
+  .games-hero p  { font-size:17px; color:var(--cream-dim); max-width:560px; }
+
+  .filter-tabs { display:flex; gap:10px; flex-wrap:wrap; margin:36px 0 32px; }
+  .tab {
+    padding:8px 18px; border-radius:20px; border:1px solid var(--border-dim);
+    font-size:13px; letter-spacing:0.06em; cursor:pointer; color:var(--cream-dim);
+    transition:all 0.2s; background:transparent; font-family:inherit;
+  }
+  .tab:hover  { border-color:var(--gold); color:var(--gold); }
+  .tab.active { background:var(--gold); color:var(--navy); border-color:var(--gold); font-weight:600; }
+
+  .lib-section { margin-bottom:60px; }
+  .lib-section-head {
+    display:flex; align-items:baseline; gap:16px;
+    margin-bottom:20px; padding-bottom:14px;
+    border-bottom:1px solid var(--border-dim);
+  }
+  .lib-section-head h2 { font-size:22px; font-weight:700; }
+  .lib-section-head p  { font-size:13px; color:var(--cream-dim); }
+
+  .game-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px;
+  }
+
+  .game-card {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:24px;
+    display:flex; flex-direction:column; gap:12px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .game-card:hover {
+    transform:translateY(-6px); border-color:var(--border);
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  }
+  .game-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .game-icon { font-size:36px; }
+  .game-type-chip {
+    font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+    padding:4px 10px; border-radius:10px; white-space:nowrap; flex-shrink:0;
+  }
+  .chip-score     { background:rgba(82,183,136,0.15);  color:var(--sage-light); border:1px solid rgba(82,183,136,0.25); }
+  .chip-turnbased { background:rgba(201,168,76,0.15);  color:var(--gold-light); border:1px solid rgba(201,168,76,0.25); }
+  .chip-daily     { background:rgba(100,130,200,0.15); color:#8aabec;           border:1px solid rgba(100,130,200,0.25); }
+  .chip-creative  { background:rgba(193,68,14,0.15);   color:#e07850;           border:1px solid rgba(193,68,14,0.25); }
+  .chip-collab    { background:rgba(150,100,220,0.15); color:#c084fc;           border:1px solid rgba(150,100,220,0.25); }
+
+  .game-card h3 { font-size:17px; font-weight:700; margin:0; }
+  .game-card p  { font-size:13px; color:var(--cream-dim); line-height:1.6; flex:1; }
+  .game-card-meta {
+    display:flex; gap:12px; flex-wrap:wrap;
+    font-size:11px; color:var(--cream-dim); opacity:0.6;
+  }
+  .game-card a {
+    display:inline-flex; align-items:center; gap:6px;
+    color:var(--gold); text-decoration:none;
+    font-size:13px; font-weight:600; letter-spacing:0.04em;
+    margin-top:auto; transition:gap 0.2s;
+  }
+  .game-card a:hover { gap:10px; }
+  .best-for { display:flex; gap:6px; flex-wrap:wrap; }
+  .best-for span {
+    font-size:11px; padding:3px 10px; border-radius:8px;
+    background:rgba(255,255,255,0.05); border:1px solid var(--border-dim);
+  }
+
+  .count-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    background:rgba(201,168,76,0.15); color:var(--gold);
+    border:1px solid rgba(201,168,76,0.25);
+    border-radius:20px; font-size:11px; font-weight:700;
+    padding:3px 10px; margin-left:10px; letter-spacing:0.06em;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Commons: Prototype</span></a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="games-page">
+  <div class="container">
+
+    <section class="games-hero">
+      <div class="section-label">Game Library</div>
+      <h1>All async.<br>All two-player.</h1>
+      <p>Every game here works without both people online at the same time. Play on your own schedule — share the moment after. <span class="count-badge">24 games</span></p>
+
+      <div class="filter-tabs">
+        <button class="tab active" onclick="filterGames('all',this)">All Games</button>
+        <button class="tab" onclick="filterGames('score',this)">📊 Score Compare</button>
+        <button class="tab" onclick="filterGames('daily',this)">📅 Daily Puzzles</button>
+        <button class="tab" onclick="filterGames('turnbased',this)">♟️ Turn-Based</button>
+        <button class="tab" onclick="filterGames('creative',this)">🎨 Creative</button>
+        <button class="tab" onclick="filterGames('collab',this)">🤝 Collaborative</button>
+        <button class="tab" onclick="filterGames('explorer',this)">🗺️ Explorer</button>
+        <button class="tab" onclick="filterGames('rival',this)">⚔️ Rival</button>
+        <button class="tab" onclick="filterGames('creator',this)">🎨 Creator</button>
+        <button class="tab" onclick="filterGames('wanderer',this)">🌀 Wanderer</button>
+      </div>
+    </section>
+
+    <!-- ── DAILY PUZZLES ── -->
+    <section class="lib-section" data-section="daily">
+      <div class="lib-section-head">
+        <h2>📅 Daily Puzzles</h2>
+        <p>Same puzzle for everyone, every day — built for comparison</p>
+      </div>
+      <div class="game-grid">
+
+        <div class="game-card" data-type="daily score" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🔤</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Wordle</h3>
+          <p>Five-letter word, six guesses. Everyone gets the same word — share your colored grid and see how your paths compared.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://www.nytimes.com/games/wordle" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,rival">
+          <div class="game-card-top"><div class="game-icon">🔠</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>NYT Connections</h3>
+          <p>Group 16 words into 4 hidden categories. Same puzzle daily — share your color grid, debate every wrong guess.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>⚔️ Rival</span></div>
+          <div class="game-card-meta"><span>⏱ 5–10 min</span><span>🌐 Browser</span></div>
+          <a href="https://www.nytimes.com/games/connections" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🗺️</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Worldle</h3>
+          <p>Guess the country from its silhouette. Six guesses, same shape every day. Compare how many it took and how far off your guesses were.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://worldle.teuteuf.fr/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🎬</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Framed</h3>
+          <p>Guess the movie from a single still frame. Six frames revealed one at a time. Share your guess count — movie fans will feel this one.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://framed.wtf/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,wanderer,rival">
+          <div class="game-card-top"><div class="game-icon">🎵</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Heardle</h3>
+          <p>Guess the song from a one-second clip. Each wrong guess reveals a bit more. Great for music people — terrible if you don't recognize it instantly.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://spotify.com/heardle" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,rival">
+          <div class="game-card-top"><div class="game-icon">🧠</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Semantle</h3>
+          <p>Guess a secret word — but your score is based on semantic similarity. Every guess is ranked by how conceptually close it is. Deeply addictive.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>⚔️ Rival</span></div>
+          <div class="game-card-meta"><span>⏱ 10–20 min</span><span>🌐 Browser</span></div>
+          <a href="https://semantle.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="daily score" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🎨</div><span class="game-type-chip chip-daily">Daily</span></div>
+          <h3>Artle</h3>
+          <p>Guess the artist from one of their works. Four paintings revealed one at a time — art history fans and total beginners both enjoy this differently.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://www.nytimes.com/games/connections" target="_blank">Play Now ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SCORE COMPARE ── -->
+    <section class="lib-section" data-section="score">
+      <div class="lib-section-head">
+        <h2>📊 Score Compare</h2>
+        <p>Both play independently, share results as a postcard</p>
+      </div>
+      <div class="game-grid">
+
+        <div class="game-card" data-type="score" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🌍</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>Openguessr</h3>
+          <p>Dropped into a random Google Street View. Use every clue — signs, plants, road markings — to guess where you are. Share your score and battle it out.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 10–20 min</span><span>🌐 Browser</span></div>
+          <a href="https://openguessr.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="score" data-types="rival,explorer">
+          <div class="game-card-top"><div class="game-icon">⌨️</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>TypeRacer</h3>
+          <p>Race the clock typing a random passage. Share your WPM. Surprisingly, intensely competitive. You will want a rematch.</p>
+          <div class="best-for"><span>⚔️ Rival</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 5 min</span><span>🌐 Browser</span></div>
+          <a href="https://typeracer.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="score" data-types="rival">
+          <div class="game-card-top"><div class="game-icon">💣</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>Minesweeper</h3>
+          <p>Classic logic grid — uncover every safe square without detonating a mine. Compare completion times. The fastest clean board wins.</p>
+          <div class="best-for"><span>⚔️ Rival</span></div>
+          <div class="game-card-meta"><span>⏱ 5–15 min</span><span>🌐 Browser</span></div>
+          <a href="https://minesweeper.online/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="score" data-types="wanderer,explorer">
+          <div class="game-card-top"><div class="game-icon">❓</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>Kahoot (Solo)</h3>
+          <p>Pick a public quiz on a shared topic — pop culture, geography, history, whatever you both agree on. Play solo, compare scores, argue about the bad questions.</p>
+          <div class="best-for"><span>🌀 Wanderer</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 10–15 min</span><span>🌐 Browser</span></div>
+          <a href="https://kahoot.com/explore/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="score" data-types="rival,explorer">
+          <div class="game-card-top"><div class="game-icon">🧩</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>Sporcle</h3>
+          <p>Timed quiz challenges on every topic imaginable — name all the countries, list every Pixar film, etc. Pick a shared category and race the clock.</p>
+          <div class="best-for"><span>⚔️ Rival</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 5–10 min</span><span>🌐 Browser</span></div>
+          <a href="https://www.sporcle.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="score" data-types="rival,explorer">
+          <div class="game-card-top"><div class="game-icon">🏎️</div><span class="game-type-chip chip-score">Score Compare</span></div>
+          <h3>Keymash</h3>
+          <p>Typing speed test with a cleaner UI than TypeRacer. Multiple modes — pick the same one, compare your results. Fast, clean, satisfying.</p>
+          <div class="best-for"><span>⚔️ Rival</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 2–5 min</span><span>🌐 Browser</span></div>
+          <a href="https://keymash.io/" target="_blank">Play Now ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── TURN-BASED ASYNC ── -->
+    <section class="lib-section" data-section="turnbased">
+      <div class="lib-section-head">
+        <h2>♟️ Turn-Based Async</h2>
+        <p>You go, they go — the game waits. No live session needed.</p>
+      </div>
+      <div class="game-grid">
+
+        <div class="game-card" data-type="turnbased" data-types="rival">
+          <div class="game-card-top"><div class="game-icon">♟️</div><span class="game-type-chip chip-turnbased">Turn-Based</span></div>
+          <h3>Lichess</h3>
+          <p>Free, open-source chess with correspondence mode. Make a move whenever you want — your match gets notified. A week-long match is perfectly normal.</p>
+          <div class="best-for"><span>⚔️ Rival</span></div>
+          <div class="game-card-meta"><span>⏱ Days</span><span>🌐 Browser · Free · No account needed</span></div>
+          <a href="https://lichess.org/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="turnbased" data-types="explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🔤</div><span class="game-type-chip chip-turnbased">Turn-Based</span></div>
+          <h3>Words with Friends</h3>
+          <p>Scrabble but async. Notifications when it's your turn. Mobile-first, genuinely chill, and you'll learn a lot about someone by their word choices.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ Days</span><span>📱 Mobile</span></div>
+          <a href="https://play.wordswithfriends.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="turnbased" data-types="rival,explorer">
+          <div class="game-card-top"><div class="game-icon">🎯</div><span class="game-type-chip chip-turnbased">Turn-Based</span></div>
+          <h3>Battleship Online</h3>
+          <p>Grid-based naval strategy. Place your ships, take turns calling coordinates, sink the fleet. Pure async — send a screenshot of your grid each turn.</p>
+          <div class="best-for"><span>⚔️ Rival</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 20–30 min</span><span>🌐 Browser</span></div>
+          <a href="https://www.battleshiponline.org/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="turnbased" data-types="rival,explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🎲</div><span class="game-type-chip chip-turnbased">Turn-Based</span></div>
+          <h3>Yahtzee with Buddies</h3>
+          <p>Classic dice game, async multiplayer. Roll, score, wait for your opponent — turn-based and totally low-pressure. Works across time zones perfectly.</p>
+          <div class="best-for"><span>⚔️ Rival</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ Days</span><span>📱 Mobile</span></div>
+          <a href="https://yahtzeewithbuddies.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── CREATIVE ── -->
+    <section class="lib-section" data-section="creative">
+      <div class="lib-section-head">
+        <h2>🎨 Creative</h2>
+        <p>Drawing, storytelling, and expressive games — best for Creators and Wanderers</p>
+      </div>
+      <div class="game-grid">
+
+        <div class="game-card" data-type="creative turnbased" data-types="creator,wanderer">
+          <div class="game-card-top"><div class="game-icon">📞</div><span class="game-type-chip chip-creative">Creative</span></div>
+          <h3>Gartic Phone</h3>
+          <p>Visual telephone — draw a prompt, pass it on, watch it devolve into something unrecognizable. Has an async pass-and-play mode.</p>
+          <div class="best-for"><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 20–30 min</span><span>🌐 Browser</span></div>
+          <a href="https://garticphone.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="creative turnbased" data-types="creator,wanderer">
+          <div class="game-card-top"><div class="game-icon">🎨</div><span class="game-type-chip chip-creative">Creative</span></div>
+          <h3>Skribbl.io</h3>
+          <p>Pictionary online. Draw a word, your match guesses. Pass the prompt, they draw. Works async via screenshots — the drawings are always chaotic.</p>
+          <div class="best-for"><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 15–20 min</span><span>🌐 Browser</span></div>
+          <a href="https://skribbl.io/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="creative" data-types="creator,wanderer">
+          <div class="game-card-top"><div class="game-icon">📖</div><span class="game-type-chip chip-creative">Creative</span></div>
+          <h3>Story Chain</h3>
+          <p>No app needed. One person starts a story with one sentence. The other adds the next. You go back and forth on Slack until you have something weird and wonderful.</p>
+          <div class="best-for"><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ Any pace</span><span>💬 Slack</span></div>
+          <a href="faq.html" target="_blank">How it works ↗</a>
+        </div>
+
+        <div class="game-card" data-type="creative" data-types="creator,explorer,wanderer">
+          <div class="game-card-top"><div class="game-icon">🎭</div><span class="game-type-chip chip-creative">Creative</span></div>
+          <h3>Jackbox (Async via screenshots)</h3>
+          <p>Quiplash, Drawful, and other Jackbox games can be played async by screenshotting prompts and sharing answers. Works best with a chaotic match.</p>
+          <div class="best-for"><span>🎨 Creator</span><span>🌀 Wanderer</span><span>🗺️ Explorer</span></div>
+          <div class="game-card-meta"><span>⏱ 30 min</span><span>🌐 Browser · Requires game</span></div>
+          <a href="https://www.jackboxgames.com/" target="_blank">Play Now ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── COLLABORATIVE ── -->
+    <section class="lib-section" data-section="collab">
+      <div class="lib-section-head">
+        <h2>🤝 Collaborative</h2>
+        <p>Work together — no competition, just coordination</p>
+      </div>
+      <div class="game-grid">
+
+        <div class="game-card" data-type="collab turnbased" data-types="explorer,wanderer,rival">
+          <div class="game-card-top"><div class="game-icon">🕵️</div><span class="game-type-chip chip-collab">Collaborative</span></div>
+          <h3>Codenames Online</h3>
+          <p>Give one-word clues to guide your partner to the right cards. Works async — one person gives the clue, the other guesses, you screenshot the board between turns.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🌀 Wanderer</span><span>⚔️ Rival</span></div>
+          <div class="game-card-meta"><span>⏱ 20–30 min</span><span>🌐 Browser</span></div>
+          <a href="https://codenames.game/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="collab" data-types="explorer,creator,wanderer">
+          <div class="game-card-top"><div class="game-icon">🧩</div><span class="game-type-chip chip-collab">Collaborative</span></div>
+          <h3>Wavelength</h3>
+          <p>One person places a concept on a spectrum (hot ↔ cold, big ↔ small). The other guesses where it lands. Reveals how differently two people think.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 10–15 min</span><span>🌐 Browser</span></div>
+          <a href="https://longwave.web.app/" target="_blank">Play Now ↗</a>
+        </div>
+
+        <div class="game-card" data-type="collab" data-types="creator,wanderer,explorer">
+          <div class="game-card-top"><div class="game-icon">🃏</div><span class="game-type-chip chip-collab">Collaborative</span></div>
+          <h3>Dixit (Photo Edition)</h3>
+          <p>No app needed. Each person picks a photo from their phone that matches a prompt and describes it in one sentence. You try to match which photo is which.</p>
+          <div class="best-for"><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ 20–30 min</span><span>💬 Slack · No app</span></div>
+          <a href="faq.html">How it works ↗</a>
+        </div>
+
+        <div class="game-card" data-type="collab" data-types="creator,wanderer,explorer">
+          <div class="game-card-top"><div class="game-icon">🗺️</div><span class="game-type-chip chip-collab">Collaborative</span></div>
+          <h3>Photo Scavenger Hunt</h3>
+          <p>A list of prompts — "something that represents where you live," "your current view," "something you made." Both find and photograph. Share and compare.</p>
+          <div class="best-for"><span>🗺️ Explorer</span><span>🎨 Creator</span><span>🌀 Wanderer</span></div>
+          <div class="game-card-meta"><span>⏱ Any pace</span><span>📱 Phone · No app</span></div>
+          <a href="faq.html">How it works ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-band">
+      <h2>Don't know which game is yours?</h2>
+      <p>Take the quiz and we'll suggest the right game for your specific pairing — based on both players' answers combined.</p>
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Commons · Passport: Play · Prototype</p>
+  <p>Built by Krystine Hall</p>
+</footer>
+
+<script>
+function filterGames(filter, tabEl) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.querySelectorAll('.game-card').forEach(card => {
+    if (filter === 'all') { card.style.display = ''; return; }
+    const type  = card.dataset.type  || '';
+    const types = card.dataset.types || '';
+    card.style.display = (type.includes(filter) || types.includes(filter)) ? '' : 'none';
+  });
+  document.querySelectorAll('.lib-section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.game-card')].some(c => c.style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

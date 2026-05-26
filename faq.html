@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commons: Prototype — FAQ</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .faq-page { padding-top: 120px; padding-bottom: 80px; }
+  .faq-hero  { padding: 60px 0 48px; }
+  .faq-hero h1 { font-size: clamp(36px,5vw,56px); font-weight:700; margin-bottom:12px; }
+  .faq-hero p  { font-size:17px; color:var(--cream-dim); max-width:520px; }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .faq-item {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .faq-item:hover { border-color: var(--border); }
+
+  .faq-q {
+    padding: 22px 24px;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px;
+    font-size: 15px; font-weight: 600; line-height: 1.4;
+    user-select: none;
+  }
+  .faq-q .arrow {
+    font-size: 12px; color: var(--gold); flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+  .faq-item.open .arrow { transform: rotate(90deg); }
+
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.3s;
+    padding: 0 24px;
+    font-size: 14px; color: var(--cream-dim); line-height: 1.7;
+  }
+  .faq-item.open .faq-a {
+    max-height: 300px;
+    padding: 0 24px 22px;
+  }
+
+  .faq-section-label {
+    grid-column: 1 / -1;
+    padding-top: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .faq-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="stamp">✈</div>
+    <span>Commons: Prototype</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="pair.html">Find Your Game</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="faq-page">
+  <div class="container">
+
+    <section class="faq-hero">
+      <div class="section-label">FAQ</div>
+      <h1>Got questions?</h1>
+      <p>Everything you need to know about how matching works, what to do with your game, and how to send a postcard.</p>
+    </section>
+
+    <div class="faq-grid">
+
+      <div class="faq-section-label"><div class="section-label">The Basics</div></div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What is Commons: Prototype? <span class="arrow">›</span></div>
+        <div class="faq-a">Commons: Prototype is a cross-geo connection event for the SDS team. You take a short quiz, get matched with a colleague from a different location, get a game suggestion built for your pairing, and play on your own time. The game is the excuse — the connection is the point.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Do I have to be online at the same time as my match? <span class="arrow">›</span></div>
+        <div class="faq-a">Nope. That's the whole design. Every game in the library is async — you play on your own time, share a screenshot or score, and your match picks it up when it works for them. No scheduling, no live calls.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How long does the event run? <span class="arrow">›</span></div>
+        <div class="faq-a">One week. You get your match on Monday, the play window runs through Friday, and postcard submissions close end of day Sunday. Plenty of time to fit it in around your queue.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I participate even if I'm not on a specific location team? <span class="arrow">›</span></div>
+        <div class="faq-a">Yes — as long as you're in SDS. The matching is location-aware but all four sites (Austin, Elk Grove, Raleigh, Singapore) are in the pool. If your location isn't listed, reach out to Krystine on Slack.</div>
+      </div>
+
+      <div class="faq-section-label"><div class="section-label">Matching</div></div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How does the matching actually work? <span class="arrow">›</span></div>
+        <div class="faq-a">The quiz captures your player type, game preferences, session length, and whether drawing games are your thing. Matches are paired cross-location (you won't be matched with someone at the same site) and cross-vibe (Explorers with Rivals, Creators with Wanderers). The game suggestion is built from the combination of both players' answers.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Will I ever get matched with someone from my own office? <span class="arrow">›</span></div>
+        <div class="faq-a">No. Cross-geo is a hard rule. If you're in Austin, you'll match with someone in Singapore, Elk Grove, or Raleigh. That's the point — the distance is the feature.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">When do matches drop? <span class="arrow">›</span></div>
+        <div class="faq-a">Match drop happens on Monday of the event week. You'll get a DM from Krystine on Slack with your match's name, location, player type, and your suggested game. That's your starting pistol.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What if my quiz says I hate drawing but my match loves it? <span class="arrow">›</span></div>
+        <div class="faq-a">The game suggestion takes both answers into account. If one person said no to drawing, drawing games are filtered out of the suggestion. You won't get Gartic Phone if either of you opted out.</div>
+      </div>
+
+      <div class="faq-section-label"><div class="section-label">Playing & Postcards</div></div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What's a postcard? <span class="arrow">›</span></div>
+        <div class="faq-a">A postcard is anything you send your match from the game — a screenshot of your score, a photo of your Wordle grid, a voice note, or just a message. It's the "I was here" moment. Small, low pressure, personal. You send it via the Submit page and Krystine forwards it along.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Do I have to play the suggested game? <span class="arrow">›</span></div>
+        <div class="faq-a">The suggestion is exactly that — a suggestion. If you and your match vibe on a different game from the library, go for it. The only rule is it has to be something both of you can play async.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What if my match doesn't respond? <span class="arrow">›</span></div>
+        <div class="faq-a">Hit up Krystine on Slack. She'll follow up. If your match is genuinely unavailable that week, she'll sort a replacement if there's time. It happens — don't stress it.</div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Is there a prize? <span class="arrow">›</span></div>
+        <div class="faq-a">Yes! Submit at least one postcard and you're automatically entered into the raffle. There are also prizes for the most unique games played (Activity Passport Champion) and the highest scores in the score-compare category (High Score Heroes). Details in your match drop DM.</div>
+      </div>
+
+      <div class="faq-section-label"><div class="section-label">Contact</div></div>
+
+      <div class="faq-item" style="grid-column: 1 / -1;" onclick="toggleFaq(this)">
+        <div class="faq-q">What's the best way to reach out with questions? <span class="arrow">›</span></div>
+        <div class="faq-a">Slack. DM Krystine Hall directly — krystine_hall@apple.com. Fastest response, most direct. Email works too but Slack gets you there faster.</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 60px; text-align:center;">
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Commons · Passport: Play · Prototype</p>
+  <p>Built by Krystine Hall</p>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+</script>
+</body>
+</html>

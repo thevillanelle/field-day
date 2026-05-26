@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commons: Prototype</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  /* ── HERO ── */
+  .hero {
+    min-height: 92vh;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding-top: 120px; padding-bottom: 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-stamp {
+    position: absolute; right: -60px; top: 50%;
+    transform: translateY(-50%);
+    width: 520px; height: 520px;
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+  .hero-bg-stamp::before {
+    content: '';
+    position: absolute; inset: 14px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+  }
+  .hero-bg-stamp::after {
+    content: 'PASSPORT: PLAY';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 22px; font-weight: 800;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+  }
+
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .hero-eyebrow .line {
+    width: 40px; height: 1px;
+    background: var(--gold); opacity: 0.5;
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 700; line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .hero h1 .word-play {
+    display: block;
+    color: var(--gold);
+  }
+
+  .hero p {
+    font-size: clamp(16px,2vw,20px);
+    color: var(--cream-dim);
+    max-width: 540px; line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 60px;
+  }
+
+  .hero-coords {
+    font-size: 11px; letter-spacing: 0.18em;
+    color: var(--cream-dim); opacity: 0.3;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { padding: 100px 0; }
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 24px; margin-top: 48px;
+  }
+  .how-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 16px;
+    padding: 36px 28px;
+    position: relative; overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                border-color 0.25s, box-shadow 0.3s;
+  }
+  .how-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  }
+  .how-card .step-num {
+    font-size: 72px; font-weight: 900;
+    color: var(--gold); opacity: 0.06;
+    position: absolute; top: 12px; right: 20px;
+    line-height: 1; pointer-events: none;
+  }
+  .how-card .step-icon { font-size: 32px; margin-bottom: 20px; }
+  .how-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+  .how-card p  { font-size: 14px; color: var(--cream-dim); line-height: 1.65; }
+
+  /* ── GAME PREVIEW ── */
+  .games-preview { padding: 80px 0; }
+  .games-strip {
+    display: flex; gap: 12px;
+    overflow: hidden; margin-top: 40px;
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+  .game-chip {
+    flex-shrink: 0;
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 10px;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; white-space: nowrap;
+    transition: border-color 0.25s;
+  }
+  .game-chip:hover { border-color: var(--gold); }
+  .game-chip .chip-icon { font-size: 18px; }
+
+  /* ── TYPES PREVIEW ── */
+  .types-section { padding: 80px 0; }
+  .types-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 16px; margin-top: 40px;
+  }
+  .type-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 16px;
+    padding: 28px 22px;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                border-color 0.25s, box-shadow 0.3s;
+  }
+  .type-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  }
+  .type-card.explorer { border-top: 2px solid var(--sage-light); }
+  .type-card.rival    { border-top: 2px solid #e07850; }
+  .type-card.creator  { border-top: 2px solid var(--gold); }
+  .type-card.wanderer { border-top: 2px solid #8aabec; }
+  .type-card .type-emoji { font-size: 36px; margin-bottom: 14px; }
+  .type-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .type-card p  { font-size: 13px; color: var(--cream-dim); line-height: 1.6; }
+
+  /* ── CTA BAND ── */
+  .cta-band {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px;
+    text-align: center;
+    margin: 80px 0;
+    position: relative; overflow: hidden;
+  }
+  .cta-band::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-band h2 { font-size: clamp(28px,4vw,44px); font-weight: 700; margin-bottom: 16px; }
+  .cta-band p  { font-size: 17px; color: var(--cream-dim); margin-bottom: 32px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+  @media (max-width:768px) {
+    .how-grid, .types-grid { grid-template-columns: 1fr; }
+    .cta-band { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="stamp">✈</div>
+    <span>Commons: Prototype</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="pair.html">Find Your Game</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="page">
+  <div class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg-stamp"></div>
+
+      <div class="hero-eyebrow fade-up">
+        <div class="line"></div>
+        <span class="section-label" style="margin:0;">Commons · Passport: Play · Prototype</span>
+        <div class="line"></div>
+      </div>
+
+      <h1 class="fade-up" style="animation-delay:0.1s">
+        Play across<br>
+        <span class="word-play">every border.</span>
+      </h1>
+
+      <p class="fade-up" style="animation-delay:0.2s">
+        Commons connects Apple's distributed workforce across locations — starting with play. Take the quiz, get matched with someone from a different part of the world, and let the connection happen on your own time.
+      </p>
+
+      <div class="hero-ctas fade-up" style="animation-delay:0.3s">
+        <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
+        <a href="games.html" class="btn btn-outline">Browse Games</a>
+      </div>
+
+      <div class="hero-coords fade-up" style="animation-delay:0.4s">
+        1.3521° N, 103.8198° E · 30.2672° N, 97.7431° W · 38.5816° N, 121.4944° W · 35.7796° N, 78.6382° W
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section">
+      <div class="section-label">How It Works</div>
+      <h2 style="font-size:clamp(28px,4vw,44px); font-weight:700; max-width:480px; line-height:1.2; margin-bottom:8px;">
+        Four steps.<br>One new connection.
+      </h2>
+
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="step-num">1</div>
+          <div class="step-icon">🧭</div>
+          <h3>Take the Quiz</h3>
+          <p>Six quick questions that tell us how you play, what you're into, and where you're coming from. Takes two minutes.</p>
+        </div>
+        <div class="how-card">
+          <div class="step-num">2</div>
+          <div class="step-icon">🌍</div>
+          <h3>Get Matched</h3>
+          <p>You're paired with someone from a different location whose vibe complements yours. Austin meets Singapore. Raleigh meets Elk Grove.</p>
+        </div>
+        <div class="how-card">
+          <div class="step-num">3</div>
+          <div class="step-icon">🎮</div>
+          <h3>Play Your Game</h3>
+          <p>You get a game suggestion built for your specific pairing. Play on your own time — no scheduling, no live calls required.</p>
+        </div>
+        <div class="how-card" style="grid-column: span 3 / span 3; display:flex; align-items:center; gap:32px; padding:28px 36px;">
+          <div class="step-num" style="position:relative; font-size:48px; opacity:0.1;">4</div>
+          <div>
+            <div class="step-icon">📬</div>
+            <h3 style="margin-bottom:8px;">Send a Postcard</h3>
+            <p style="max-width:520px;">Screenshot your score, a great moment, or just a message. Drop it to your match. No pressure — just a small thing that says <em style="color:var(--gold); font-style:normal;">"I was here."</em></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PLAYER TYPES -->
+    <section class="types-section">
+      <div class="section-label">Player Types</div>
+      <h2 style="font-size:clamp(24px,3.5vw,38px); font-weight:700; margin-bottom:8px;">
+        What kind of player are you?
+      </h2>
+      <p style="color:var(--cream-dim); font-size:15px; margin-bottom:4px;">The quiz finds out. The match is built around the combination.</p>
+
+      <div class="types-grid">
+        <div class="type-card explorer">
+          <div class="type-emoji">🗺️</div>
+          <h3>Explorer</h3>
+          <p>Curious, discovery-driven, loves variety. Best paired with a Rival — someone to push against.</p>
+          <div style="margin-top:16px;"><span class="type-badge badge-explorer">Explorer</span></div>
+        </div>
+        <div class="type-card rival">
+          <div class="type-emoji">⚔️</div>
+          <h3>Rival</h3>
+          <p>Competitive, focused, here to win. Best paired with an Explorer — someone to chase.</p>
+          <div style="margin-top:16px;"><span class="type-badge badge-rival">Rival</span></div>
+        </div>
+        <div class="type-card creator">
+          <div class="type-emoji">🎨</div>
+          <h3>Creator</h3>
+          <p>Expressive, collaborative, prefers creative play. Best paired with a Wanderer — open canvas.</p>
+          <div style="margin-top:16px;"><span class="type-badge badge-creator">Creator</span></div>
+        </div>
+        <div class="type-card wanderer">
+          <div class="type-emoji">🌀</div>
+          <h3>Wanderer</h3>
+          <p>Open to anything, laid-back, goes with the flow. Best paired with a Creator — brings the energy.</p>
+          <div style="margin-top:16px;"><span class="type-badge badge-wanderer">Wanderer</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- GAME PREVIEW -->
+    <section class="games-preview">
+      <div class="section-label">The Game Library</div>
+      <h2 style="font-size:clamp(24px,3.5vw,38px); font-weight:700; margin-bottom:8px;">
+        All async. All two-player.
+      </h2>
+      <p style="color:var(--cream-dim); font-size:15px; margin-bottom:4px;">No scheduling. No live session. Play when it works for you, share the moment after.</p>
+
+      <div class="games-strip">
+        <div class="game-chip"><span class="chip-icon">🌍</span> Openguessr</div>
+        <div class="game-chip"><span class="chip-icon">♟️</span> Lichess</div>
+        <div class="game-chip"><span class="chip-icon">🔤</span> Wordle</div>
+        <div class="game-chip"><span class="chip-icon">📞</span> Gartic Phone</div>
+        <div class="game-chip"><span class="chip-icon">🗺️</span> Worldle</div>
+        <div class="game-chip"><span class="chip-icon">🎨</span> Skribbl.io</div>
+        <div class="game-chip"><span class="chip-icon">🕵️</span> Codenames</div>
+        <div class="game-chip"><span class="chip-icon">⌨️</span> TypeRacer</div>
+        <div class="game-chip"><span class="chip-icon">🔠</span> NYT Connections</div>
+        <div class="game-chip"><span class="chip-icon">❓</span> Kahoot</div>
+        <div class="game-chip"><span class="chip-icon">🎬</span> Framed</div>
+        <div class="game-chip"><span class="chip-icon">💣</span> Minesweeper</div>
+      </div>
+
+      <div style="margin-top:28px;">
+        <a href="games.html" class="btn btn-outline">See Full Game Guide →</a>
+      </div>
+    </section>
+
+    <!-- CTA BAND -->
+    <div class="cta-band">
+      <h2>Ready to get your match?</h2>
+      <p>Six questions. Two minutes. One colleague from somewhere you've never been.</p>
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Commons · Passport: Play · Prototype</p>
+  <p>Built by Krystine Hall</p>
+</footer>
+
+</body>
+</html>

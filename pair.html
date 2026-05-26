@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commons: Prototype — Game Pairing Tool</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .admin-page { padding: 120px 0 80px; }
+  .admin-shell { max-width: 800px; }
+
+  .admin-header {
+    background: var(--navy-card);
+    border: 1px solid rgba(193,68,14,0.3);
+    border-radius: 16px;
+    padding: 20px 28px;
+    margin-bottom: 40px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .admin-header p { font-size: 13px; color: var(--cream-dim); }
+  .admin-header strong { color: var(--terra); }
+
+  /* ── SUBMISSIONS TABLE ── */
+  .submissions-section { margin-bottom: 56px; }
+  .submissions-section h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+  .submission-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 10px;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sub-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+  .sub-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy-mid);
+    border: 1px solid var(--border-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: var(--gold);
+    flex-shrink: 0;
+  }
+  .sub-name  { font-size: 15px; font-weight: 600; }
+  .sub-meta  { font-size: 12px; color: var(--cream-dim); margin-top: 2px; }
+  .sub-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* ── PAIRING TOOL ── */
+  .pair-tool {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+  }
+  .pair-tool h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .pair-tool > p { font-size: 14px; color: var(--cream-dim); margin-bottom: 32px; }
+
+  .pair-inputs {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 20px; align-items: end; margin-bottom: 28px;
+  }
+  .pair-vs {
+    font-size: 22px; font-weight: 900; color: var(--gold);
+    text-align: center; padding-bottom: 14px;
+  }
+
+  .suggestion-box {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    text-align: center;
+    display: none;
+    animation: fadeUp 0.35s ease both;
+  }
+  .suggestion-box.show { display: block; }
+  .sug-game-icon { font-size: 52px; margin-bottom: 12px; }
+  .sug-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .sug-game  { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+  .sug-why   { font-size: 14px; color: var(--cream-dim); line-height: 1.6; max-width: 420px; margin: 0 auto 20px; }
+  .sug-url   { font-size: 13px; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="stamp">✈</div>
+    <span>Commons: Prototype</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="pair.html">Find Your Game</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="admin-page">
+  <div class="container">
+    <div class="admin-shell">
+
+      <div class="section-label">Commons: Prototype</div>
+      <h1 style="font-size:clamp(32px,5vw,52px); font-weight:700; margin-bottom:24px;">Find your game.</h1>
+      <p style="font-size:17px; color:var(--cream-dim); max-width:560px; margin-bottom:40px;">Already know your player type? Enter yours and your match's — the tool suggests the right game for your specific combo and writes the Slack message for you.</p>
+
+      <!-- PAIRING TOOL -->
+      <div class="pair-tool">
+        <h2>Generate a game suggestion</h2>
+        <p>Select both player types, drawing preference, and session length. The suggestion updates automatically.</p>
+
+        <div class="pair-inputs">
+          <div>
+            <div class="form-group">
+              <label>Player A — Type</label>
+              <select id="a-type" onchange="suggest()">
+                <option value="">Select type...</option>
+                <option value="explorer">🗺️ Explorer</option>
+                <option value="rival">⚔️ Rival</option>
+                <option value="creator">🎨 Creator</option>
+                <option value="wanderer">🌀 Wanderer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Player A — Drawing ok?</label>
+              <select id="a-drawing" onchange="suggest()">
+                <option value="">Select...</option>
+                <option value="love">Loves it</option>
+                <option value="fine">Fine with it</option>
+                <option value="skip">No drawing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Player A — Session length</label>
+              <select id="a-duration" onchange="suggest()">
+                <option value="">Select...</option>
+                <option value="short">15 min</option>
+                <option value="medium">30 min</option>
+                <option value="long">60 min</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pair-vs">VS</div>
+
+          <div>
+            <div class="form-group">
+              <label>Player B — Type</label>
+              <select id="b-type" onchange="suggest()">
+                <option value="">Select type...</option>
+                <option value="explorer">🗺️ Explorer</option>
+                <option value="rival">⚔️ Rival</option>
+                <option value="creator">🎨 Creator</option>
+                <option value="wanderer">🌀 Wanderer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Player B — Drawing ok?</label>
+              <select id="b-drawing" onchange="suggest()">
+                <option value="">Select...</option>
+                <option value="love">Loves it</option>
+                <option value="fine">Fine with it</option>
+                <option value="skip">No drawing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Player B — Session length</label>
+              <select id="b-duration" onchange="suggest()">
+                <option value="">Select...</option>
+                <option value="short">15 min</option>
+                <option value="medium">30 min</option>
+                <option value="long">60 min</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggestion-box" id="suggestion-box">
+          <div class="sug-game-icon" id="sug-icon">🌍</div>
+          <div class="sug-label">Suggested Game</div>
+          <div class="sug-game"  id="sug-name">Openguessr</div>
+          <div class="sug-why"   id="sug-why">Both players explore independently, compare scores as a postcard.</div>
+          <a class="sug-url" id="sug-url" href="#" target="_blank">Open Game ↗</a>
+
+          <div style="margin-top:28px; text-align:left; background:var(--navy); border-radius:10px; padding:20px 24px;">
+            <div style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:10px;">Slack DM Copy</div>
+            <div id="dm-copy" style="font-size:13px; color:var(--cream-dim); line-height:1.8; white-space:pre-line;"></div>
+            <button class="btn btn-outline" style="margin-top:16px; font-size:12px; padding:8px 16px;" onclick="copyDM()">Copy DM Text</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── DIVIDER ── -->
+      <div class="divider"></div>
+
+      <!-- ── MATCH ME SUBMISSION ── -->
+      <div>
+        <div class="section-label">Don't have a match yet?</div>
+        <h2 style="font-size:clamp(24px,4vw,38px); font-weight:700; margin-bottom:12px;">We'll find you one.</h2>
+        <p style="font-size:16px; color:var(--cream-dim); max-width:520px; margin-bottom:32px; line-height:1.7;">Take the quiz first so we have your player type — then drop your info below. We'll pair you with someone from a different location and send you both a game suggestion on Slack.</p>
+
+        <div style="background:var(--navy-card); border:1px solid var(--border-dim); border-radius:20px; padding:40px; max-width:560px;">
+          <div class="form-group">
+            <label>Your Full Name</label>
+            <input type="text" id="m-name" placeholder="Krystine Hall" />
+          </div>
+          <div class="form-group">
+            <label>Apple Email</label>
+            <input type="email" id="m-email" placeholder="you@apple.com" />
+          </div>
+          <div class="form-group">
+            <label>Your Location</label>
+            <select id="m-location">
+              <option value="">Select your office...</option>
+              <option>Austin</option>
+              <option>Elk Grove</option>
+              <option>Raleigh</option>
+              <option>Singapore</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Player Type <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--cream-dim); font-size:11px;">— <a href="quiz.html" style="color:var(--gold);">Take the quiz</a> if you don't know yours yet</span></label>
+            <select id="m-type">
+              <option value="">Select type...</option>
+              <option value="explorer">🗺️ Explorer</option>
+              <option value="rival">⚔️ Rival</option>
+              <option value="creator">🎨 Creator</option>
+              <option value="wanderer">🌀 Wanderer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Drawing games — are you in?</label>
+            <select id="m-drawing">
+              <option value="">Select...</option>
+              <option value="love">Love them</option>
+              <option value="fine">Fine with them</option>
+              <option value="skip">Please no drawing</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>How long can you play in one sitting?</label>
+            <select id="m-duration">
+              <option value="">Select...</option>
+              <option value="short">15 minutes</option>
+              <option value="medium">30 minutes</option>
+              <option value="long">Up to an hour</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" onclick="submitMatch()">
+            ✈ Add Me to the Pool →
+          </button>
+
+          <div id="match-submitted" style="display:none; text-align:center; padding:28px 0 8px;">
+            <div style="font-size:40px; margin-bottom:12px;">📬</div>
+            <div style="font-weight:700; font-size:18px; margin-bottom:8px;">You're in the pool.</div>
+            <div style="font-size:14px; color:var(--cream-dim); line-height:1.7;">Krystine will match you with someone from a different location and DM you both on Slack with your game. Keep an eye out. 🌍</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Commons · Passport: Play · Prototype</p>
+  <p>Built by Krystine Hall</p>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────────
+//  FULL GAME CATALOGUE — every game from the library
+// ─────────────────────────────────────────────────────────
+const ALL_GAMES = {
+  // ── DAILY PUZZLES ──
+  wordle:       { icon:'🔤', name:'Wordle',          url:'https://www.nytimes.com/games/wordle',    type:'daily',     minDuration:'short',  noDrawingNeeded:true  },
+  connections:  { icon:'🔠', name:'NYT Connections', url:'https://www.nytimes.com/games/connections',type:'daily',    minDuration:'short',  noDrawingNeeded:true  },
+  worldle:      { icon:'🗺️', name:'Worldle',          url:'https://worldle.teuteuf.fr/',             type:'daily',     minDuration:'short',  noDrawingNeeded:true  },
+  framed:       { icon:'🎬', name:'Framed',           url:'https://framed.wtf/',                     type:'daily',     minDuration:'short',  noDrawingNeeded:true  },
+  heardle:      { icon:'🎵', name:'Heardle',          url:'https://spotify.com/heardle',             type:'daily',     minDuration:'short',  noDrawingNeeded:true  },
+  semantle:     { icon:'🧠', name:'Semantle',         url:'https://semantle.com/',                   type:'daily',     minDuration:'medium', noDrawingNeeded:true  },
+  artle:        { icon:'🎨', name:'Artle',            url:'https://www.artle.org/',                  type:'daily',     minDuration:'short',  noDrawingNeeded:true  },
+  // ── SCORE COMPARE ──
+  openguessr:   { icon:'🌍', name:'Openguessr',       url:'https://openguessr.com/',                 type:'score',     minDuration:'medium', noDrawingNeeded:true  },
+  typeracer:    { icon:'⌨️', name:'TypeRacer',        url:'https://typeracer.com/',                  type:'score',     minDuration:'short',  noDrawingNeeded:true  },
+  minesweeper:  { icon:'💣', name:'Minesweeper',      url:'https://minesweeper.online/',             type:'score',     minDuration:'short',  noDrawingNeeded:true  },
+  kahoot:       { icon:'❓', name:'Kahoot (Solo)',    url:'https://kahoot.com/explore/',             type:'score',     minDuration:'medium', noDrawingNeeded:true  },
+  sporcle:      { icon:'🧩', name:'Sporcle',          url:'https://www.sporcle.com/',                type:'score',     minDuration:'short',  noDrawingNeeded:true  },
+  keymash:      { icon:'🏎️', name:'Keymash',          url:'https://keymash.io/',                     type:'score',     minDuration:'short',  noDrawingNeeded:true  },
+  // ── TURN-BASED ──
+  lichess:      { icon:'♟️', name:'Lichess',          url:'https://lichess.org/',                    type:'turnbased', minDuration:'long',   noDrawingNeeded:true  },
+  wordswfriends:{ icon:'🔤', name:'Words with Friends',url:'https://play.wordswithfriends.com/',    type:'turnbased', minDuration:'medium', noDrawingNeeded:true  },
+  battleship:   { icon:'🎯', name:'Battleship Online',url:'https://www.battleshiponline.org/',       type:'turnbased', minDuration:'medium', noDrawingNeeded:true  },
+  yahtzee:      { icon:'🎲', name:'Yahtzee with Buddies',url:'https://yahtzeewithbuddies.com/',     type:'turnbased', minDuration:'medium', noDrawingNeeded:true  },
+  // ── CREATIVE ──
+  gartic:       { icon:'📞', name:'Gartic Phone',     url:'https://garticphone.com/',                type:'creative',  minDuration:'medium', noDrawingNeeded:false },
+  skribbl:      { icon:'🎨', name:'Skribbl.io',       url:'https://skribbl.io/',                     type:'creative',  minDuration:'medium', noDrawingNeeded:false },
+  storychain:   { icon:'📖', name:'Story Chain',      url:null,                                      type:'creative',  minDuration:'short',  noDrawingNeeded:true  },
+  jackbox:      { icon:'🎭', name:'Jackbox',           url:'https://www.jackboxgames.com/',           type:'creative',  minDuration:'long',   noDrawingNeeded:false },
+  // ── COLLABORATIVE ──
+  codenames:    { icon:'🕵️', name:'Codenames',        url:'https://codenames.game/',                 type:'collab',    minDuration:'medium', noDrawingNeeded:true  },
+  wavelength:   { icon:'🧩', name:'Wavelength',       url:'https://longwave.web.app/',               type:'collab',    minDuration:'medium', noDrawingNeeded:true  },
+  dixit:        { icon:'🃏', name:'Dixit (Photo Ed.)',url:null,                                      type:'collab',    minDuration:'medium', noDrawingNeeded:true  },
+  scavenger:    { icon:'🗺️', name:'Photo Scavenger Hunt',url:null,                                   type:'collab',    minDuration:'long',   noDrawingNeeded:true  },
+};
+
+// ─────────────────────────────────────────────────────────
+//  PAIRING MATRIX
+//  Each entry: { game, why }
+//  'why' explains the logic for THIS SPECIFIC COMBO
+//  Overrides applied separately for drawing + duration
+// ─────────────────────────────────────────────────────────
+const MATRIX = {
+  // Same types
+  'explorer_explorer': { game:'openguessr',   why:"Two Explorers dropped into the same Street View — no competition needed, just the shared obsession of figuring out where you are. Compare your scores and your reasoning." },
+  'rival_rival':       { game:'lichess',       why:"Two competitors who want to win — correspondence chess is the cleanest possible expression of that. Slow, strategic, and completely ruthless." },
+  'creator_creator':   { game:'gartic',        why:"Two Creators loose on Gartic Phone is a recipe for something that starts as art and ends as chaos. Neither of you will be able to explain what happened, but you'll both be proud." },
+  'wanderer_wanderer': { game:'connections',   why:"Two people with no agenda, up for anything — a daily puzzle you both solve independently and compare. Low stakes, surprisingly opinionated once the categories start going sideways." },
+
+  // Cross types
+  'explorer_rival':    { game:'typeracer',     why:"An Explorer who wants a challenge meets a Rival who wants a win — TypeRacer gives both exactly what they came for. Fast, measurable, and immediately rematched." },
+  'rival_explorer':    { game:'typeracer',     why:"An Explorer who wants a challenge meets a Rival who wants a win — TypeRacer gives both exactly what they came for. Fast, measurable, and immediately rematched." },
+
+  'explorer_creator':  { game:'wavelength',    why:"An Explorer's curiosity meets a Creator's expressive instinct. Wavelength forces you to reveal how your mind categorizes the world — you'll learn more about each other from one round than a month of Slack messages." },
+  'creator_explorer':  { game:'wavelength',    why:"An Explorer's curiosity meets a Creator's expressive instinct. Wavelength forces you to reveal how your mind categorizes the world — you'll learn more about each other from one round than a month of Slack messages." },
+
+  'explorer_wanderer': { game:'worldle',       why:"An Explorer who's up for discovery meets a Wanderer who just wants a good time — Worldle is the perfect low-pressure daily that gives both. The geography angle keeps the Explorer happy; no stress keeps the Wanderer in." },
+  'wanderer_explorer': { game:'worldle',       why:"An Explorer who's up for discovery meets a Wanderer who just wants a good time — Worldle is the perfect low-pressure daily that gives both. The geography angle keeps the Explorer happy; no stress keeps the Wanderer in." },
+
+  'rival_creator':     { game:'codenames',     why:"A Rival's competitive edge meets a Creator's way with words. Codenames is won by the person who gives the perfect one-word clue — precise enough to be clever, broad enough to be risky. That tension is exactly where these two types collide." },
+  'creator_rival':     { game:'codenames',     why:"A Rival's competitive edge meets a Creator's way with words. Codenames is won by the person who gives the perfect one-word clue — precise enough to be clever, broad enough to be risky. That tension is exactly where these two types collide." },
+
+  'rival_wanderer':    { game:'battleship',    why:"A Rival who wants a real match meets a Wanderer who's genuinely fine with whatever — Battleship gives the Rival their win condition while being accessible enough that the Wanderer can just enjoy calling out coordinates and watching chaos unfold." },
+  'wanderer_rival':    { game:'battleship',    why:"A Rival who wants a real match meets a Wanderer who's genuinely fine with whatever — Battleship gives the Rival their win condition while being accessible enough that the Wanderer can just enjoy calling out coordinates and watching chaos unfold." },
+
+  'creator_wanderer':  { game:'gartic',        why:"A Creator who wants to express something meets a Wanderer who's genuinely open to anything — Gartic Phone is the natural result. The Creator brings the vision; the Wanderer ensures it gets gloriously misinterpreted." },
+  'wanderer_creator':  { game:'gartic',        why:"A Creator who wants to express something meets a Wanderer who's genuinely open to anything — Gartic Phone is the natural result. The Creator brings the vision; the Wanderer ensures it gets gloriously misinterpreted." },
+};
+
+// ─────────────────────────────────────────────────────────
+//  OVERRIDE LOGIC
+//  Applied on top of the matrix result
+// ─────────────────────────────────────────────────────────
+const DURATION_MINS = { short: 15, medium: 30, long: 60 };
+
+function resolveGame(aType, bType, aDrawing, bDrawing, aDuration, bDuration) {
+  const key    = `${aType}_${bType}`;
+  const match  = MATRIX[key] || MATRIX[`${bType}_${aType}`];
+  let   gameId = match ? match.game : 'openguessr';
+  let   why    = match ? match.why  : "Geography is the universal async game — same map, same challenge, completely different strategies for getting there.";
+
+  const noDrawing    = aDrawing   === 'skip' || bDrawing   === 'skip';
+  const shortSession = aDuration  === 'short' || bDuration === 'short';
+  const game         = ALL_GAMES[gameId];
+  const isDrawingGame = game && !game.noDrawingNeeded;
+  const isTooLong     = game && DURATION_MINS[game.minDuration] > DURATION_MINS['short'] && shortSession;
+
+  // Drawing override
+  if (noDrawing && isDrawingGame) {
+    gameId = 'wordle';
+    why = "Drawing was off the table for at least one of you — Wordle is the perfect pivot. Same word every day, shareable grid, takes five minutes. The playing field is equal and the pressure is zero.";
+  }
+  // Short session override (only swap out genuinely long-haul games)
+  else if (shortSession && (gameId === 'lichess' || gameId === 'wordswfriends' || gameId === 'scavenger' || gameId === 'jackbox')) {
+    gameId = 'keymash';
+    why = "At least one of you only has 15 minutes — Keymash is the call. Pick the same mode, type as fast as you can, screenshot your WPM, and share. Clean, fast, surprisingly smug when you win.";
+  }
+  // Creator + Wanderer + no drawing → Story Chain
+  else if (noDrawing && (aType === 'creator' || bType === 'creator') && (aType === 'wanderer' || bType === 'wanderer')) {
+    gameId = 'storychain';
+    why = "Drawing was out — but a Creator and Wanderer pairing still wants something expressive. Story Chain on Slack is perfect: one person opens with a sentence, the other adds the next. No app, no skill barrier, just two people making something weird together.";
+  }
+
+  const resolved = ALL_GAMES[gameId];
+  return { ...resolved, why };
+}
+
+// ─────────────────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────────────────
+function suggest() {
+  const aType     = document.getElementById('a-type').value;
+  const bType     = document.getElementById('b-type').value;
+  const aDrawing  = document.getElementById('a-drawing').value;
+  const bDrawing  = document.getElementById('b-drawing').value;
+  const aDuration = document.getElementById('a-duration').value;
+  const bDuration = document.getElementById('b-duration').value;
+
+  if (!aType || !bType || !aDrawing || !bDrawing || !aDuration || !bDuration) return;
+
+  const game = resolveGame(aType, bType, aDrawing, bDrawing, aDuration, bDuration);
+
+  const box = document.getElementById('suggestion-box');
+  box.classList.add('show');
+  document.getElementById('sug-icon').textContent = game.icon;
+  document.getElementById('sug-name').textContent = game.name;
+  document.getElementById('sug-why').textContent  = game.why;
+
+  const link = document.getElementById('sug-url');
+  if (game.url) {
+    link.href = game.url;
+    link.textContent = `Open ${game.name} ↗`;
+    link.style.display = 'inline';
+  } else {
+    link.style.display = 'none';
+  }
+
+  const aLabel = document.getElementById('a-type').selectedOptions[0].text;
+  const bLabel = document.getElementById('b-type').selectedOptions[0].text;
+
+  const howToPlay = game.url
+    ? `• Both of you open ${game.name}: ${game.url}\n• Play on your own time — no need to be online together\n• Screenshot your result and send it to your match on Slack`
+    : `• This one runs over Slack — no app needed\n• One person starts, the other responds whenever they have a moment\n• Screenshot or copy the thread when you're done`;
+
+  const dm =
+`✈️ Commons: Prototype — your game suggestion is ready.
+
+${game.icon} ${game.name}
+${game.url || 'Via Slack — no link needed'}
+
+Why this game for you two:
+${game.why}
+
+How to play:
+${howToPlay}
+
+Share your result as a postcard — screenshot, score, reaction, anything. That's your stamp. 🌍`;
+
+  document.getElementById('dm-copy').textContent = dm;
+  window._dmText = dm;
+}
+
+function copyDM() {
+  if (!window._dmText) return;
+  navigator.clipboard.writeText(window._dmText).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = 'Copy Message'; }, 2000);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+//  MATCH ME SUBMISSION
+// ─────────────────────────────────────────────────────────
+const API_BASE = window.API_BASE || '';
+
+async function submitMatch() {
+  const name     = document.getElementById('m-name').value.trim();
+  const email    = document.getElementById('m-email').value.trim();
+  const location = document.getElementById('m-location').value;
+  const type     = document.getElementById('m-type').value;
+  const drawing  = document.getElementById('m-drawing').value;
+  const duration = document.getElementById('m-duration').value;
+
+  if (!name || !email || !location || !type || !drawing || !duration) {
+    alert('Please fill in all fields so we can find you the right match.');
+    return;
+  }
+
+  const btn = document.querySelector('[onclick="submitMatch()"]');
+  btn.textContent = 'Adding you…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/players`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        location,
+        vibe_type:     type,
+        drawing_pref:  drawing,
+        duration_pref: duration,
+      }),
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+
+    document.querySelector('#match-submitted').style.display = 'block';
+    btn.style.display = 'none';
+
+  } catch (err) {
+    console.error(err);
+    btn.textContent = '✈ Add Me to the Pool →';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again or reach out to Krystine on Slack.');
+  }
+}
+</script>
+</body>
+</html>

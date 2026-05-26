@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commons: Prototype — Quiz</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .quiz-page {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 120px 24px 60px;
+  }
+  .quiz-shell {
+    width: 100%; max-width: 640px;
+  }
+  .quiz-header { margin-bottom: 36px; }
+  .quiz-header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+  .quiz-header p  { font-size: 15px; color: var(--cream-dim); }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 20px;
+    padding: 40px;
+    animation: fadeUp 0.35s ease both;
+  }
+  .q-number {
+    font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .q-text {
+    font-size: clamp(20px,3vw,26px);
+    font-weight: 600; line-height: 1.35;
+    margin-bottom: 32px;
+  }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option {
+    background: var(--navy-mid);
+    border: 1px solid var(--border-dim);
+    border-radius: 12px;
+    padding: 16px 22px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 15px; color: var(--cream);
+    transition: border-color 0.2s, background 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    user-select: none;
+  }
+  .option:hover {
+    border-color: rgba(201,168,76,0.4);
+    background: rgba(201,168,76,0.06);
+    transform: translateX(4px);
+  }
+  .option.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+  .option .opt-icon { font-size: 22px; flex-shrink: 0; }
+  .option .opt-label { font-weight: 500; }
+  .option .opt-sub {
+    font-size: 12px; color: var(--cream-dim);
+    display: block; margin-top: 2px;
+  }
+
+  /* ── QUIZ NAV ── */
+  .quiz-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px;
+  }
+
+  /* ── INFO STEP ── */
+  .info-step { display: none; animation: fadeUp 0.35s ease both; }
+  .info-step.active { display: block; }
+
+  /* ── TYPE REVEAL ── */
+  .type-reveal {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    animation: fadeUp 0.4s ease both;
+  }
+  .type-reveal.active { display: block; }
+  .type-reveal-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 52px 40px;
+    position: relative; overflow: hidden;
+  }
+  .type-reveal-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .reveal-stamp {
+    font-size: 72px; margin-bottom: 20px;
+    animation: stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .reveal-label {
+    font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .reveal-type {
+    font-size: 48px; font-weight: 800;
+    margin-bottom: 16px; line-height: 1;
+  }
+  .reveal-desc {
+    font-size: 16px; color: var(--cream-dim);
+    max-width: 380px; margin: 0 auto 16px;
+    line-height: 1.65;
+  }
+  .reveal-pair {
+    font-size: 13px; color: var(--cream-dim);
+    margin-bottom: 32px;
+  }
+  .reveal-pair strong { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="stamp">✈</div>
+    <span>Commons: Prototype</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="pair.html">Find Your Game</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="quiz-page">
+  <div class="quiz-shell">
+
+    <div class="quiz-header">
+      <div class="section-label">Commons: Prototype · Vibe Assessment</div>
+      <h1>Find your player type.</h1>
+      <p>Six questions. Takes two minutes. Your results get matched with someone across the world.</p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress" style="width:0%"></div>
+    </div>
+
+    <!-- QUESTION CONTAINER -->
+    <div id="quiz-container">
+
+      <!-- Q1 -->
+      <div class="q-card" id="q1">
+        <div class="q-number">Question 1 of 6</div>
+        <div class="q-text">When you sit down to play something, what's the honest goal?</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q1', 'win')">
+            <span class="opt-icon">⚔️</span>
+            <div><span class="opt-label">I'm here to win</span><span class="opt-sub">Competing is the fun part</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q1', 'fun')">
+            <span class="opt-icon">🎲</span>
+            <div><span class="opt-label">I'm here to mess around</span><span class="opt-sub">No stakes, just vibes</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q1', 'explore')">
+            <span class="opt-icon">🌍</span>
+            <div><span class="opt-label">I want to discover something</span><span class="opt-sub">Curiosity over competition</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q1', 'create')">
+            <span class="opt-icon">🎨</span>
+            <div><span class="opt-label">I want to make something</span><span class="opt-sub">Creative expression is the point</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <span></span>
+          <button class="btn btn-primary" onclick="nextQ(1)" id="next1" style="display:none">Next →</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-card" id="q2" style="display:none">
+        <div class="q-number">Question 2 of 6</div>
+        <div class="q-text">Pick the game type that sounds most like a good time.</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q2', 'strategy')">
+            <span class="opt-icon">🧠</span>
+            <div><span class="opt-label">Strategy & puzzles</span><span class="opt-sub">Chess, logic games, brain teasers</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q2', 'creative')">
+            <span class="opt-icon">✏️</span>
+            <div><span class="opt-label">Creative & expressive</span><span class="opt-sub">Drawing, storytelling, improv</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q2', 'geography')">
+            <span class="opt-icon">🗺️</span>
+            <div><span class="opt-label">Explore & discover</span><span class="opt-sub">Geography, trivia, word games</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q2', 'fast')">
+            <span class="opt-icon">⚡</span>
+            <div><span class="opt-label">Fast & reflex-based</span><span class="opt-sub">Typing races, quick-fire rounds</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="prevQ(2)">← Back</button>
+          <button class="btn btn-primary" onclick="nextQ(2)" id="next2" style="display:none">Next →</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-card" id="q3" style="display:none">
+        <div class="q-number">Question 3 of 6</div>
+        <div class="q-text">How long can you realistically play in one sitting?</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q3', 'short')">
+            <span class="opt-icon">⚡</span>
+            <div><span class="opt-label">15 minutes max</span><span class="opt-sub">Quick hits, between meetings</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q3', 'medium')">
+            <span class="opt-icon">☕</span>
+            <div><span class="opt-label">Around 30 minutes</span><span class="opt-sub">Enough to get into it</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q3', 'long')">
+            <span class="opt-icon">🛋️</span>
+            <div><span class="opt-label">Up to an hour</span><span class="opt-sub">I've got time, let's go</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="prevQ(3)">← Back</button>
+          <button class="btn btn-primary" onclick="nextQ(3)" id="next3" style="display:none">Next →</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-card" id="q4" style="display:none">
+        <div class="q-number">Question 4 of 6</div>
+        <div class="q-text">What do you actually want out of playing with someone new?</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q4', 'friend')">
+            <span class="opt-icon">🤝</span>
+            <div><span class="opt-label">I want to make a friend</span><span class="opt-sub">The connection is the whole point</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q4', 'opponent')">
+            <span class="opt-icon">🏆</span>
+            <div><span class="opt-label">I want a worthy opponent</span><span class="opt-sub">Friendly competition, mutual respect</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q4', 'surprise')">
+            <span class="opt-icon">🌀</span>
+            <div><span class="opt-label">Surprise me</span><span class="opt-sub">Whatever happens, happens</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="prevQ(4)">← Back</button>
+          <button class="btn btn-primary" onclick="nextQ(4)" id="next4" style="display:none">Next →</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-card" id="q5" style="display:none">
+        <div class="q-number">Question 5 of 6</div>
+        <div class="q-text">When you think about playing a game with someone, which medium feels most natural?</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q5', 'words')">
+            <span class="opt-icon">🔤</span>
+            <div><span class="opt-label">Words</span><span class="opt-sub">Wordplay, clues, language-based</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q5', 'visuals')">
+            <span class="opt-icon">👁️</span>
+            <div><span class="opt-label">Visuals</span><span class="opt-sub">Maps, images, recognizing things</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q5', 'strategy')">
+            <span class="opt-icon">♟️</span>
+            <div><span class="opt-label">Pure strategy</span><span class="opt-sub">Logical moves, no luck involved</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q5', 'drawing')">
+            <span class="opt-icon">✏️</span>
+            <div><span class="opt-label">Drawing</span><span class="opt-sub">Making things, sketching, visual expression</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="prevQ(5)">← Back</button>
+          <button class="btn btn-primary" onclick="nextQ(5)" id="next5" style="display:none">Next →</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="q-card" id="q6" style="display:none">
+        <div class="q-number">Question 6 of 6</div>
+        <div class="q-text">Drawing games — like Skribbl or Gartic Phone — how do you feel about them?</div>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'q6', 'love')">
+            <span class="opt-icon">❤️</span>
+            <div><span class="opt-label">I love them</span><span class="opt-sub">Bring it, I'll commit to the bit</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q6', 'fine')">
+            <span class="opt-icon">🙂</span>
+            <div><span class="opt-label">I'm fine with them</span><span class="opt-sub">Not my first pick but I'll play</span></div>
+          </div>
+          <div class="option" onclick="selectOption(this, 'q6', 'skip')">
+            <span class="opt-icon">🙈</span>
+            <div><span class="opt-label">Please not drawing</span><span class="opt-sub">My art would scare people</span></div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="prevQ(6)">← Back</button>
+          <button class="btn btn-primary" onclick="showResults()" id="next6" style="display:none">See My Type →</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TYPE REVEAL -->
+    <div class="type-reveal" id="type-reveal">
+      <div class="type-reveal-card">
+        <div class="reveal-stamp" id="reveal-emoji">🗺️</div>
+        <div class="reveal-label">Your Player Type</div>
+        <div class="reveal-type" id="reveal-type">Explorer</div>
+        <div class="reveal-desc" id="reveal-desc">Curious, discovery-driven, and always up for something new. You play to see what's out there.</div>
+        <div class="reveal-pair">Best paired with a <strong id="reveal-pair">Rival</strong></div>
+        <div id="reveal-badge" style="margin-bottom:32px;"></div>
+
+        <!-- INFO FORM -->
+        <div class="info-step active" id="info-form">
+          <div style="text-align:left; max-width:440px; margin:0 auto;">
+            <h3 style="font-size:18px; font-weight:600; margin-bottom:6px; text-align:center;">One more thing.</h3>
+            <p style="font-size:14px; color:var(--cream-dim); text-align:center; margin-bottom:24px;">We need your info to send you your match.</p>
+
+            <div class="form-group">
+              <label>Your Full Name</label>
+              <input type="text" id="f-name" placeholder="Krystine Hall" />
+            </div>
+            <div class="form-group">
+              <label>Apple Email</label>
+              <input type="email" id="f-email" placeholder="you@apple.com" />
+            </div>
+            <div class="form-group">
+              <label>Your Location</label>
+              <select id="f-location">
+                <option value="">Select your office...</option>
+                <option>Austin</option>
+                <option>Elk Grove</option>
+                <option>Raleigh</option>
+                <option>Singapore</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" onclick="submitEntry()">
+              ✈ Submit My Entry →
+            </button>
+          </div>
+        </div>
+
+        <!-- SUBMITTED STATE -->
+        <div class="info-step" id="submitted-state">
+          <div style="font-size:48px; margin-bottom:16px;">📬</div>
+          <h3 style="font-size:22px; font-weight:700; margin-bottom:10px;">You're in.</h3>
+          <p style="font-size:15px; color:var(--cream-dim); max-width:380px; margin:0 auto 24px;">Your type, your game preferences, and your info have been sent. You'll hear from Krystine on Slack when your match drops.</p>
+          <a href="games.html" class="btn btn-outline">Browse the Game Library →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Commons · Passport: Play · Prototype</p>
+  <p>Built by Krystine Hall</p>
+</footer>
+
+<script>
+// ─── QUIZ STATE ───────────────────────────────
+const answers = {};
+let currentQ  = 1;
+const TOTAL   = 6;
+
+function updateProgress(q) {
+  document.getElementById('progress').style.width = ((q - 1) / TOTAL * 100) + '%';
+}
+
+function selectOption(el, qId, value) {
+  // deselect siblings
+  el.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[qId] = value;
+  // show next button
+  const nextBtn = document.getElementById('next' + qId.replace('q',''));
+  if (nextBtn) nextBtn.style.display = 'inline-flex';
+  // also handle last question button label
+  const n6 = document.getElementById('next6');
+  if (n6 && qId === 'q6') n6.style.display = 'inline-flex';
+}
+
+function nextQ(from) {
+  if (!answers['q' + from]) return;
+  document.getElementById('q' + from).style.display = 'none';
+  const next = from + 1;
+  const el = document.getElementById('q' + next);
+  if (el) {
+    el.style.display = 'block';
+    el.style.animation = 'none';
+    requestAnimationFrame(() => { el.style.animation = ''; });
+  }
+  currentQ = next;
+  updateProgress(next);
+}
+
+function prevQ(from) {
+  document.getElementById('q' + from).style.display = 'none';
+  document.getElementById('q' + (from - 1)).style.display = 'block';
+  currentQ = from - 1;
+  updateProgress(currentQ);
+}
+
+// ─── PLAYER TYPE LOGIC ───────────────────────
+const TYPES = {
+  explorer: {
+    emoji: '🗺️', name: 'Explorer',
+    desc: 'Curious, discovery-driven, always up for something new. You play to see what\'s out there.',
+    pair: 'Rival', badge: 'badge-explorer'
+  },
+  rival: {
+    emoji: '⚔️', name: 'Rival',
+    desc: 'Competitive, focused, here to win. You bring intensity and respect in equal measure.',
+    pair: 'Explorer', badge: 'badge-rival'
+  },
+  creator: {
+    emoji: '🎨', name: 'Creator',
+    desc: 'Expressive, collaborative, drawn to creative play. You make things more interesting for everyone.',
+    pair: 'Wanderer', badge: 'badge-creator'
+  },
+  wanderer: {
+    emoji: '🌀', name: 'Wanderer',
+    desc: 'Open to anything, laid-back, goes with the flow. You\'re the perfect player for any situation.',
+    pair: 'Creator', badge: 'badge-wanderer'
+  }
+};
+
+function computeType() {
+  let scores = { explorer: 0, rival: 0, creator: 0, wanderer: 0 };
+
+  // Q1 — goal
+  if (answers.q1 === 'win')     scores.rival    += 3;
+  if (answers.q1 === 'fun')     scores.wanderer += 3;
+  if (answers.q1 === 'explore') scores.explorer += 3;
+  if (answers.q1 === 'create')  scores.creator  += 3;
+
+  // Q2 — game type
+  if (answers.q2 === 'strategy')  scores.rival    += 2;
+  if (answers.q2 === 'creative')  scores.creator  += 2;
+  if (answers.q2 === 'geography') scores.explorer += 2;
+  if (answers.q2 === 'fast')      scores.rival    += 1; scores.explorer += 1;
+
+  // Q4 — intent
+  if (answers.q4 === 'friend')   scores.wanderer += 2; scores.creator  += 1;
+  if (answers.q4 === 'opponent') scores.rival    += 2;
+  if (answers.q4 === 'surprise') scores.wanderer += 2; scores.explorer += 1;
+
+  // Q5 — medium
+  if (answers.q5 === 'words')    scores.explorer += 2;
+  if (answers.q5 === 'visuals')  scores.explorer += 2;
+  if (answers.q5 === 'strategy') scores.rival    += 2;
+  if (answers.q5 === 'drawing')  scores.creator  += 2;
+
+  return Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+function showResults() {
+  if (!answers.q6) return;
+  document.getElementById('q6').style.display = 'none';
+  document.getElementById('progress').style.width = '100%';
+
+  const type = computeType();
+  const t    = TYPES[type];
+
+  document.getElementById('reveal-emoji').textContent = t.emoji;
+  document.getElementById('reveal-type').textContent  = t.name;
+  document.getElementById('reveal-desc').textContent  = t.desc;
+  document.getElementById('reveal-pair').textContent  = t.pair;
+  document.getElementById('reveal-badge').innerHTML   =
+    `<span class="type-badge ${t.badge}">${t.emoji} ${t.name}</span>`;
+
+  // store type for submission
+  window._playerType = type;
+  window._playerTypeName = t.name;
+
+  const reveal = document.getElementById('type-reveal');
+  reveal.classList.add('active');
+}
+
+// ─── API ─────────────────────────────────────────────────────
+// In production on Shuri, the API is same-origin — no host needed.
+// In local dev, set window.API_BASE = 'http://localhost:8080' in the console.
+const API_BASE = window.API_BASE || '';
+
+// ─── SUBMISSION ───────────────────────────────
+async function submitEntry() {
+  const name     = document.getElementById('f-name').value.trim();
+  const email    = document.getElementById('f-email').value.trim();
+  const location = document.getElementById('f-location').value;
+
+  if (!name || !email || !location) {
+    alert('Please fill in all three fields.');
+    return;
+  }
+
+  const btn = document.querySelector('[onclick="submitEntry()"]');
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/players`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        location,
+        vibe_type:     window._playerType || null,
+        quiz_answers:  answers,
+        drawing_pref:  answers.q6 || 'fine',
+        duration_pref: answers.q3 || 'medium',
+      }),
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+
+    document.getElementById('info-form').classList.remove('active');
+    document.getElementById('submitted-state').classList.add('active');
+
+  } catch (err) {
+    console.error(err);
+    btn.textContent = '✈ Submit My Entry →';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again or reach out to Krystine on Slack.');
+  }
+}
+</script>
+</body>
+</html>
