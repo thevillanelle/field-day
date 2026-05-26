@@ -33,6 +33,8 @@ from api.db import (
     register_player, get_registrations,
     create_match, get_match, get_matches_for_player, get_matches_for_event,
     create_postcard, get_postcards,
+    get_profile, get_all_profiles, upsert_profile,
+    get_connections, get_connection_count, create_connection,
 )
 from api.matching import run_matching, GAMES
 
@@ -355,6 +357,69 @@ def api_get_postcards(match_id: str) -> list[dict]:
 @app.get("/api/games")
 def api_get_games() -> dict:
     return GAMES
+
+
+# ── Profiles (People layer) ───────────────────────────────────────────────────
+
+class ProfileUpdate(BaseModel):
+    bio:          str        = ""
+    skills:       list[str]  = []
+    interests:    list[str]  = []
+    hobbies:      list[str]  = []
+    avatar_color: str | None = None
+    is_public:    bool       = True
+
+
+@app.get("/api/profiles")
+def api_get_profiles() -> list[dict]:
+    """All public profiles — powers the People page."""
+    profiles = get_all_profiles()
+    # Enrich each with connection count
+    for p in profiles:
+        p["connection_count"] = get_connection_count(p["id"])
+    return profiles
+
+
+@app.get("/api/profiles/{player_id}")
+def api_get_profile(player_id: str) -> dict:
+    profile = get_profile(player_id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    profile["connection_count"] = get_connection_count(player_id)
+    return profile
+
+
+@app.patch("/api/profiles/{player_id}")
+def api_update_profile(player_id: str, body: ProfileUpdate, request: Request) -> dict:
+    """Players update their own profile. Admins can update any."""
+    email = _get_user_email(request)
+    player = get_player(player_id)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    # Allow if it's their own profile or admin
+    if not _is_admin(request) and player.get("email", "").lower() != (email or ""):
+        raise HTTPException(status_code=403, detail="Can only update your own profile")
+    updated = upsert_profile(player_id, body.model_dump())
+    return updated
+
+
+# ── Connections (social graph) ────────────────────────────────────────────────
+
+@app.get("/api/connections/{player_id}")
+def api_get_connections(player_id: str) -> list[dict]:
+    return get_connections(player_id)
+
+
+@app.post("/api/connections", status_code=201)
+def api_create_connection(
+    player_1_id: str,
+    player_2_id: str,
+    vertical:    str = "play",
+    match_id:    str | None = None,
+    request:     Request = None,
+) -> dict:
+    """Create a connection between two players. Called automatically when a match completes."""
+    return create_connection(player_1_id, player_2_id, vertical, match_id)
 
 
 # ── Static files — mounted LAST ───────────────────────────────────────────────

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Recess — My Connections</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .connections-page { padding-top: 120px; padding-bottom: 80px; }
+
+  .connections-hero { padding: 60px 0 40px; }
+  .connections-hero h1 { font-size: clamp(32px,5vw,52px); font-weight:700; margin-bottom:10px; }
+  .connections-hero p  { font-size:16px; color:var(--cream-dim); max-width:520px; }
+
+  /* ── EMAIL LOOKUP ── */
+  .lookup-form {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 16px; padding: 32px; max-width: 480px; margin-bottom: 48px;
+  }
+  .lookup-form h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+  .lookup-form .form-row { display: flex; gap: 10px; }
+  .lookup-form input { flex: 1; }
+
+  /* ── CONNECTIONS LIST ── */
+  .connections-list { display: flex; flex-direction: column; gap: 12px; }
+  .connection-item {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 14px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .connection-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--border);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+  }
+  .conn-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 800; color: var(--navy);
+    flex-shrink: 0;
+  }
+  .conn-info { flex: 1; min-width: 160px; }
+  .conn-name   { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .conn-meta   { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
+  .conn-right  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .conn-date   { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+
+  .vertical-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 8px;
+    background: rgba(201,168,76,0.12); color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.2);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* ── STATES ── */
+  .state-empty {
+    text-align: center; padding: 80px 0;
+    color: var(--muted); font-size: 15px;
+  }
+  .state-empty .big { font-size: 48px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="how-to-play.html">How It Works</a></li>
+    <li><a href="people.html">People</a></li>
+    <li><a href="quiz.html">Take the Quiz</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="pair.html">Find Your Game</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+<main class="connections-page">
+  <div class="container">
+
+    <section class="connections-hero">
+      <div class="section-label">Your Social Graph</div>
+      <h1>Connections</h1>
+      <p>Everyone you've played with. Every match is a stamp. Every stamp is a person.</p>
+    </section>
+
+    <!-- EMAIL LOOKUP -->
+    <div class="lookup-form" id="lookup-form">
+      <h3>Find your connections</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Enter the email you used when you took the quiz.</p>
+      <div class="lookup-form form-row">
+        <input type="email" id="lookup-email" class="filter-input" placeholder="you@yourorg.com" onkeydown="if(event.key==='Enter')lookupConnections()">
+        <button class="btn btn-primary" onclick="lookupConnections()">Go →</button>
+      </div>
+      <div id="lookup-error" style="font-size:13px;color:#e07850;margin-top:10px;display:none;"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="connections-root" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div id="result-name" style="font-size:22px;font-weight:700;"></div>
+          <div id="result-count" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+        </div>
+        <a href="#" onclick="reset();return false;" class="btn btn-ghost" style="font-size:12px;">← Look up a different person</a>
+      </div>
+      <div class="connections-list" id="connections-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Global Recess · Passport: Play</p>
+  <p>global-recess.vercel.app</p>
+</footer>
+
+<script>
+const API_BASE = window.API_BASE || '';
+const FLAGS    = { Austin:'🇺🇸', 'Elk Grove':'🇺🇸', Raleigh:'🇺🇸', Singapore:'🇸🇬' };
+const TYPE_META = {
+  explorer: { emoji:'🗺️', label:'Explorer', badge:'badge-explorer' },
+  rival:    { emoji:'⚔️', label:'Rival',    badge:'badge-rival'    },
+  creator:  { emoji:'🎨', label:'Creator',  badge:'badge-creator'  },
+  wanderer: { emoji:'🌀', label:'Wanderer', badge:'badge-wanderer' },
+};
+
+function initials(name) {
+  return (name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+async function lookupConnections() {
+  const email = document.getElementById('lookup-email').value.trim();
+  if (!email) return;
+
+  const errEl = document.getElementById('lookup-error');
+  errEl.style.display = 'none';
+
+  try {
+    // Find player by email
+    const pRes = await fetch(`${API_BASE}/api/players/by-email/${encodeURIComponent(email)}`);
+    if (!pRes.ok) {
+      errEl.textContent = "We couldn't find an account with that email. Make sure it matches what you used in the quiz.";
+      errEl.style.display = 'block';
+      return;
+    }
+    const player = await pRes.json();
+
+    // Fetch connections
+    const cRes = await fetch(`${API_BASE}/api/connections/${player.id}`);
+    const connections = cRes.ok ? await cRes.json() : [];
+
+    renderConnections(player, connections);
+
+  } catch {
+    errEl.textContent = 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+  }
+}
+
+function renderConnections(player, connections) {
+  document.getElementById('lookup-form').style.display = 'none';
+  const root = document.getElementById('connections-root');
+  root.style.display = 'block';
+
+  document.getElementById('result-name').textContent = `${player.name}'s connections`;
+  document.getElementById('result-count').textContent =
+    `${connections.length} connection${connections.length !== 1 ? 's' : ''} across ${new Set(connections.map(c => c.partner?.location)).size} location${new Set(connections.map(c => c.partner?.location)).size !== 1 ? 's' : ''}`;
+
+  const list = document.getElementById('connections-list');
+
+  if (!connections.length) {
+    list.innerHTML = `
+      <div class="state-empty">
+        <div class="big">🌍</div>
+        <div style="font-weight:700;font-size:18px;margin-bottom:8px;">No connections yet</div>
+        <div style="margin-bottom:24px;">Get matched and play a game — your first connection will show up here.</div>
+        <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = connections.map(c => {
+    const partner = c.partner || {};
+    const tm      = TYPE_META[partner.vibe_type] || {};
+    const flag    = FLAGS[partner.location] || '🌍';
+    return `
+    <div class="connection-item">
+      <div class="conn-avatar" style="background:${partner.avatar_color || '#c9a84c'}">
+        ${initials(partner.name)}
+      </div>
+      <div class="conn-info">
+        <div class="conn-name">${partner.name || 'Unknown'}</div>
+        <div class="conn-meta">
+          <span>${flag} ${partner.location || '—'}</span>
+          ${tm.emoji ? `<span class="type-badge ${tm.badge}" style="font-size:11px;padding:2px 8px;">${tm.emoji} ${tm.label}</span>` : ''}
+        </div>
+      </div>
+      <div class="conn-right">
+        <span class="vertical-badge">${c.vertical || 'play'}</span>
+        <span class="conn-date">${formatDate(c.connected_at)}</span>
+        <a href="profile.html?id=${partner.id}" class="btn btn-outline" style="padding:6px 14px;font-size:12px;">View →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function reset() {
+  document.getElementById('lookup-form').style.display = 'block';
+  document.getElementById('connections-root').style.display = 'none';
+  document.getElementById('lookup-email').value = '';
+  document.getElementById('lookup-error').style.display = 'none';
+}
+</script>
+</body>
+</html>
