@@ -206,11 +206,11 @@
         <div style="background:var(--navy-card); border:1px solid var(--border-dim); border-radius:20px; padding:40px; max-width:560px;">
           <div class="form-group">
             <label>Your Full Name</label>
-            <input type="text" id="m-name" placeholder="Krystine Hall" />
+            <input type="text" id="m-name" placeholder="the organiser" />
           </div>
           <div class="form-group">
             <label>Apple Email</label>
-            <input type="email" id="m-email" placeholder="you@apple.com" />
+            <input type="email" id="m-email" placeholder="you@yourorg.com" />
           </div>
           <div class="form-group">
             <label>Your Location</label>
@@ -258,7 +258,7 @@
           <div id="match-submitted" style="display:none; text-align:center; padding:28px 0 8px;">
             <div style="font-size:40px; margin-bottom:12px;">📬</div>
             <div style="font-weight:700; font-size:18px; margin-bottom:8px;">You're in the pool.</div>
-            <div style="font-size:14px; color:var(--cream-dim); line-height:1.7;">Krystine will match you with someone from a different location and DM you both on Slack with your game. Keep an eye out. 🌍</div>
+            <div style="font-size:14px; color:var(--cream-dim); line-height:1.7;">The organiser will match you with someone from a different location and DM you both on Slack with your game. Keep an eye out. 🌍</div>
           </div>
         </div>
       </div>
@@ -269,7 +269,7 @@
 
 <footer>
   <p>Commons · Passport: Play · Prototype</p>
-  <p>Built by Krystine Hall</p>
+  <p>Global Recess</p>
 </footer>
 
 <script>
@@ -489,7 +489,7 @@ async function submitMatch() {
     console.error(err);
     btn.textContent = '✈ Add Me to the Pool →';
     btn.disabled = false;
-    alert('Something went wrong. Please try again or reach out to Krystine on Slack.');
+    alert('Something went wrong. Please try again or reach out to the event organiser on Slack.');
   }
 }
 </script>

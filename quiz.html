@@ -330,11 +330,11 @@
 
             <div class="form-group">
               <label>Your Full Name</label>
-              <input type="text" id="f-name" placeholder="Krystine Hall" />
+              <input type="text" id="f-name" placeholder="the organiser" />
             </div>
             <div class="form-group">
               <label>Apple Email</label>
-              <input type="email" id="f-email" placeholder="you@apple.com" />
+              <input type="email" id="f-email" placeholder="you@yourorg.com" />
             </div>
             <div class="form-group">
               <label>Your Location</label>
@@ -357,7 +357,7 @@
         <div class="info-step" id="submitted-state">
           <div style="font-size:48px; margin-bottom:16px;">📬</div>
           <h3 style="font-size:22px; font-weight:700; margin-bottom:10px;">You're in.</h3>
-          <p style="font-size:15px; color:var(--cream-dim); max-width:380px; margin:0 auto 24px;">Your type, your game preferences, and your info have been sent. You'll hear from Krystine on Slack when your match drops.</p>
+          <p style="font-size:15px; color:var(--cream-dim); max-width:380px; margin:0 auto 24px;">Your type, your game preferences, and your info have been sent. You'll hear from the event organiser on Slack when your match drops.</p>
           <a href="games.html" class="btn btn-outline">Browse the Game Library →</a>
         </div>
       </div>
@@ -368,7 +368,7 @@
 
 <footer>
   <p>Commons · Passport: Play · Prototype</p>
-  <p>Built by Krystine Hall</p>
+  <p>Global Recess</p>
 </footer>
 
 <script>
@@ -535,7 +535,7 @@ async function submitEntry() {
     console.error(err);
     btn.textContent = '✈ Submit My Entry →';
     btn.disabled = false;
-    alert('Something went wrong. Please try again or reach out to Krystine on Slack.');
+    alert('Something went wrong. Please try again or reach out to the event organiser on Slack.');
   }
 }
 </script>

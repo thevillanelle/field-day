@@ -137,6 +137,33 @@ def init_db() -> None:
             )
         """)
 
+        # ── Profiles (extended player data for People layer) ─────────────────
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS profiles (
+                player_id     TEXT PRIMARY KEY REFERENCES players(id),
+                bio           TEXT DEFAULT '',
+                skills        TEXT DEFAULT '[]',
+                interests     TEXT DEFAULT '[]',
+                hobbies       TEXT DEFAULT '[]',
+                avatar_color  TEXT DEFAULT '#c9a84c',
+                is_public     INTEGER DEFAULT 1,
+                updated_at    TEXT DEFAULT (datetime('now'))
+            )
+        """)
+
+        # ── Connections (social graph — created when a match completes) ───────
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS connections (
+                id            TEXT PRIMARY KEY,
+                player_1_id   TEXT NOT NULL REFERENCES players(id),
+                player_2_id   TEXT NOT NULL REFERENCES players(id),
+                vertical      TEXT DEFAULT 'play',
+                match_id      TEXT REFERENCES matches(id),
+                connected_at  TEXT DEFAULT (datetime('now')),
+                UNIQUE(player_1_id, player_2_id)
+            )
+        """)
+
     print("[db] Commons database initialised")
 
 
@@ -426,3 +453,142 @@ def get_postcards(match_id: str) -> list[dict]:
             (match_id,)
         ).fetchall()
     return [dict(r) for r in rows]
+
+
+# ── Profiles ──────────────────────────────────────────────────────────────────
+
+AVATAR_COLORS = [
+    '#c9a84c','#52b788','#e07850','#8aabec',
+    '#c084fc','#fb7185','#34d399','#f59e0b',
+]
+
+def _avatar_color(player_id: str) -> str:
+    """Deterministic color from player id."""
+    return AVATAR_COLORS[sum(ord(c) for c in player_id) % len(AVATAR_COLORS)]
+
+
+def get_profile(player_id: str) -> dict | None:
+    player = get_player(player_id)
+    if not player:
+        return None
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT * FROM profiles WHERE player_id=?", (player_id,)
+        ).fetchone()
+    profile = dict(row) if row else {
+        "player_id":    player_id,
+        "bio":          "",
+        "skills":       "[]",
+        "interests":    "[]",
+        "hobbies":      "[]",
+        "avatar_color": _avatar_color(player_id),
+        "is_public":    1,
+    }
+    return {
+        **player,
+        "bio":          profile["bio"],
+        "skills":       json.loads(profile["skills"] or "[]"),
+        "interests":    json.loads(profile["interests"] or "[]"),
+        "hobbies":      json.loads(profile["hobbies"] or "[]"),
+        "avatar_color": profile["avatar_color"] or _avatar_color(player_id),
+        "is_public":    bool(profile["is_public"]),
+    }
+
+
+def get_all_profiles() -> list[dict]:
+    """All public profiles — for the People page."""
+    players = get_all_players()
+    result  = []
+    with get_conn() as conn:
+        for p in players:
+            row = conn.execute(
+                "SELECT * FROM profiles WHERE player_id=?", (p["id"],)
+            ).fetchone()
+            profile = dict(row) if row else {}
+            if not profile.get("is_public", 1):
+                continue
+            result.append({
+                **p,
+                "bio":          profile.get("bio", ""),
+                "skills":       json.loads(profile.get("skills", "[]") or "[]"),
+                "interests":    json.loads(profile.get("interests", "[]") or "[]"),
+                "hobbies":      json.loads(profile.get("hobbies", "[]") or "[]"),
+                "avatar_color": profile.get("avatar_color") or _avatar_color(p["id"]),
+                "is_public":    True,
+            })
+    return result
+
+
+def upsert_profile(player_id: str, data: dict) -> dict | None:
+    now = datetime.now(timezone.utc).isoformat()
+    color = data.get("avatar_color") or _avatar_color(player_id)
+    with get_conn() as conn:
+        conn.execute("""
+            INSERT INTO profiles (player_id, bio, skills, interests, hobbies, avatar_color, is_public, updated_at)
+            VALUES (?,?,?,?,?,?,?,?)
+            ON CONFLICT(player_id) DO UPDATE SET
+              bio          = excluded.bio,
+              skills       = excluded.skills,
+              interests    = excluded.interests,
+              hobbies      = excluded.hobbies,
+              avatar_color = excluded.avatar_color,
+              is_public    = excluded.is_public,
+              updated_at   = excluded.updated_at
+        """, (
+            player_id,
+            data.get("bio", ""),
+            json.dumps(data.get("skills", [])),
+            json.dumps(data.get("interests", [])),
+            json.dumps(data.get("hobbies", [])),
+            color,
+            1 if data.get("is_public", True) else 0,
+            now,
+        ))
+    return get_profile(player_id)
+
+
+# ── Connections ───────────────────────────────────────────────────────────────
+
+def create_connection(player_1_id: str, player_2_id: str,
+                      vertical: str = "play", match_id: str | None = None) -> dict:
+    import uuid as _uuid
+    conn_id = "cn" + _uuid.uuid4().hex[:10]
+    # Canonical order so UNIQUE constraint works regardless of who's p1/p2
+    a, b = sorted([player_1_id, player_2_id])
+    with get_conn() as conn:
+        conn.execute("""
+            INSERT OR IGNORE INTO connections
+              (id, player_1_id, player_2_id, vertical, match_id)
+            VALUES (?,?,?,?,?)
+        """, (conn_id, a, b, vertical, match_id))
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT * FROM connections WHERE player_1_id=? AND player_2_id=?", (a, b)
+        ).fetchone()
+    return dict(row)
+
+
+def get_connections(player_id: str) -> list[dict]:
+    """All connections for a player, enriched with partner profile."""
+    with get_conn() as conn:
+        rows = conn.execute("""
+            SELECT * FROM connections
+            WHERE player_1_id=? OR player_2_id=?
+            ORDER BY connected_at DESC
+        """, (player_id, player_id)).fetchall()
+
+    result = []
+    for row in rows:
+        r = dict(row)
+        partner_id = r["player_2_id"] if r["player_1_id"] == player_id else r["player_1_id"]
+        partner    = get_profile(partner_id)
+        result.append({**r, "partner": partner})
+    return result
+
+
+def get_connection_count(player_id: str) -> int:
+    with get_conn() as conn:
+        return conn.execute("""
+            SELECT COUNT(*) FROM connections
+            WHERE player_1_id=? OR player_2_id=?
+        """, (player_id, player_id)).fetchone()[0]

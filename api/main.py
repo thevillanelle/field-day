@@ -38,9 +38,10 @@ from api.matching import run_matching, GAMES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Admin DSIDs / emails — mirrors skills hub pattern ────────────────────────
-ADMIN_EMAILS: set[str] = {"krystine_hall@apple.com"}
-ADMIN_DSIDS:  set[str] = {"1853476154"}
+# ── Admin — configure via environment variables in production ─────────────────
+# Set ADMIN_EMAIL and ADMIN_DSID in your deployment environment
+ADMIN_EMAILS: set[str] = {os.environ.get("ADMIN_EMAIL", "admin@example.com")}
+ADMIN_DSIDS:  set[str] = {os.environ.get("ADMIN_DSID", "")}
 
 _EMAIL_HEADERS = ["x-user-email", "x-apple-sso-email", "x-forwarded-email"]
 
