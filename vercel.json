@@ -5,16 +5,20 @@
     { "src": "*.css",       "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)",           "dest": "api/main.py"        },
-    { "src": "/commons.css",        "dest": "/commons.css"       },
-    { "src": "/games.html",         "dest": "/games.html"        },
-    { "src": "/quiz.html",          "dest": "/quiz.html"         },
-    { "src": "/pair.html",          "dest": "/pair.html"         },
-    { "src": "/faq.html",           "dest": "/faq.html"          },
-    { "src": "/people.html",        "dest": "/people.html"       },
-    { "src": "/profile.html",       "dest": "/profile.html"      },
-    { "src": "/connections.html",   "dest": "/connections.html"  },
-    { "src": "/how-to-play.html",   "dest": "/how-to-play.html"  },
-    { "src": "/(.*)",               "dest": "/index.html"        }
+    { "src": "/api/(.*)",              "dest": "api/main.py"             },
+    { "src": "/commons.css",           "dest": "/commons.css"            },
+    { "src": "/games.html",            "dest": "/games.html"             },
+    { "src": "/quiz.html",             "dest": "/quiz.html"              },
+    { "src": "/pair.html",             "dest": "/pair.html"              },
+    { "src": "/faq.html",              "dest": "/faq.html"               },
+    { "src": "/people.html",           "dest": "/people.html"            },
+    { "src": "/profile.html",          "dest": "/profile.html"           },
+    { "src": "/connections.html",      "dest": "/connections.html"       },
+    { "src": "/how-to-play.html",      "dest": "/how-to-play.html"       },
+    { "src": "/passport-play.html",    "dest": "/passport-play.html"     },
+    { "src": "/passport-meet.html",    "dest": "/passport-meet.html"     },
+    { "src": "/passport-make.html",    "dest": "/passport-make.html"     },
+    { "src": "/passport-learn.html",   "dest": "/passport-learn.html"    },
+    { "src": "/(.*)",                  "dest": "/index.html"             }
   ]
 }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Make — Global Recess</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .vertical-page { padding-top:120px; padding-bottom:80px; }
+  .v-tag {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 16px; border-radius:20px; margin-bottom:20px;
+    font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    background:rgba(193,68,14,0.12); color:#e07850; border:1px solid rgba(193,68,14,0.25);
+  }
+
+  /* ── ACTIVITY CARDS ── */
+  .activities-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px; margin-top:32px;
+  }
+  .activity-card {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 24px;
+    display:flex; flex-direction:column; gap:12px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .activity-card:hover {
+    transform:translateY(-6px); border-color:rgba(193,68,14,0.3);
+    box-shadow:0 16px 40px rgba(0,0,0,0.4);
+  }
+  .activity-type {
+    font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:#e07850;
+  }
+  .activity-title { font-size:17px; font-weight:700; line-height:1.3; }
+  .activity-desc  { font-size:13px; color:var(--muted); line-height:1.65; flex:1; }
+  .activity-meta  { font-size:11px; color:var(--muted); opacity:0.6; display:flex; gap:12px; }
+
+  .make-steps {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:16px; margin-top:32px;
+  }
+  .make-step {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 22px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .make-step:hover { transform:translateY(-6px); }
+  .make-step .step-num { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#e07850; margin-bottom:14px; }
+  .make-step .step-icon { font-size:28px; margin-bottom:10px; }
+  .make-step h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .make-step p  { font-size:13px; color:var(--muted); line-height:1.6; }
+
+  @media(max-width:768px) { .make-steps { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
+  </ul>
+</nav>
+
+<main class="vertical-page">
+  <div class="container">
+
+    <!-- HERO -->
+    <section style="padding:60px 0 48px;">
+      <div class="v-tag">🎨 Passport: Make</div>
+      <h1 style="font-size:clamp(40px,6vw,72px);font-weight:700;margin-bottom:16px;">
+        Connect through<br><span style="color:#e07850;">creation.</span>
+      </h1>
+      <p style="font-size:18px;color:var(--cream-dim);max-width:580px;line-height:1.75;margin-bottom:32px;">
+        Get matched with someone from a different location. Build something together. A playlist. A mood board. A micro-story. A photo from two different places. No skill required — just showing up with something.
+      </p>
+      <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">How It Works</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">Make something together — from two different places.</h2>
+      <div class="make-steps">
+        <div class="make-step">
+          <div class="step-num">Step 01</div>
+          <div class="step-icon">🌍</div>
+          <h3>Get Matched</h3>
+          <p>Cross-geo pairing. Your make activity is suggested based on both your creative preferences and session lengths.</p>
+        </div>
+        <div class="make-step">
+          <div class="step-num">Step 02</div>
+          <div class="step-icon">🎨</div>
+          <h3>Make Your Part</h3>
+          <p>Each person contributes their half of the project. Async — you go when it works for you. No live session needed.</p>
+        </div>
+        <div class="make-step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">📬</div>
+          <h3>Share the Result</h3>
+          <p>Send your contribution as a postcard. See what your match made. The combination is the artifact — two people, two places, one thing.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ACTIVITY LIBRARY -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">Activity Library</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">What you could make together.</h2>
+      <p style="font-size:15px;color:var(--muted);margin-bottom:4px;">Each activity produces something real — something that wouldn't exist without both of you.</p>
+
+      <div class="activities-grid">
+
+        <div class="activity-card">
+          <div class="activity-type">Music</div>
+          <div class="activity-title">Collaborative Playlist</div>
+          <div class="activity-desc">Each person adds 5 songs that represent their current mood or place. Combine into one shared playlist. The contrast tells the story.</div>
+          <div class="activity-meta"><span>🎵 Spotify or Apple Music</span><span>⏱ 15 min</span></div>
+        </div>
+
+        <div class="activity-card">
+          <div class="activity-type">Visual</div>
+          <div class="activity-title">Mood Board Exchange</div>
+          <div class="activity-desc">Both players build a small mood board (3–5 images) around a shared theme — "where I find calm," "what energy looks like." Share and compare.</div>
+          <div class="activity-meta"><span>🖼️ Any tool or photos</span><span>⏱ 20 min</span></div>
+        </div>
+
+        <div class="activity-card">
+          <div class="activity-type">Writing</div>
+          <div class="activity-title">Two-Voice Story</div>
+          <div class="activity-desc">Person A writes the opening paragraph of a story. Person B writes the next. Go back and forth until you have something. Neither of you knows where it's going.</div>
+          <div class="activity-meta"><span>💬 Slack or any doc</span><span>⏱ Any pace</span></div>
+        </div>
+
+        <div class="activity-card">
+          <div class="activity-type">Photography</div>
+          <div class="activity-title">Same Prompt, Different Place</div>
+          <div class="activity-desc">Both players photograph the same subject — "your current view," "something that represents where you live," "something old." Compare the two images side by side.</div>
+          <div class="activity-meta"><span>📱 Phone camera</span><span>⏱ 15 min</span></div>
+        </div>
+
+        <div class="activity-card">
+          <div class="activity-type">Design</div>
+          <div class="activity-title">Six-Word Memoir Exchange</div>
+          <div class="activity-desc">Each person writes a six-word memoir about their week, their year, or their life. Share both. Optionally, design a small card around each other's words.</div>
+          <div class="activity-meta"><span>✏️ No tools needed</span><span>⏱ 10 min</span></div>
+        </div>
+
+        <div class="activity-card">
+          <div class="activity-type">Maps</div>
+          <div class="activity-title">Annotated Map</div>
+          <div class="activity-desc">Each person annotates a map of their city or neighborhood — favorite spots, places that matter, things people don't know about. Share the marked-up maps.</div>
+          <div class="activity-meta"><span>🗺️ Google Maps or screenshot</span><span>⏱ 20 min</span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>Ready to make something?</h2>
+      <p>Get matched, pick an activity, and build something with someone from the other side of the world.</p>
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Global Recess · Passport: Make</p>
+  <p>global-recess.vercel.app</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Learn — Global Recess</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .vertical-page { padding-top:120px; padding-bottom:80px; }
+  .v-tag {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 16px; border-radius:20px; margin-bottom:20px;
+    font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    background:rgba(100,130,200,0.12); color:#8aabec; border:1px solid rgba(100,130,200,0.25);
+  }
+
+  /* ── EXCHANGE CARDS ── */
+  .exchange-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:16px; margin-top:32px;
+  }
+  .exchange-card {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 24px;
+    display:flex; flex-direction:column; gap:12px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .exchange-card:hover {
+    transform:translateY(-6px); border-color:rgba(100,130,200,0.3);
+    box-shadow:0 16px 40px rgba(0,0,0,0.4);
+  }
+  .exchange-type  { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:#8aabec; }
+  .exchange-title { font-size:17px; font-weight:700; line-height:1.3; }
+  .exchange-desc  { font-size:13px; color:var(--muted); line-height:1.65; flex:1; }
+
+  /* ── SKILL SWAP VISUAL ── */
+  .skill-swap {
+    display:flex; align-items:center; gap:16px;
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:20px; padding:32px 40px; margin-top:32px;
+    flex-wrap:wrap;
+  }
+  .swap-side { flex:1; min-width:200px; }
+  .swap-side h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .swap-side p  { font-size:13px; color:var(--muted); line-height:1.6; }
+  .swap-arrow { font-size:32px; color:var(--gold); flex-shrink:0; }
+
+  .learn-steps {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:16px; margin-top:32px;
+  }
+  .learn-step {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 22px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .learn-step:hover { transform:translateY(-6px); }
+  .learn-step .step-num { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#8aabec; margin-bottom:14px; }
+  .learn-step .step-icon { font-size:28px; margin-bottom:10px; }
+  .learn-step h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .learn-step p  { font-size:13px; color:var(--muted); line-height:1.6; }
+
+  @media(max-width:768px) { .learn-steps, .skill-swap { flex-direction:column; } .swap-arrow { transform:rotate(90deg); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
+  </ul>
+</nav>
+
+<main class="vertical-page">
+  <div class="container">
+
+    <!-- HERO -->
+    <section style="padding:60px 0 48px;">
+      <div class="v-tag">📚 Passport: Learn</div>
+      <h1 style="font-size:clamp(40px,6vw,72px);font-weight:700;margin-bottom:16px;">
+        Connect through<br><span style="color:#8aabec;">knowledge.</span>
+      </h1>
+      <p style="font-size:18px;color:var(--cream-dim);max-width:580px;line-height:1.75;margin-bottom:32px;">
+        Get matched across skill gaps. You know something they want to learn. They know something you want to learn. Send each other one lesson, one resource, one demonstration. Teach each other one thing.
+      </p>
+      <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- THE SWAP CONCEPT -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">The Concept</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">Everyone knows something someone else doesn't.</h2>
+      <p style="font-size:15px;color:var(--muted);margin-bottom:24px;">The quiz captures your skills and interests. The match finds someone whose gaps align with your strengths — and vice versa.</p>
+
+      <div class="skill-swap">
+        <div class="swap-side">
+          <h3>You know</h3>
+          <p>Python · Data analysis · Public speaking · Project management · Cantonese · How to train for a marathon · Whatever you put on your profile.</p>
+        </div>
+        <div class="swap-arrow">⇄</div>
+        <div class="swap-side">
+          <h3>They know</h3>
+          <p>Something you want to learn. Figma · Chess · A language. How to cook something specific. A skill from a completely different world than yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">How It Works</div>
+      <div class="learn-steps">
+        <div class="learn-step">
+          <div class="step-num">Step 01</div>
+          <div class="step-icon">📝</div>
+          <h3>Add Your Skills</h3>
+          <p>Fill in your profile with what you know and what you want to learn. The more specific, the better the match.</p>
+        </div>
+        <div class="learn-step">
+          <div class="step-num">Step 02</div>
+          <div class="step-icon">🤝</div>
+          <h3>Get Matched Across Gaps</h3>
+          <p>The algorithm finds someone whose skills overlap with your interests — and whose interests overlap with your skills.</p>
+        </div>
+        <div class="learn-step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">📬</div>
+          <h3>Teach Each Other One Thing</h3>
+          <p>Each person sends a lesson — a resource, a how-to, a demonstration, a recommendation. Async. On your own time. One thing each.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- EXCHANGE FORMATS -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">Exchange Formats</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">How to teach someone one thing.</h2>
+      <div class="exchange-grid">
+
+        <div class="exchange-card">
+          <div class="exchange-type">Resource Drop</div>
+          <div class="exchange-title">The Article / Video / Book</div>
+          <div class="exchange-desc">Find one thing that taught you the most about your skill. Send it with a 2-sentence note about why it clicked for you. The context is the lesson.</div>
+        </div>
+
+        <div class="exchange-card">
+          <div class="exchange-type">Voice Note</div>
+          <div class="exchange-title">Two-Minute Explainer</div>
+          <div class="exchange-desc">Record a 2-minute voice note explaining one concept in your area. Teach it like you're talking to someone smart who just doesn't know this yet.</div>
+        </div>
+
+        <div class="exchange-card">
+          <div class="exchange-type">Written Lesson</div>
+          <div class="exchange-title">The Starter Guide</div>
+          <div class="exchange-desc">Write a short "if I were starting this today, here's what I'd do" — the 3 things you wish you'd known. No jargon. Just what actually matters.</div>
+        </div>
+
+        <div class="exchange-card">
+          <div class="exchange-type">Screenshot Walkthrough</div>
+          <div class="exchange-title">Show Your Process</div>
+          <div class="exchange-desc">Screenshot your screen or your work. Annotate it. Show them what your actual process looks like. Behind the scenes is more useful than the polished result.</div>
+        </div>
+
+        <div class="exchange-card">
+          <div class="exchange-type">Challenge</div>
+          <div class="exchange-title">Give Them a Task</div>
+          <div class="exchange-desc">Instead of explaining — give them a beginner exercise in your skill. Something they can actually try. Report back what happened.</div>
+        </div>
+
+        <div class="exchange-card">
+          <div class="exchange-type">Conversation</div>
+          <div class="exchange-title">The Q&A Postcard</div>
+          <div class="exchange-desc">Your match sends you 3 questions about your skill. You answer them honestly — including the "I don't know" ones. Questions are often better than lessons.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>What do you know that someone else wants to learn?</h2>
+      <p>Fill in your profile, take the quiz, and get matched with someone whose skills and interests are the inverse of yours.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+        <a href="profile.html" class="btn btn-outline">Update My Profile</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Global Recess · Passport: Learn</p>
+  <p>global-recess.vercel.app</p>
+</footer>
+</body>
+</html>

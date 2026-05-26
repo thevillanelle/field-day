@@ -3,179 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commons: Prototype</title>
+<title>Global Recess — Connect Across Every Border</title>
 <link rel="stylesheet" href="commons.css">
 <style>
+
   /* ── HERO ── */
   .hero {
-    min-height: 92vh;
+    min-height: 94vh;
     display: flex; flex-direction: column;
     justify-content: center;
     padding-top: 120px; padding-bottom: 80px;
     position: relative; overflow: hidden;
   }
-  .hero-bg-stamp {
-    position: absolute; right: -60px; top: 50%;
-    transform: translateY(-50%);
-    width: 520px; height: 520px;
-    border: 3px solid var(--gold);
-    border-radius: 50%;
-    opacity: 0.04;
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 40%, rgba(201,168,76,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 60%, rgba(82,183,136,0.05) 0%, transparent 55%);
     pointer-events: none;
   }
-  .hero-bg-stamp::before {
-    content: '';
-    position: absolute; inset: 14px;
-    border: 1px solid var(--gold);
-    border-radius: 50%;
-  }
-  .hero-bg-stamp::after {
-    content: 'PASSPORT: PLAY';
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
-    font-size: 22px; font-weight: 800;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-  }
-
-  .hero-eyebrow {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 24px;
-  }
-  .hero-eyebrow .line {
-    width: 40px; height: 1px;
-    background: var(--gold); opacity: 0.5;
-  }
-
-  .hero h1 {
-    font-size: clamp(52px, 8vw, 96px);
-    font-weight: 700; line-height: 1.0;
-    letter-spacing: -0.02em;
-    margin-bottom: 28px;
-  }
-  .hero h1 .word-play {
-    display: block;
-    color: var(--gold);
-  }
-
-  .hero p {
-    font-size: clamp(16px,2vw,20px);
-    color: var(--cream-dim);
-    max-width: 540px; line-height: 1.7;
-    margin-bottom: 40px;
-  }
-
-  .hero-ctas {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    margin-bottom: 60px;
-  }
-
   .hero-coords {
     font-size: 11px; letter-spacing: 0.18em;
-    color: var(--cream-dim); opacity: 0.3;
+    color: var(--muted); opacity: 0.3;
     font-variant-numeric: tabular-nums;
+    margin-bottom: 32px;
   }
+  .hero h1 {
+    font-size: clamp(52px,8vw,100px);
+    font-weight: 700; line-height: 1.0;
+    letter-spacing: -0.02em; margin-bottom: 28px;
+  }
+  .hero h1 .accent { color: var(--gold); }
+  .hero p {
+    font-size: clamp(16px,2vw,20px);
+    color: var(--cream-dim); max-width: 560px;
+    line-height: 1.75; margin-bottom: 40px;
+  }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 60px; }
+
+  /* ── VERTICALS SECTION ── */
+  .verticals-section { padding: 100px 0; }
+  .verticals-section > .section-label { margin-bottom: 12px; }
+  .verticals-section > h2 {
+    font-size: clamp(28px,4vw,44px); font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .verticals-section > p {
+    font-size: 16px; color: var(--muted); margin-bottom: 48px; max-width: 520px;
+  }
+
+  .verticals-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+  }
+
+  .vertical-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 20px; padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 16px;
+    text-decoration: none; color: inherit;
+    position: relative; overflow: hidden;
+    transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1),
+                box-shadow 0.3s, border-color 0.25s;
+  }
+  .vertical-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 28px 56px rgba(0,0,0,0.5);
+  }
+  .vertical-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 0% 0%, var(--card-glow) 0%, transparent 65%);
+    opacity: 0; transition: opacity 0.35s;
+    pointer-events: none;
+  }
+  .vertical-card:hover::before { opacity: 1; }
+
+  .vertical-card.play    { --card-glow: rgba(201,168,76,0.08);  border-top: 2px solid var(--gold); }
+  .vertical-card.meet    { --card-glow: rgba(82,183,136,0.08);  border-top: 2px solid var(--sage-light); }
+  .vertical-card.make    { --card-glow: rgba(193,68,14,0.08);   border-top: 2px solid #e07850; }
+  .vertical-card.learn   { --card-glow: rgba(100,130,200,0.08); border-top: 2px solid #8aabec; }
+
+  .v-icon  { font-size: 40px; }
+  .v-label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .vertical-card.play  .v-label { color: var(--gold); }
+  .vertical-card.meet  .v-label { color: var(--sage-light); }
+  .vertical-card.make  .v-label { color: #e07850; }
+  .vertical-card.learn .v-label { color: #8aabec; }
+
+  .v-title { font-size: 22px; font-weight: 700; }
+  .v-desc  { font-size: 14px; color: var(--muted); line-height: 1.7; flex: 1; }
+  .v-cta   {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+    margin-top: 4px;
+    transition: gap 0.2s;
+  }
+  .vertical-card.play  .v-cta { color: var(--gold); }
+  .vertical-card.meet  .v-cta { color: var(--sage-light); }
+  .vertical-card.make  .v-cta { color: #e07850; }
+  .vertical-card.learn .v-cta { color: #8aabec; }
+  .vertical-card:hover .v-cta { gap: 10px; }
 
   /* ── HOW IT WORKS ── */
-  .how-section { padding: 100px 0; }
-  .how-grid {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 24px; margin-top: 48px;
-  }
-  .how-card {
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 16px;
-    padding: 36px 28px;
-    position: relative; overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
-                border-color 0.25s, box-shadow 0.3s;
-  }
-  .how-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--border);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
-  }
-  .how-card .step-num {
-    font-size: 72px; font-weight: 900;
-    color: var(--gold); opacity: 0.06;
-    position: absolute; top: 12px; right: 20px;
-    line-height: 1; pointer-events: none;
-  }
-  .how-card .step-icon { font-size: 32px; margin-bottom: 20px; }
-  .how-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
-  .how-card p  { font-size: 14px; color: var(--cream-dim); line-height: 1.65; }
-
-  /* ── GAME PREVIEW ── */
-  .games-preview { padding: 80px 0; }
-  .games-strip {
-    display: flex; gap: 12px;
-    overflow: hidden; margin-top: 40px;
-    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
-  }
-  .game-chip {
-    flex-shrink: 0;
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 10px;
-    padding: 12px 20px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 14px; white-space: nowrap;
-    transition: border-color 0.25s;
-  }
-  .game-chip:hover { border-color: var(--gold); }
-  .game-chip .chip-icon { font-size: 18px; }
-
-  /* ── TYPES PREVIEW ── */
-  .types-section { padding: 80px 0; }
-  .types-grid {
+  .how-section { padding: 80px 0; }
+  .steps-grid {
     display: grid; grid-template-columns: repeat(4,1fr);
     gap: 16px; margin-top: 40px;
   }
-  .type-card {
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 16px;
-    padding: 28px 22px;
+  .step {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 16px; padding: 28px 22px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s;
+  }
+  .step:hover { transform: translateY(-6px); border-color: var(--border); }
+  .step-num  { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .step-icon { font-size: 30px; margin-bottom: 12px; }
+  .step h3   { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step p    { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── STATS ── */
+  .stats-section {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 24px; padding: 56px;
+    display: flex; gap: 0; margin: 0 0 80px;
     text-align: center;
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
-                border-color 0.25s, box-shadow 0.3s;
   }
-  .type-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  .stat-item { flex: 1; position: relative; }
+  .stat-item:not(:last-child)::after {
+    content: ''; position: absolute;
+    right: 0; top: 20%; height: 60%;
+    width: 1px; background: var(--border-dim);
   }
-  .type-card.explorer { border-top: 2px solid var(--sage-light); }
-  .type-card.rival    { border-top: 2px solid #e07850; }
-  .type-card.creator  { border-top: 2px solid var(--gold); }
-  .type-card.wanderer { border-top: 2px solid #8aabec; }
-  .type-card .type-emoji { font-size: 36px; margin-bottom: 14px; }
-  .type-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-  .type-card p  { font-size: 13px; color: var(--cream-dim); line-height: 1.6; }
+  .stat-num   { font-size: clamp(32px,4vw,52px); font-weight: 800; color: var(--gold); }
+  .stat-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
 
   /* ── CTA BAND ── */
   .cta-band {
-    background: var(--navy-card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 60px;
-    text-align: center;
-    margin: 80px 0;
-    position: relative; overflow: hidden;
+    background: var(--navy-card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 64px;
+    text-align: center; position: relative; overflow: hidden;
+    margin-bottom: 80px;
   }
   .cta-band::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%);
     pointer-events: none;
   }
-  .cta-band h2 { font-size: clamp(28px,4vw,44px); font-weight: 700; margin-bottom: 16px; }
-  .cta-band p  { font-size: 17px; color: var(--cream-dim); margin-bottom: 32px; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .cta-band h2 { font-size: clamp(28px,4vw,44px); font-weight: 700; margin-bottom: 14px; }
+  .cta-band p  { font-size: 17px; color: var(--muted); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
 
-  @media (max-width:768px) {
-    .how-grid, .types-grid { grid-template-columns: 1fr; }
+  @media (max-width: 768px) {
+    .verticals-grid, .steps-grid { grid-template-columns: 1fr; }
+    .stats-section { flex-direction: column; gap: 32px; padding: 40px 24px; }
+    .stat-item::after { display: none; }
     .cta-band { padding: 40px 24px; }
   }
 </style>
@@ -183,50 +170,105 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">
-    <div class="stamp">✈</div>
-    <span>Commons: Prototype</span>
-  </a>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
   <ul class="nav-links">
-    <li><a href="how-to-play.html">How It Works</a></li>
     <li><a href="people.html">People</a></li>
-    <li><a href="quiz.html">Take the Quiz</a></li>
-    <li><a href="games.html">Games</a></li>
-    <li><a href="pair.html">Find Your Game</a></li>
-    <li><a href="connections.html">Connections</a></li>
-    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
   </ul>
 </nav>
 
-<main class="page">
+<main>
   <div class="container">
 
     <!-- HERO -->
     <section class="hero">
-      <div class="hero-bg-stamp"></div>
-
-      <div class="hero-eyebrow fade-up">
-        <div class="line"></div>
-        <span class="section-label" style="margin:0;">Commons · Passport: Play · Prototype</span>
-        <div class="line"></div>
-      </div>
-
-      <h1 class="fade-up" style="animation-delay:0.1s">
-        Play across<br>
-        <span class="word-play">every border.</span>
+      <div class="hero-bg"></div>
+      <div class="hero-coords">1.3521° N · 30.2672° N · 38.5816° N · 35.7796° N</div>
+      <h1>
+        Connect across<br>
+        <span class="accent">every border.</span>
       </h1>
-
-      <p class="fade-up" style="animation-delay:0.2s">
-        Commons connects Apple's distributed workforce across locations — starting with play. Take the quiz, get matched with someone from a different part of the world, and let the connection happen on your own time.
+      <p>
+        Global Recess matches you with a colleague from a different part of the world — then gives you a reason to actually talk. Play a game. Have a conversation. Build something. Teach each other something. Your call.
       </p>
-
-      <div class="hero-ctas fade-up" style="animation-delay:0.3s">
-        <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
-        <a href="games.html" class="btn btn-outline">Browse Games</a>
+      <div class="hero-ctas">
+        <a href="quiz.html" class="btn btn-primary">✈ Find My Match →</a>
+        <a href="people.html" class="btn btn-outline">Browse People</a>
       </div>
+    </section>
 
-      <div class="hero-coords fade-up" style="animation-delay:0.4s">
-        1.3521° N, 103.8198° E · 30.2672° N, 97.7431° W · 38.5816° N, 121.4944° W · 35.7796° N, 78.6382° W
+    <!-- STATS -->
+    <div class="stats-section">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-people">—</div>
+        <div class="stat-label">People</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Ways to Connect</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">24</div>
+        <div class="stat-label">Async Games</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">🌍</div>
+        <div class="stat-label">Cross-Geo Always</div>
+      </div>
+    </div>
+
+    <!-- VERTICALS -->
+    <section class="verticals-section">
+      <div class="section-label">Passport</div>
+      <h2>Four ways to connect.</h2>
+      <p>Every vertical uses the same matching engine. Different people show up differently — pick the one that fits.</p>
+
+      <div class="verticals-grid">
+
+        <a class="vertical-card play" href="passport-play.html">
+          <div class="v-icon">🎮</div>
+          <div>
+            <div class="v-label">Passport: Play</div>
+            <div class="v-title">Connect through games</div>
+          </div>
+          <div class="v-desc">Get matched with someone from a different location. Get a game suggestion built for your specific pairing. Play async, share your score as a postcard. The game is the excuse — the connection is the point.</div>
+          <div class="v-cta">Explore Play →</div>
+        </a>
+
+        <a class="vertical-card meet" href="passport-meet.html">
+          <div class="v-icon">💬</div>
+          <div>
+            <div class="v-label">Passport: Meet</div>
+            <div class="v-title">Connect through conversation</div>
+          </div>
+          <div class="v-desc">Get matched and receive a set of structured questions to answer for each other. Async, thoughtful, low-pressure. You go first. They respond. No small talk required — the prompts skip straight to the good stuff.</div>
+          <div class="v-cta">Explore Meet →</div>
+        </a>
+
+        <a class="vertical-card make" href="passport-make.html">
+          <div class="v-icon">🎨</div>
+          <div>
+            <div class="v-label">Passport: Make</div>
+            <div class="v-title">Connect through creation</div>
+          </div>
+          <div class="v-desc">Get matched and build something together. A collaborative playlist. A shared mood board. A micro-story. A photo essay from two different places. No skill required — just showing up with something.</div>
+          <div class="v-cta">Explore Make →</div>
+        </a>
+
+        <a class="vertical-card learn" href="passport-learn.html">
+          <div class="v-icon">📚</div>
+          <div>
+            <div class="v-label">Passport: Learn</div>
+            <div class="v-title">Connect through knowledge</div>
+          </div>
+          <div class="v-desc">Get matched across skill gaps. You know something they want to learn. They know something you want to learn. Async knowledge exchange — each person sends a lesson, a resource, a demonstration. Teach each other one thing.</div>
+          <div class="v-cta">Explore Learn →</div>
+        </a>
+
       </div>
     </section>
 
@@ -235,112 +277,39 @@
     <!-- HOW IT WORKS -->
     <section class="how-section">
       <div class="section-label">How It Works</div>
-      <h2 style="font-size:clamp(28px,4vw,44px); font-weight:700; max-width:480px; line-height:1.2; margin-bottom:8px;">
-        Four steps.<br>One new connection.
-      </h2>
-
-      <div class="how-grid">
-        <div class="how-card">
-          <div class="step-num">1</div>
+      <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;margin-bottom:40px;">Same engine. Every vertical.</h2>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-num">Step 01</div>
           <div class="step-icon">🧭</div>
           <h3>Take the Quiz</h3>
-          <p>Six quick questions that tell us how you play, what you're into, and where you're coming from. Takes two minutes.</p>
+          <p>Six questions. Two minutes. Tells us how you play, what you're into, and what kind of connection you're looking for.</p>
         </div>
-        <div class="how-card">
-          <div class="step-num">2</div>
+        <div class="step">
+          <div class="step-num">Step 02</div>
           <div class="step-icon">🌍</div>
           <h3>Get Matched</h3>
-          <p>You're paired with someone from a different location whose vibe complements yours. Austin meets Singapore. Raleigh meets Elk Grove.</p>
+          <p>Cross-geo, vibe-aware matching. You'll never be matched with someone from your own location. That's the whole point.</p>
         </div>
-        <div class="how-card">
-          <div class="step-num">3</div>
-          <div class="step-icon">🎮</div>
-          <h3>Play Your Game</h3>
-          <p>You get a game suggestion built for your specific pairing. Play on your own time — no scheduling, no live calls required.</p>
+        <div class="step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">✨</div>
+          <h3>Do the Thing</h3>
+          <p>Play a game. Answer a question. Make something. Teach something. On your own time — no scheduling, no live call required.</p>
         </div>
-        <div class="how-card" style="grid-column: span 3 / span 3; display:flex; align-items:center; gap:32px; padding:28px 36px;">
-          <div class="step-num" style="position:relative; font-size:48px; opacity:0.1;">4</div>
-          <div>
-            <div class="step-icon">📬</div>
-            <h3 style="margin-bottom:8px;">Send a Postcard</h3>
-            <p style="max-width:520px;">Screenshot your score, a great moment, or just a message. Drop it to your match. No pressure — just a small thing that says <em style="color:var(--gold); font-style:normal;">"I was here."</em></p>
-          </div>
+        <div class="step">
+          <div class="step-num">Step 04</div>
+          <div class="step-icon">📬</div>
+          <h3>Send a Postcard</h3>
+          <p>Share what you made, scored, said, or learned. A screenshot, a note, a reaction. That's your stamp in the passport.</p>
         </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- PLAYER TYPES -->
-    <section class="types-section">
-      <div class="section-label">Player Types</div>
-      <h2 style="font-size:clamp(24px,3.5vw,38px); font-weight:700; margin-bottom:8px;">
-        What kind of player are you?
-      </h2>
-      <p style="color:var(--cream-dim); font-size:15px; margin-bottom:4px;">The quiz finds out. The match is built around the combination.</p>
-
-      <div class="types-grid">
-        <div class="type-card explorer">
-          <div class="type-emoji">🗺️</div>
-          <h3>Explorer</h3>
-          <p>Curious, discovery-driven, loves variety. Best paired with a Rival — someone to push against.</p>
-          <div style="margin-top:16px;"><span class="type-badge badge-explorer">Explorer</span></div>
-        </div>
-        <div class="type-card rival">
-          <div class="type-emoji">⚔️</div>
-          <h3>Rival</h3>
-          <p>Competitive, focused, here to win. Best paired with an Explorer — someone to chase.</p>
-          <div style="margin-top:16px;"><span class="type-badge badge-rival">Rival</span></div>
-        </div>
-        <div class="type-card creator">
-          <div class="type-emoji">🎨</div>
-          <h3>Creator</h3>
-          <p>Expressive, collaborative, prefers creative play. Best paired with a Wanderer — open canvas.</p>
-          <div style="margin-top:16px;"><span class="type-badge badge-creator">Creator</span></div>
-        </div>
-        <div class="type-card wanderer">
-          <div class="type-emoji">🌀</div>
-          <h3>Wanderer</h3>
-          <p>Open to anything, laid-back, goes with the flow. Best paired with a Creator — brings the energy.</p>
-          <div style="margin-top:16px;"><span class="type-badge badge-wanderer">Wanderer</span></div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- GAME PREVIEW -->
-    <section class="games-preview">
-      <div class="section-label">The Game Library</div>
-      <h2 style="font-size:clamp(24px,3.5vw,38px); font-weight:700; margin-bottom:8px;">
-        All async. All two-player.
-      </h2>
-      <p style="color:var(--cream-dim); font-size:15px; margin-bottom:4px;">No scheduling. No live session. Play when it works for you, share the moment after.</p>
-
-      <div class="games-strip">
-        <div class="game-chip"><span class="chip-icon">🌍</span> Openguessr</div>
-        <div class="game-chip"><span class="chip-icon">♟️</span> Lichess</div>
-        <div class="game-chip"><span class="chip-icon">🔤</span> Wordle</div>
-        <div class="game-chip"><span class="chip-icon">📞</span> Gartic Phone</div>
-        <div class="game-chip"><span class="chip-icon">🗺️</span> Worldle</div>
-        <div class="game-chip"><span class="chip-icon">🎨</span> Skribbl.io</div>
-        <div class="game-chip"><span class="chip-icon">🕵️</span> Codenames</div>
-        <div class="game-chip"><span class="chip-icon">⌨️</span> TypeRacer</div>
-        <div class="game-chip"><span class="chip-icon">🔠</span> NYT Connections</div>
-        <div class="game-chip"><span class="chip-icon">❓</span> Kahoot</div>
-        <div class="game-chip"><span class="chip-icon">🎬</span> Framed</div>
-        <div class="game-chip"><span class="chip-icon">💣</span> Minesweeper</div>
-      </div>
-
-      <div style="margin-top:28px;">
-        <a href="games.html" class="btn btn-outline">See Full Game Guide →</a>
       </div>
     </section>
 
     <!-- CTA BAND -->
     <div class="cta-band">
-      <h2>Ready to get your match?</h2>
-      <p>Six questions. Two minutes. One colleague from somewhere you've never been.</p>
+      <h2>One quiz. Four ways to connect.</h2>
+      <p>Take the vibe assessment once — it feeds every Passport vertical. Your type travels with you.</p>
       <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
     </div>
 
@@ -348,9 +317,19 @@
 </main>
 
 <footer>
-  <p>Commons · Passport: Play · Prototype</p>
-  <p>Global Recess</p>
+  <p>Global Recess · Passport Platform</p>
+  <p>global-recess.vercel.app</p>
 </footer>
 
+<script>
+// Live people count from API
+fetch('/api/profiles')
+  .then(r => r.ok ? r.json() : [])
+  .then(p => {
+    const el = document.getElementById('stat-people');
+    if (el) el.textContent = p.length || '—';
+  })
+  .catch(() => {});
+</script>
 </body>
 </html>

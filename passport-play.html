@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Play — Global Recess</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .vertical-page { padding-top: 120px; padding-bottom: 80px; }
+  .vertical-hero { padding: 60px 0 48px; }
+  .vertical-hero .v-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 20px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.25);
+  }
+  .vertical-hero h1 { font-size: clamp(40px,6vw,72px); font-weight:700; margin-bottom:16px; }
+  .vertical-hero p  { font-size:18px; color:var(--cream-dim); max-width:580px; line-height:1.75; margin-bottom:32px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
+  </ul>
+</nav>
+
+<main class="vertical-page">
+  <div class="container">
+
+    <section class="vertical-hero">
+      <div class="v-tag">🎮 Passport: Play</div>
+      <h1>Connect through<br><span style="color:var(--gold)">games.</span></h1>
+      <p>Get matched with someone from a different location. Get a game built for your specific pairing. Play on your own time — no scheduling, no live call required. Share your result as a postcard.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
+        <a href="games.html" class="btn btn-outline">Browse Games</a>
+        <a href="pair.html" class="btn btn-ghost">Find Your Game</a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- WHY PLAY -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">Why Play</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:32px;">The game is the excuse. The connection is the point.</h2>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:12px;">🌍</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:8px;">Cross-geo always</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6;">You will never be matched with someone from your own location. Austin meets Singapore. Raleigh meets Elk Grove. The distance is the feature.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:12px;">🎯</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:8px;">Matched to your pairing</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6;">Your game suggestion is built from the combination of both players' vibe types, drawing preferences, and session lengths. Not random. Intentional.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:12px;">⏱️</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:8px;">Async by design</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6;">Every game in the library works without both people online at the same time. Play when it works for you. Share the moment after.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:12px;">📬</div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:8px;">The postcard model</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6;">Every interaction is a postcard. A score. A screenshot. A reaction. It travels across time zones without requiring both people to be online. Small, personal, real.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TWO MODES -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">Two Modes</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:32px;">Stamp or The Bell.</h2>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
+        <div class="card" style="border-top:2px solid var(--gold);">
+          <div style="font-size:32px;margin-bottom:14px;">🗺️</div>
+          <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Stamp Mode</div>
+          <div style="font-size:19px;font-weight:700;margin-bottom:10px;">Intentional matching</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.65;">Take the quiz → get matched by the algorithm → match drops on Monday → week-long play window → postcard submit. Curated, vibe-aware, cross-geo. The whole experience.</div>
+        </div>
+        <div class="card" style="border-top:2px solid var(--sage-light);">
+          <div style="font-size:32px;margin-bottom:14px;">⚡</div>
+          <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--sage-light);margin-bottom:8px;">The Bell</div>
+          <div style="font-size:19px;font-weight:700;margin-bottom:10px;">Instant drop-in</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.65;">A live window opens for your org. You drop in. You're instantly matched with the next available person from the opposite region. No quiz required. Pure collision.</div>
+          <div style="font-size:12px;color:var(--muted);opacity:0.5;margin-top:12px;">Coming soon</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>Ready to play?</h2>
+      <p>Take the quiz and get matched with someone from across the world.</p>
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Global Recess · Passport: Play</p>
+  <p>global-recess.vercel.app</p>
+</footer>
+</body>
+</html>

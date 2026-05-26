@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Meet — Global Recess</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .vertical-page { padding-top:120px; padding-bottom:80px; }
+  .v-tag {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 16px; border-radius:20px; margin-bottom:20px;
+    font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    background:rgba(82,183,136,0.12); color:var(--sage-light); border:1px solid rgba(82,183,136,0.25);
+  }
+
+  /* ── PROMPT CARDS ── */
+  .prompts-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:16px; margin-top:32px;
+  }
+  .prompt-card {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 24px;
+    display:flex; flex-direction:column; gap:12px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .prompt-card:hover {
+    transform:translateY(-6px); border-color:rgba(82,183,136,0.3);
+    box-shadow:0 16px 40px rgba(0,0,0,0.4);
+  }
+  .prompt-category {
+    font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--sage-light);
+  }
+  .prompt-text {
+    font-size:16px; font-weight:600; line-height:1.45;
+    color:var(--cream);
+  }
+  .prompt-sub {
+    font-size:13px; color:var(--muted); line-height:1.6;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .meet-steps {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:16px; margin-top:32px;
+  }
+  .meet-step {
+    background:var(--navy-card); border:1px solid var(--border-dim);
+    border-radius:16px; padding:28px 22px;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .meet-step:hover { transform:translateY(-6px); }
+  .meet-step .step-num { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--sage-light); margin-bottom:14px; }
+  .meet-step .step-icon { font-size:28px; margin-bottom:10px; }
+  .meet-step h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .meet-step p  { font-size:13px; color:var(--muted); line-height:1.6; }
+
+  @media(max-width:768px) { .meet-steps { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
+  </ul>
+</nav>
+
+<main class="vertical-page">
+  <div class="container">
+
+    <!-- HERO -->
+    <section style="padding:60px 0 48px;">
+      <div class="v-tag">💬 Passport: Meet</div>
+      <h1 style="font-size:clamp(40px,6vw,72px);font-weight:700;margin-bottom:16px;">
+        Connect through<br><span style="color:var(--sage-light);">conversation.</span>
+      </h1>
+      <p style="font-size:18px;color:var(--cream-dim);max-width:580px;line-height:1.75;margin-bottom:32px;">
+        Get matched with someone from a different location. Receive a prompt. Answer it for your partner. They answer it for you. No small talk. No scheduling. Just two people actually getting to know each other.
+      </p>
+      <a href="quiz.html" class="btn btn-primary">✈ Get My Match →</a>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">How It Works</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">Skip the small talk.</h2>
+      <p style="font-size:15px;color:var(--muted);margin-bottom:4px;">The prompts do the work. You just have to show up honestly.</p>
+      <div class="meet-steps">
+        <div class="meet-step">
+          <div class="step-num">Step 01</div>
+          <div class="step-icon">🧭</div>
+          <h3>Get Matched</h3>
+          <p>Take the quiz once. The algorithm matches you cross-geo with someone whose vibe complements yours.</p>
+        </div>
+        <div class="meet-step">
+          <div class="step-num">Step 02</div>
+          <div class="step-icon">💬</div>
+          <h3>Receive Your Prompt</h3>
+          <p>Both players get the same prompt — a question designed to surface something real. You each answer it independently on your own time.</p>
+        </div>
+        <div class="meet-step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">📬</div>
+          <h3>Send Your Postcard</h3>
+          <p>Share your answer with your match. Read theirs. Respond if you want to. That's the connection — two honest answers from two different places in the world.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PROMPT LIBRARY -->
+    <section style="margin-bottom:60px;">
+      <div class="section-label">Prompt Library</div>
+      <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">Questions worth answering.</h2>
+      <p style="font-size:15px;color:var(--muted);margin-bottom:4px;">Your match gets the same prompt. Your answers arrive in each other's inboxes like letters from somewhere new.</p>
+
+      <div class="prompts-grid">
+
+        <div class="prompt-card">
+          <div class="prompt-category">Work & Craft</div>
+          <div class="prompt-text">"What's something you built or made that you're quietly proud of?"</div>
+          <div class="prompt-sub">Doesn't have to be at work. Could be anything.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Place & Roots</div>
+          <div class="prompt-text">"What's one thing about where you're from that most people don't know?"</div>
+          <div class="prompt-sub">The thing you'd tell someone who actually asked.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Curiosity</div>
+          <div class="prompt-text">"What's a rabbit hole you've fallen down recently that you didn't expect?"</div>
+          <div class="prompt-sub">The Wikipedia spiral. The late-night read. The obsession.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Perspective</div>
+          <div class="prompt-text">"What's something you believed for a long time that you eventually changed your mind about?"</div>
+          <div class="prompt-sub">No judgment. Just honest.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Right Now</div>
+          <div class="prompt-text">"What's something you're trying to get better at — and why now?"</div>
+          <div class="prompt-sub">Work, life, anything. What's the current project on yourself?</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Texture</div>
+          <div class="prompt-text">"Describe your ideal Tuesday. Not a vacation — just a regular day done right."</div>
+          <div class="prompt-sub">The small things reveal a lot about a person.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Connection</div>
+          <div class="prompt-text">"What's a piece of advice you've received that you think about more than the person who gave it probably knows?"</div>
+          <div class="prompt-sub">The sentence that stuck.</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-category">Exchange</div>
+          <div class="prompt-text">"If you could teach your match one thing you know well, what would it be?"</div>
+          <div class="prompt-sub">Sets up a Learn match naturally — but works on its own too.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>Ready to meet someone?</h2>
+      <p>Take the quiz, get matched, and see what happens when two strangers answer the same question from opposite sides of the world.</p>
+      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>Global Recess · Passport: Meet</p>
+  <p>global-recess.vercel.app</p>
+</footer>
+</body>
+</html>
