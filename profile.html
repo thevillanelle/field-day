@@ -53,6 +53,76 @@
     transform: translateY(-2px);
   }
   .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* ── RECOGNITION ── */
+  .recognition-section { margin-bottom: 40px; }
+  .recognition-section h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .recognition-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  .recognition-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+  .recognition-card {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 14px; padding: 20px 22px;
+    display: flex; align-items: flex-start; gap: 14px;
+    position: relative;
+    animation: fadeUp 0.3s ease both;
+  }
+  .rec-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: var(--navy); flex-shrink: 0; margin-top: 2px;
+  }
+  .rec-body { flex: 1; }
+  .rec-from {
+    font-size: 12px; font-weight: 700; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rec-loc   { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .rec-text  { font-size: 14px; color: var(--cream-dim); line-height: 1.65; }
+  .rec-date  { font-size: 11px; color: var(--muted); margin-top: 6px; opacity: 0.6; }
+
+  .rec-actions {
+    display: flex; gap: 6px; flex-shrink: 0;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .recognition-card:hover .rec-actions { opacity: 1; }
+  .rec-btn {
+    background: none; border: 1px solid var(--border-dim); border-radius: 8px;
+    padding: 4px 10px; cursor: pointer; font-size: 11px;
+    font-family: inherit; color: var(--muted); transition: all 0.2s;
+  }
+  .rec-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .rec-btn.flag:hover { border-color: #e07850; color: #e07850; }
+  .rec-btn.remove:hover { border-color: #fb7185; color: #fb7185; }
+
+  .recognition-empty {
+    text-align: center; padding: 32px;
+    background: var(--navy-card); border: 1px dashed var(--border-dim);
+    border-radius: 14px; color: var(--muted); font-size: 14px;
+  }
+
+  /* ── LEAVE A NOTE ── */
+  .leave-note {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 14px; padding: 22px; margin-top: 8px;
+  }
+  .leave-note h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .leave-note textarea {
+    width: 100%; background: var(--navy-mid);
+    border: 1px solid var(--border-dim); border-radius: 8px;
+    padding: 12px 16px; color: var(--cream); font-family: inherit;
+    font-size: 14px; resize: vertical; min-height: 80px; max-height: 200px;
+    outline: none; transition: border-color 0.2s; line-height: 1.6;
+  }
+  .leave-note textarea:focus { border-color: var(--gold); }
+  .leave-note textarea::placeholder { color: var(--muted); opacity: 0.5; }
+  .note-meta {
+    display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: flex-end;
+  }
+  .note-meta input { flex: 1; min-width: 160px; }
+  .note-submit { flex-shrink: 0; }
+  .char-count { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: right; opacity: 0.5; }
   .connections-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 12px;
@@ -318,11 +388,37 @@ function renderProfile(p, connections) {
       </div>` : '<p style="color:var(--muted);font-size:14px;">No connections yet — play a game and make one. 🌍</p>'}
     </section>
 
+    <!-- RECOGNITION -->
+    <section class="recognition-section" id="recognition-section">
+      <h2>✨ Recognition</h2>
+      <p class="recognition-sub">Leave a note for ${p.name.split(' ')[0]}. Compliments, shoutouts, something they did that stuck with you.</p>
+      <div class="recognition-list" id="rec-list">
+        <div class="recognition-empty">No notes yet — be the first to leave one.</div>
+      </div>
+      <div class="leave-note">
+        <h3>Leave a note</h3>
+        <textarea id="rec-text" maxlength="280"
+          placeholder="e.g. 'Marcus explained async matching to me in a way that finally clicked. Genuinely helpful.'"
+          oninput="document.getElementById('rec-char').textContent = (280 - this.value.length) + ' left'"></textarea>
+        <div class="char-count" id="rec-char">280 left</div>
+        <div class="note-meta">
+          <input type="text"  id="rec-name"  class="filter-input" style="font-size:13px;" placeholder="Your name">
+          <input type="text"  id="rec-loc"   class="filter-input" style="font-size:13px;max-width:160px;" placeholder="Your location">
+          <button class="btn btn-primary note-submit" style="padding:10px 20px;font-size:13px;" onclick="submitNote('${p.id}','${p.name.split(' ')[0]}')">
+            ✨ Leave a note →
+          </button>
+        </div>
+        <div id="rec-feedback" style="font-size:13px;margin-top:10px;display:none;"></div>
+      </div>
+    </section>
+
     <div class="divider"></div>
     <a href="people.html" class="btn btn-outline">← Back to People</a>
   `;
 
   document.title = `${p.name} — Commons`;
+  // Load recognition notes after DOM is set
+  requestAnimationFrame(() => renderNotes(p.id, false));
 }
 
 function toggleEdit() {
@@ -364,6 +460,113 @@ function showNotFound() {
 }
 
 loadProfile();
+
+// ─────────────────────────────────────────────────────────
+//  RECOGNITION — localStorage-backed for prototype
+//  In production: replace with /api/recognition/{profileId}
+// ─────────────────────────────────────────────────────────
+
+const ADMIN_IDS = ['p_admin']; // expand when DSID auth is live
+
+function recKey(profileId) { return `commons_rec_${profileId}`; }
+
+function loadNotes(profileId) {
+  try { return JSON.parse(localStorage.getItem(recKey(profileId)) || '[]'); }
+  catch { return []; }
+}
+
+function saveNotes(profileId, notes) {
+  localStorage.setItem(recKey(profileId), JSON.stringify(notes));
+}
+
+function renderNotes(profileId, isOwner) {
+  const list  = document.getElementById('rec-list');
+  if (!list) return;
+  const notes = loadNotes(profileId).filter(n => !n.flagged);
+
+  if (!notes.length) {
+    list.innerHTML = '<div class="recognition-empty">No notes yet — be the first to leave one.</div>';
+    return;
+  }
+
+  list.innerHTML = notes.map((n, i) => {
+    const av = n.from.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const canRemove = isOwner || ADMIN_IDS.includes('viewer'); // expands with real auth
+    return `
+    <div class="recognition-card" id="rec-card-${i}">
+      <div class="rec-avatar" style="background:${n.color || '#c9a84c'}">${av}</div>
+      <div class="rec-body">
+        <div class="rec-from">
+          ${n.from}
+          ${n.loc ? `<span class="rec-loc">${n.loc}</span>` : ''}
+        </div>
+        <div class="rec-text">${escHtml(n.text)}</div>
+        <div class="rec-date">${n.date}</div>
+      </div>
+      <div class="rec-actions">
+        <button class="rec-btn flag" onclick="flagNote('${profileId}',${i})" title="Flag this note">🚩 Flag</button>
+        ${canRemove ? `<button class="rec-btn remove" onclick="removeNote('${profileId}',${i})" title="Remove this note">✕ Remove</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const AVATAR_COLORS = ['#c9a84c','#52b788','#e07850','#8aabec','#c084fc','#fb7185','#34d399','#f59e0b'];
+
+function submitNote(profileId, recipientFirstName) {
+  const text = (document.getElementById('rec-text')?.value || '').trim();
+  const from = (document.getElementById('rec-name')?.value || '').trim();
+  const loc  = (document.getElementById('rec-loc')?.value  || '').trim();
+  const fb   = document.getElementById('rec-feedback');
+
+  if (!text) { showFeedback(fb, '⚠️ Write something first.', '#e07850'); return; }
+  if (!from) { showFeedback(fb, '⚠️ Add your name.', '#e07850'); return; }
+  if (text.length < 10) { showFeedback(fb, '⚠️ A little more than that — at least 10 characters.', '#e07850'); return; }
+
+  const notes = loadNotes(profileId);
+  const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+  const now   = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+
+  notes.unshift({ text, from, loc, color, date: now, flagged: false });
+  saveNotes(profileId, notes);
+
+  // Clear form
+  document.getElementById('rec-text').value = '';
+  document.getElementById('rec-name').value = '';
+  document.getElementById('rec-loc').value  = '';
+  document.getElementById('rec-char').textContent = '280 left';
+
+  showFeedback(fb, `✨ Your note for ${recipientFirstName} has been saved.`, 'var(--sage-light)');
+
+  // Re-render — isOwner unknown at note-submit time so pass false
+  renderNotes(profileId, false);
+}
+
+function flagNote(profileId, idx) {
+  if (!confirm('Flag this note for review? It will be hidden until reviewed.')) return;
+  const notes = loadNotes(profileId);
+  if (notes[idx]) { notes[idx].flagged = true; saveNotes(profileId, notes); renderNotes(profileId, true); }
+}
+
+function removeNote(profileId, idx) {
+  if (!confirm('Remove this note permanently?')) return;
+  const notes = loadNotes(profileId);
+  notes.splice(idx, 1);
+  saveNotes(profileId, notes);
+  renderNotes(profileId, true);
+}
+
+function showFeedback(el, msg, color) {
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
 </script>
 </body>
 </html>
