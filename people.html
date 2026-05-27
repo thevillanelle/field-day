@@ -5,177 +5,210 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Global Recess — People</title>
 <link rel="stylesheet" href="commons.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
 
   /* ── DISCOVERY TICKER ── */
   .discovery-bar {
-    position: fixed;
-    top: 64px; left: 0; right: 0;
-    z-index: 90;
-    background: rgba(10,15,23,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-dim);
-    overflow: hidden;
-    height: 52px;
+    position: fixed; top: 64px; left: 0; right: 0; z-index: 90;
+    background: rgba(10,15,23,0.94); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-dim); overflow: hidden; height: 52px;
   }
   .discovery-track {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    gap: 0;
-    will-change: transform;
+    display: flex; align-items: center; height: 100%; width: max-content;
+    animation: tickerScroll 180s linear infinite;
+  }
+  .discovery-track:hover { animation-play-state: paused; }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
   }
   .discovery-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 32px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border-right: 1px solid var(--border-dim);
-    height: 100%;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 0 28px; white-space: nowrap; flex-shrink: 0;
+    border-right: 1px solid var(--border-dim); height: 100%;
+    cursor: pointer; text-decoration: none; color: inherit;
     transition: background 0.2s;
   }
   .discovery-item:hover { background: rgba(201,168,76,0.06); }
-
   .di-avatar {
-    width: 28px; height: 28px; border-radius: 50%;
+    width: 26px; height: 26px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 800; color: var(--navy);
-    flex-shrink: 0;
+    font-size: 9px; font-weight: 800; color: var(--navy); flex-shrink: 0;
   }
-  .di-label {
-    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-    opacity: 0.45; margin-right: 2px; flex-shrink: 0;
-  }
-  .di-name { font-size: 13px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
-  .di-text { font-size: 13px; color: var(--cream-dim); max-width: 280px;
-             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  /* fade masks on edges */
+  .di-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.4; flex-shrink: 0; }
+  .di-name  { font-size: 13px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+  .di-text  { font-size: 13px; color: var(--cream-dim); max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
   .discovery-bar::before,
   .discovery-bar::after {
-    content: '';
-    position: absolute; top: 0; bottom: 0; width: 80px;
-    pointer-events: none; z-index: 2;
+    content:''; position:absolute; top:0; bottom:0; width:60px; pointer-events:none; z-index:2;
   }
-  .discovery-bar::before { left: 0;  background: linear-gradient(90deg, rgba(10,15,23,1), transparent); }
-  .discovery-bar::after  { right: 0; background: linear-gradient(-90deg, rgba(10,15,23,1), transparent); }
+  .discovery-bar::before { left:0;  background: linear-gradient(90deg, rgba(10,15,23,1), transparent); }
+  .discovery-bar::after  { right:0; background: linear-gradient(-90deg, rgba(10,15,23,1), transparent); }
 
   /* ── PAGE ── */
   .people-page { padding-top: 168px; padding-bottom: 80px; }
+  .people-hero { padding: 40px 0 28px; }
+  .people-hero h1 { font-size: clamp(30px,4.5vw,48px); font-weight:700; margin-bottom:6px; }
+  .people-hero p  { font-size:14px; color:var(--cream-dim); max-width:480px; }
 
-  .people-hero { padding: 48px 0 32px; }
-  .people-hero h1 { font-size: clamp(32px,5vw,52px); font-weight:700; margin-bottom:8px; }
-  .people-hero p  { font-size:15px; color:var(--cream-dim); max-width:520px; }
-
-  /* ── FILTERS ── */
-  .filters {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    margin: 24px 0 8px; align-items: center;
+  /* ── PILL FILTERS (replaces dropdowns) ── */
+  .filter-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: center; margin: 20px 0 6px;
   }
-  .filter-input {
+  .filter-search {
     background: var(--navy-card); border: 1px solid var(--border-dim);
-    border-radius: 8px; padding: 10px 16px;
+    border-radius: 8px; padding: 9px 14px;
     color: var(--cream); font-size: 13px; font-family: inherit;
-    outline: none; min-width: 200px;
-    transition: border-color 0.2s;
+    outline: none; min-width: 220px; transition: border-color 0.2s;
   }
-  .filter-input:focus { border-color: var(--gold); }
-  .filter-input::placeholder { color: var(--muted); opacity: 0.5; }
+  .filter-search:focus { border-color: var(--gold); }
+  .filter-search::placeholder { color: var(--muted); opacity: 0.5; }
+
+  .pill-group {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  }
+  .pill-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-right: 2px;
+  }
+  .filter-pill {
+    padding: 6px 14px; border-radius: 20px; cursor: pointer;
+    font-size: 12px; font-family: inherit; font-weight: 500;
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    color: var(--cream-dim); transition: all 0.2s; white-space: nowrap;
+  }
+  .filter-pill:hover { border-color: var(--gold); color: var(--gold); }
+  .filter-pill.active {
+    background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 700;
+  }
+  .filter-pill.vibe-rival.active    { background:#fb7185; border-color:#fb7185; }
+  .filter-pill.vibe-explorer.active { background:var(--sage-light); border-color:var(--sage-light); }
+  .filter-pill.vibe-creator.active  { background:var(--gold); border-color:var(--gold); }
+  .filter-pill.vibe-wanderer.active { background:#8aabec; border-color:#8aabec; }
+
+  /* ── D3 MAP ── */
+  .map-section {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 20px; padding: 0; overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .map-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; border-bottom: 1px solid var(--border-dim); flex-wrap: wrap; gap: 10px;
+  }
+  .map-header h2 { font-size: 16px; font-weight: 700; }
+  .map-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .map-pill {
+    padding: 5px 12px; border-radius: 20px; cursor: pointer;
+    font-size: 11px; font-family: inherit; font-weight: 600;
+    background: transparent; border: 1px solid var(--border-dim);
+    color: var(--cream-dim); transition: all 0.2s;
+  }
+  .map-pill:hover  { border-color: var(--gold); color: var(--gold); }
+  .map-pill.active { background: rgba(201,168,76,0.15); color: var(--gold); border-color: rgba(201,168,76,0.4); }
+  #map-svg-wrap {
+    height: 480px; width: 100%; position: relative;
+  }
+  #map-svg { width: 100%; height: 100%; cursor: grab; }
+  #map-svg:active { cursor: grabbing; }
+  .map-hint {
+    padding: 10px 24px 14px; font-size: 11px; color: var(--muted);
+    display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+    border-top: 1px solid var(--border-dim);
+  }
+  .map-legend { display: flex; gap: 12px; flex-wrap: wrap; }
+  .legend-dot {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted);
+  }
+  .legend-dot span {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* result panel from map click */
+  .map-result {
+    display: none; margin: 0 24px 24px;
+    background: var(--navy-mid); border: 1px solid var(--border-dim);
+    border-radius: 12px; padding: 16px 20px;
+  }
+  .map-result.show { display: block; }
+  .map-result-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--gold); }
+  .map-result-people { display: flex; flex-wrap: wrap; gap: 8px; }
+  .map-person-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 20px;
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    font-size: 12px; text-decoration: none; color: var(--cream);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .map-person-chip:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .mpc-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; color: var(--navy); flex-shrink: 0;
+  }
 
   /* ── PEOPLE GRID ── */
+  .count-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 12px; }
   .people-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 14px;
-    margin-top: 16px;
   }
-
-  /* ── PERSON CARD ── */
   .person-card {
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
+    background: var(--navy-card); border: 1px solid var(--border-dim);
     border-radius: 18px; padding: 22px;
     display: flex; flex-direction: column; gap: 12px;
-    cursor: pointer; text-decoration: none; color: inherit;
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
-                border-color 0.25s, box-shadow 0.3s;
-    position: relative; overflow: hidden;
+    cursor: pointer; text-decoration: none; color: inherit; position: relative; overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
   }
   .person-card::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 0% 0%, var(--card-accent, rgba(201,168,76,0.05)) 0%, transparent 65%);
-    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 0% 0%, var(--card-accent, transparent) 0%, transparent 65%);
+    opacity:0; transition:opacity 0.3s; pointer-events:none;
   }
-  .person-card:hover { transform: translateY(-8px); border-color: var(--border); box-shadow: 0 20px 48px rgba(0,0,0,0.45); }
-  .person-card:hover::before { opacity: 1; }
-
-  .card-top { display: flex; align-items: center; gap: 12px; }
+  .person-card:hover { transform:translateY(-8px); border-color:var(--border); box-shadow:0 20px 48px rgba(0,0,0,0.45); }
+  .person-card:hover::before { opacity:1; }
+  .card-top { display:flex; align-items:center; gap:12px; }
   .avatar {
-    width: 52px; height: 52px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 17px; font-weight: 800; color: var(--navy); flex-shrink: 0;
+    width:52px; height:52px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; font-weight:800; color:var(--navy); flex-shrink:0;
   }
-  .card-name { font-size: 15px; font-weight: 700; }
-  .card-loc  { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  /* current status pill */
+  .card-name { font-size:15px; font-weight:700; }
+  .card-loc  { font-size:11px; color:var(--muted); margin-top:2px; }
   .card-status {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border-dim);
-    border-radius: 8px; padding: 8px 12px;
-    font-size: 12px; color: var(--cream-dim);
-    line-height: 1.5;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
+    background:rgba(255,255,255,0.04); border:1px solid var(--border-dim);
+    border-radius:8px; padding:8px 12px; font-size:12px; color:var(--cream-dim); line-height:1.5;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
-  .card-status .status-dot {
-    display: inline-block; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--sage-light);
-    margin-right: 6px; vertical-align: middle;
+  .status-dot {
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:var(--sage-light); margin-right:6px; vertical-align:middle;
     animation: pulse 2.5s ease-in-out infinite;
   }
-
-  /* current moments row */
-  .card-currents {
-    display: flex; flex-direction: column; gap: 4px;
+  .card-currents { display:flex; flex-direction:column; gap:4px; }
+  .current-row { display:flex; align-items:baseline; gap:6px; font-size:11px; line-height:1.4; overflow:hidden; }
+  .current-label { color:var(--muted); flex-shrink:0; opacity:0.6; }
+  .current-val   { color:var(--cream-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card-tags  { display:flex; flex-wrap:wrap; gap:5px; }
+  .card-tag   {
+    font-size:10px; padding:3px 9px; border-radius:8px;
+    background:rgba(255,255,255,0.05); border:1px solid var(--border-dim);
+    color:var(--cream-dim); cursor:pointer; transition: border-color 0.2s, color 0.2s;
   }
-  .current-row {
-    display: flex; align-items: baseline; gap: 6px;
-    font-size: 11px; line-height: 1.4;
-    overflow: hidden;
-  }
-  .current-label { color: var(--muted); flex-shrink: 0; opacity: 0.6; }
-  .current-val   { color: var(--cream-dim);
-                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-  .card-tag {
-    font-size: 10px; padding: 3px 9px; border-radius: 8px;
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border-dim);
-    color: var(--cream-dim);
-  }
-
+  .card-tag:hover { border-color:var(--gold); color:var(--gold); }
   .card-footer {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-top: 8px; border-top: 1px solid var(--border-dim);
-    font-size: 11px; color: var(--muted);
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:8px; border-top:1px solid var(--border-dim); font-size:11px; color:var(--muted);
   }
-
-  /* ── STATES ── */
   .state-msg { grid-column:1/-1; text-align:center; padding:60px; color:var(--muted); font-size:15px; }
-  .count-label { font-size:11px; color:var(--muted); letter-spacing:0.08em; }
 
   @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-  @keyframes scrollLeft {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
+
+  /* highlight ring for active filter */
+  .person-card.highlighted { border-color: var(--gold) !important; }
 </style>
 </head>
 <body>
@@ -203,35 +236,65 @@
     <section class="people-hero">
       <div class="section-label">The Community</div>
       <h1>People</h1>
-      <p>Everyone in Global Recess. Browse by location, vibe type, or what they're into right now.</p>
+      <p>Everyone in Global Recess. Filter by location, vibe type, or click any skill to find who shares it.</p>
     </section>
 
-    <div class="filters">
-      <input class="filter-input" type="text" id="search"
-             placeholder="🔍  Search by name, skill, hobby, song…"
-             oninput="filterPeople()">
-      <select class="filter-input" id="filter-location" onchange="filterPeople()" style="min-width:160px;">
-        <option value="">All locations</option>
-        <option>Elk Grove</option>
-        <option>Santa Clara Valley</option>
-        <option>Seattle</option>
-        <option>New York</option>
-        <option>Raleigh</option>
-        <option>Cork</option>
-        <option>Singapore</option>
-        <option>Bangalore</option>
-        <option>Shanghai</option>
-        <option>Vietnam</option>
-      </select>
-      <select class="filter-input" id="filter-type" onchange="filterPeople()" style="min-width:160px;">
-        <option value="">All types</option>
-        <option value="explorer">🗺️ Explorer</option>
-        <option value="rival">⚔️ Rival</option>
-        <option value="creator">🎨 Creator</option>
-        <option value="wanderer">🌀 Wanderer</option>
-      </select>
+    <!-- PILL FILTERS -->
+    <div class="filter-row">
+      <input class="filter-search" type="text" id="search"
+             placeholder="🔍  Search name, skill, song, book, show…"
+             oninput="applyFilters()">
+    </div>
+    <div class="filter-row" style="margin-top:4px;">
+      <span class="pill-label">Location</span>
+      <div class="pill-group" id="loc-pills">
+        <button class="filter-pill active" onclick="setPill(this,'loc','')">All</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Elk Grove')">🇺🇸 Elk Grove</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Santa Clara Valley')">🇺🇸 SCV</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Seattle')">🇺🇸 Seattle</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','New York')">🇺🇸 New York</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Raleigh')">🇺🇸 Raleigh</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Cork')">🇮🇪 Cork</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Singapore')">🇸🇬 Singapore</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Bangalore')">🇮🇳 Bangalore</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Shanghai')">🇨🇳 Shanghai</button>
+        <button class="filter-pill" onclick="setPill(this,'loc','Vietnam')">🇻🇳 Vietnam</button>
+      </div>
+    </div>
+    <div class="filter-row" style="margin-top:4px; margin-bottom:24px;">
+      <span class="pill-label">Vibe</span>
+      <div class="pill-group" id="vibe-pills">
+        <button class="filter-pill active" onclick="setPill(this,'vibe','')">All</button>
+        <button class="filter-pill vibe-explorer" onclick="setPill(this,'vibe','explorer')">🗺️ Explorer</button>
+        <button class="filter-pill vibe-rival"    onclick="setPill(this,'vibe','rival')">⚔️ Rival</button>
+        <button class="filter-pill vibe-creator"  onclick="setPill(this,'vibe','creator')">🎨 Creator</button>
+        <button class="filter-pill vibe-wanderer" onclick="setPill(this,'vibe','wanderer')">🌀 Wanderer</button>
+      </div>
     </div>
 
+    <!-- D3 CONNECTIONS MAP -->
+    <div class="map-section" id="map-section">
+      <div class="map-header">
+        <h2>🔗 Connections Map</h2>
+        <div class="map-filter-pills">
+          <button class="map-pill active" onclick="buildMap('all', this)">All interests</button>
+          <button class="map-pill" onclick="buildMap('skills', this)">💼 Skills</button>
+          <button class="map-pill" onclick="buildMap('hobbies', this)">🎨 Hobbies</button>
+          <button class="map-pill" onclick="buildMap('nonwork', this)">✨ Non-work</button>
+        </div>
+      </div>
+      <div id="map-svg-wrap"><svg id="map-svg"></svg></div>
+      <div class="map-result" id="map-result">
+        <div class="map-result-title" id="map-result-title"></div>
+        <div class="map-result-people" id="map-result-people"></div>
+      </div>
+      <div class="map-hint">
+        <span>Click a node to see who shares it · Drag · Scroll to zoom</span>
+        <div class="map-legend" id="map-legend"></div>
+      </div>
+    </div>
+
+    <!-- PEOPLE GRID -->
     <div class="count-label" id="count-label"></div>
     <div class="people-grid" id="people-grid">
       <div class="state-msg">Loading…</div>
@@ -247,6 +310,7 @@
 
 <script src="data/people.js"></script>
 <script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────────
 const TYPE_META = {
   explorer: { emoji:'🗺️', label:'Explorer', badge:'badge-explorer' },
   rival:    { emoji:'⚔️', label:'Rival',    badge:'badge-rival'    },
@@ -256,73 +320,255 @@ const TYPE_META = {
 const FLAGS = {
   'Elk Grove':'🇺🇸','Santa Clara Valley':'🇺🇸','Seattle':'🇺🇸',
   'New York':'🇺🇸','Raleigh':'🇺🇸','Cork':'🇮🇪',
-  'Singapore':'🇸🇬','Bangalore':'🇮🇳','Shanghai':'🇨🇳','Vietnam':'🇻🇳'
+  'Singapore':'🇸🇬','Bangalore':'🇮🇳','Shanghai':'🇨🇳','Vietnam':'🇻🇳','Austin':'🇺🇸'
+};
+const CAT_COLORS = {
+  Food:'#f59e0b', Fitness:'#52b788', Music:'#c084fc', Tech:'#06b6d4',
+  Arts:'#e07850', Sports:'#fb7185', Travel:'#34d399', Outdoors:'#4ade80',
+  Writing:'#a78bfa', Film:'#f472b6', History:'#94a3b8', Other:'#c9a84c'
 };
 
-function initials(name) {
-  return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+function initials(n) { return (n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+// ── FILTER STATE ──────────────────────────────────────────────────────────
+let activeLoc   = '';
+let activeVibe  = '';
+let activeSkill = '';  // from map or tag click
+
+// ── PILL FILTER LOGIC ─────────────────────────────────────────────────────
+function setPill(btn, group, val) {
+  const container = document.getElementById(group === 'loc' ? 'loc-pills' : 'vibe-pills');
+  container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  if (group === 'loc')  activeLoc  = val;
+  if (group === 'vibe') activeVibe = val;
+  activeSkill = '';
+  applyFilters();
+}
+
+function setSkillFilter(skill) {
+  activeSkill = skill;
+  activeLoc   = '';
+  activeVibe  = '';
+  // clear loc/vibe pills
+  document.querySelectorAll('#loc-pills .filter-pill, #vibe-pills .filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#loc-pills .filter-pill').classList.add('active');
+  document.querySelector('#vibe-pills .filter-pill').classList.add('active');
+  document.getElementById('search').value = '';
+  applyFilters();
+  // scroll to grid
+  document.getElementById('people-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = PEOPLE.filter(p => {
+    const allText = [
+      p.name, p.bio, p.status, p.song, p.book, p.show, p.hyperfixation,
+      ...(p.work_skills||[]), ...(p.hobbies||[]), ...(p.non_work||[])
+    ].join(' ').toLowerCase();
+
+    const matchQ     = !q          || allText.includes(q);
+    const matchLoc   = !activeLoc  || p.location === activeLoc;
+    const matchVibe  = !activeVibe || p.vibe_type === activeVibe;
+    const matchSkill = !activeSkill || allText.includes(activeSkill.toLowerCase());
+    return matchQ && matchLoc && matchVibe && matchSkill;
+  });
+  renderPeople(filtered, activeSkill);
 }
 
 // ── DISCOVERY TICKER ──────────────────────────────────────────────────────
-
-// All the "current" moment types we pull from
 const MOMENT_TYPES = [
-  { key:'status',       label:'Right now',         emoji:'●'  },
-  { key:'song',         label:'Stuck in my head',  emoji:'🎵' },
-  { key:'hyperfixation',label:'Currently obsessed',emoji:'🔮' },
-  { key:'book',         label:'Reading',           emoji:'📖' },
-  { key:'show',         label:'Watching',          emoji:'📺' },
+  { key:'status',        label:'Right now',         emoji:'●'  },
+  { key:'song',          label:'Stuck in head',     emoji:'🎵' },
+  { key:'hyperfixation', label:'Obsessed with',     emoji:'🔮' },
+  { key:'book',          label:'Reading',           emoji:'📖' },
+  { key:'show',          label:'Watching',          emoji:'📺' },
 ];
 
 function buildTicker() {
-  // Build a shuffled pool of moments — one random type per person
-  const pool = PEOPLE
-    .map(p => {
-      const mt = MOMENT_TYPES[Math.floor(Math.random() * MOMENT_TYPES.length)];
-      const val = p[mt.key];
-      if (!val) return null;
-      return { person: p, label: mt.label, emoji: mt.emoji, val };
-    })
-    .filter(Boolean);
+  const pool = PEOPLE.map(p => {
+    const mt  = MOMENT_TYPES[Math.floor(Math.random() * MOMENT_TYPES.length)];
+    const val = p[mt.key];
+    return val ? { person:p, label:mt.label, emoji:mt.emoji, val } : null;
+  }).filter(Boolean).sort(() => Math.random() - 0.5);
 
-  // Shuffle
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-
-  const track = document.getElementById('discovery-track');
-
-  // Render twice for seamless loop
-  const renderItems = (items) => items.map(m => `
+  const html = (items) => items.map(m => `
     <a class="discovery-item" href="profile.html?id=${m.person.id}">
       <div class="di-avatar" style="background:${m.person.avatar_color}">${initials(m.person.name)}</div>
       <span class="di-label">${m.emoji} ${m.label}</span>
       <span class="di-name">${m.person.name.split(' ')[0]}</span>
       <span class="di-text">${m.val}</span>
-    </a>
-  `).join('');
+    </a>`).join('');
 
-  track.innerHTML = renderItems(pool) + renderItems(pool);
-
-  // Calculate total width of one set and animate
-  requestAnimationFrame(() => {
-    const totalW = track.scrollWidth / 2;
-    const duration = totalW / 60; // px per second
-    track.style.animation = `scrollLeft ${duration}s linear infinite`;
-  });
-
-  // Pause on hover
-  track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-  track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+  document.getElementById('discovery-track').innerHTML = html(pool) + html(pool);
 }
 
-// ── PEOPLE GRID ────────────────────────────────────────────────────────────
+// ── D3 CONNECTIONS MAP ────────────────────────────────────────────────────
+const INTEREST_CATEGORY = {
+  Food:    s => /cook|bak|grilling|bbq|food|dining|recipe|fermenting|hotpot|spicy|hawker|biryani|ramen|dumpling|boba|dim sum/i.test(s),
+  Fitness: s => /gym|fitness|running|cycling|swimming|yoga|pilates|hiking|climbing|martial arts|jiu.jitsu|badminton|cricket|football|basketball|tennis|chess|polo|surfing|marathon|ultra/i.test(s),
+  Music:   s => /music|guitar|piano|violin|dj|singing|song|audio|drum|flute|whistle|sitar|sarangi|guqin|cello|jazz|bass|folk|trad|pipes|mridangam/i.test(s),
+  Arts:    s => /draw|paint|art|sculpture|coloring|craft|sewing|knitting|origami|calligraph|design|embroidery|pottery|lace|silk|batik|warli|kolam/i.test(s),
+  Tech:    s => /gaming|video game|pc gaming|3d print|robot|coding|programming|scripting|keyboard|hardware|chess/i.test(s),
+  Film:    s => /photo|videograph|film|cinema|movie|documentary|animation|drone/i.test(s),
+  Writing: s => /writing|journaling|blog|podcast|poetry|storytelling|content/i.test(s),
+  Travel:  s => /travel|road trip|hiking|exploring|backpack|adventures/i.test(s),
+  Outdoors:s => /outdoor|nature|garden|forest|beach|sea|ocean|foraging|bonsai|plant|bird|kayak|sailing/i.test(s),
+  Other:   _s => true,
+};
+function getCategory(label) {
+  for (const [cat, test] of Object.entries(INTEREST_CATEGORY)) {
+    if (test(label)) return cat;
+  }
+  return 'Other';
+}
 
-function renderPeople(people) {
+let mmSim = null;
+
+function normalizeSkill(s) {
+  s = s.trim().toLowerCase();
+  if (/\bhiking\b/.test(s)) return 'Hiking';
+  if (/\bcooking\b/.test(s) || /\bcook\b/.test(s)) return 'Cooking';
+  if (/\bmusic\b/.test(s)) return 'Music';
+  if (/\bread(ing)?\b/.test(s)) return 'Reading';
+  if (/\btravel\b/.test(s)) return 'Traveling';
+  if (/\brunning\b/.test(s)) return 'Running';
+  if (/\bchess\b/.test(s)) return 'Chess';
+  if (/\bcycling\b/.test(s)) return 'Cycling';
+  if (/photography/.test(s)) return 'Photography';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function buildInterestMap(filter) {
+  const map = {};
+  PEOPLE.forEach(p => {
+    const items = [];
+    if (filter !== 'hobbies') (p.non_work||[]).forEach(s => { if(s.trim()) items.push(s.trim()); });
+    if (filter !== 'nonwork') (p.hobbies||[]).forEach(h => { if(h.trim()) items.push(h.trim()); });
+    if (filter === 'skills' || filter === 'all') (p.work_skills||[]).forEach(s => { if(s.trim()) items.push(s.trim()); });
+    items.forEach(raw => {
+      const label = normalizeSkill(raw);
+      const key   = label.toLowerCase();
+      if (!map[key]) map[key] = { id:'i_'+key, label, people:new Set() };
+      map[key].people.add(p.id);
+    });
+  });
+  return Object.values(map)
+    .map(n => ({ ...n, people:[...n.people], count:n.people.size, category:getCategory(n.label) }))
+    .filter(n => n.count >= 2)  // only show nodes with 2+ people
+    .sort((a,b) => b.count - a.count)
+    .slice(0, 80);  // cap at 80 nodes for performance
+}
+
+function buildMap(filter, btn) {
+  document.querySelectorAll('.map-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('map-result').classList.remove('show');
+  renderMap(filter);
+}
+
+function renderMap(filter='all') {
+  if (!window.d3) return;
+  const wrap = document.getElementById('map-svg-wrap');
+  const W = wrap.clientWidth || 900;
+  const H = 480;
+
+  const nodes = buildInterestMap(filter);
+  if (!nodes.length) return;
+
+  const maxCount = Math.max(...nodes.map(n => n.count), 1);
+
+  const svg = d3.select('#map-svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+  if (mmSim) mmSim.stop();
+
+  // zoom/pan
+  const g = svg.append('g');
+  svg.call(d3.zoom().scaleExtent([0.3, 5])
+    .on('zoom', e => g.attr('transform', e.transform)));
+
+  // radius scale
+  const rScale = d3.scaleSqrt().domain([1, maxCount]).range([10, 36]);
+
+  // simulation
+  mmSim = d3.forceSimulation(nodes)
+    .force('charge',  d3.forceManyBody().strength(d => -rScale(d.count) * 8))
+    .force('center',  d3.forceCenter(W/2, H/2).strength(0.08))
+    .force('collide', d3.forceCollide().radius(d => rScale(d.count) + 4).strength(0.85))
+    .force('x', d3.forceX(W/2).strength(0.04))
+    .force('y', d3.forceY(H/2).strength(0.04));
+
+  const nodeG = g.selectAll('g.node')
+    .data(nodes)
+    .join('g')
+    .attr('class', 'node')
+    .style('cursor', 'pointer')
+    .call(d3.drag()
+      .on('start', (e,d) => { if(!e.active) mmSim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on('end',   (e,d) => { if(!e.active) mmSim.alphaTarget(0); d.fx=null; d.fy=null; }))
+    .on('click', (e, d) => showMapResult(d));
+
+  nodeG.append('circle')
+    .attr('r', d => rScale(d.count))
+    .attr('fill', d => CAT_COLORS[d.category] || '#c9a84c')
+    .attr('fill-opacity', 0.18)
+    .attr('stroke', d => CAT_COLORS[d.category] || '#c9a84c')
+    .attr('stroke-width', 1.5)
+    .attr('stroke-opacity', 0.7);
+
+  nodeG.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .attr('fill', d => CAT_COLORS[d.category] || '#c9a84c')
+    .attr('font-family', '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif')
+    .attr('font-size', d => Math.max(9, Math.min(13, rScale(d.count) * 0.55)))
+    .attr('font-weight', '600')
+    .attr('pointer-events', 'none')
+    .text(d => d.label.length > 14 ? d.label.slice(0,12)+'…' : d.label);
+
+  nodeG.append('title').text(d => `${d.label} — ${d.count} people`);
+
+  mmSim.on('tick', () => {
+    nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+
+  // Legend
+  const usedCats = [...new Set(nodes.map(n => n.category))];
+  document.getElementById('map-legend').innerHTML = usedCats.map(c =>
+    `<span class="legend-dot"><span style="background:${CAT_COLORS[c]||'#c9a84c'}"></span>${c}</span>`
+  ).join('');
+}
+
+function showMapResult(node) {
+  const result = document.getElementById('map-result');
+  document.getElementById('map-result-title').textContent = `${node.label} — ${node.count} people`;
+  const people = node.people.map(id => PEOPLE.find(p => p.id === id)).filter(Boolean);
+  document.getElementById('map-result-people').innerHTML = people.map(p => `
+    <a class="map-person-chip" href="profile.html?id=${p.id}">
+      <div class="mpc-dot" style="background:${p.avatar_color}">${initials(p.name)}</div>
+      ${p.name.split(' ')[0]} <span style="opacity:0.5;font-size:10px;">${FLAGS[p.location]||'🌍'}</span>
+    </a>`).join('');
+  result.classList.add('show');
+
+  // Also filter the grid to matching people
+  activeSkill = node.label;
+  activeLoc = ''; activeVibe = '';
+  document.querySelectorAll('#loc-pills .filter-pill, #vibe-pills .filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#loc-pills .filter-pill').classList.add('active');
+  document.querySelector('#vibe-pills .filter-pill').classList.add('active');
+  document.getElementById('search').value = '';
+  applyFilters();
+}
+
+// ── PEOPLE GRID ──────────────────────────────────────────────────────────
+function renderPeople(people, highlight='') {
   const grid = document.getElementById('people-grid');
   document.getElementById('count-label').textContent =
-    `${people.length} member${people.length !== 1 ? 's' : ''}`;
+    `${people.length} member${people.length !== 1 ? 's' : ''}${highlight ? ` · filtered by "${highlight}"` : ''}`;
 
   if (!people.length) {
     grid.innerHTML = '<div class="state-msg">No one matches those filters.</div>';
@@ -332,20 +578,17 @@ function renderPeople(people) {
   grid.innerHTML = people.map(p => {
     const tm   = TYPE_META[p.vibe_type] || {};
     const flag = FLAGS[p.location] || '🌍';
-    const tags = [...(p.work_skills||[])].slice(0, 2)
-               .concat([...(p.hobbies||[])].slice(0, 1));
-
-    // Pick two random current fields to show on card
-    const cardCurrents = [
-      p.song         ? { label:'🎵', val: p.song }          : null,
-      p.book         ? { label:'📖', val: p.book }          : null,
-      p.show         ? { label:'📺', val: p.show }          : null,
-      p.hyperfixation? { label:'🔮', val: p.hyperfixation } : null,
-    ].filter(Boolean).sort(() => Math.random() - 0.5).slice(0, 2);
+    const tags = [...(p.work_skills||[]).slice(0,2), ...(p.hobbies||[]).slice(0,1)];
+    const currents = [
+      p.song          ? { label:'🎵', val:p.song }          : null,
+      p.book          ? { label:'📖', val:p.book }          : null,
+      p.show          ? { label:'📺', val:p.show }          : null,
+      p.hyperfixation ? { label:'🔮', val:p.hyperfixation } : null,
+    ].filter(Boolean).sort(()=>Math.random()-0.5).slice(0,2);
 
     return `
     <a class="person-card" href="profile.html?id=${p.id}"
-       style="--card-accent: ${p.avatar_color}22">
+       style="--card-accent:${p.avatar_color}22">
       <div class="card-top">
         <div class="avatar" style="background:${p.avatar_color}">${initials(p.name)}</div>
         <div>
@@ -354,53 +597,34 @@ function renderPeople(people) {
         </div>
         ${tm.emoji ? `<span class="type-badge ${tm.badge}" style="margin-left:auto;font-size:10px;">${tm.emoji} ${tm.label}</span>` : ''}
       </div>
-
-      ${p.status ? `
-      <div class="card-status">
-        <span class="status-dot"></span>${p.status}
-      </div>` : ''}
-
-      ${cardCurrents.length ? `
-      <div class="card-currents">
-        ${cardCurrents.map(c => `
-          <div class="current-row">
-            <span class="current-label">${c.label}</span>
-            <span class="current-val">${c.val}</span>
-          </div>`).join('')}
-      </div>` : ''}
-
-      ${tags.length ? `
-      <div class="card-tags">
-        ${tags.map(t => `<span class="card-tag">${t}</span>`).join('')}
-      </div>` : ''}
-
+      ${p.status ? `<div class="card-status"><span class="status-dot"></span>${p.status}</div>` : ''}
+      ${currents.length ? `<div class="card-currents">${currents.map(c =>
+        `<div class="current-row"><span class="current-label">${c.label}</span><span class="current-val">${c.val}</span></div>`
+      ).join('')}</div>` : ''}
+      ${tags.length ? `<div class="card-tags">${tags.map(t =>
+        `<span class="card-tag" onclick="event.preventDefault();setSkillFilter('${t.replace(/'/g,"\\'")}');void 0">${t}</span>`
+      ).join('')}</div>` : ''}
       <div class="card-footer">
-        <span>${p.bio ? p.bio.split('.')[0] + '.' : ''}</span>
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.bio ? p.bio.split('.')[0]+'.' : ''}</span>
       </div>
     </a>`;
   }).join('');
 }
 
-function filterPeople() {
-  const q   = document.getElementById('search').value.toLowerCase();
-  const loc = document.getElementById('filter-location').value;
-  const typ = document.getElementById('filter-type').value;
-
-  const filtered = PEOPLE.filter(p => {
-    const text = [
-      p.name, p.bio, p.status, p.song, p.book, p.show, p.hyperfixation,
-      ...(p.work_skills||[]), ...(p.hobbies||[]), ...(p.non_work||[])
-    ].join(' ').toLowerCase();
-    return (!q   || text.includes(q))
-        && (!loc || p.location === loc)
-        && (!typ || p.vibe_type === typ);
-  });
-  renderPeople(filtered);
-}
-
-// ── INIT ───────────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────────
 buildTicker();
 renderPeople(PEOPLE);
+// defer map until after DOM paint
+setTimeout(() => renderMap('all'), 100);
+
+// Handle ?skill= URL param (from profile page skill pills)
+const urlSkill = new URLSearchParams(location.search).get('skill');
+if (urlSkill) {
+  activeSkill = urlSkill;
+  document.getElementById('search').value = '';
+  applyFilters();
+  setTimeout(() => document.getElementById('map-section').scrollIntoView({ behavior:'smooth' }), 300);
+}
 </script>
 </body>
 </html>

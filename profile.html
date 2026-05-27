@@ -41,14 +41,18 @@
   /* ── SECTION ── */
   .profile-section { margin-bottom: 40px; }
   .profile-section h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
   .tag-pill {
+    display: inline-flex; align-items: center;
     padding: 6px 14px; border-radius: 20px;
     background: var(--navy-card); border: 1px solid var(--border-dim);
     font-size: 13px; color: var(--cream-dim);
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
   }
-
-  /* ── CONNECTIONS GRID ── */
+  .tag-pill:hover {
+    border-color: var(--gold); color: var(--gold);
+    transform: translateY(-2px);
+  }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
   .connections-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 12px;
@@ -199,7 +203,8 @@ function renderProfile(p, connections) {
   const flag = FLAGS[p.location] || '🌍';
   const root = document.getElementById('profile-root');
 
-  const tagPill = (icon, val) => `<span class="tag-pill">${icon} ${val}</span>`;
+  const tagPill = (icon, val) =>
+    `<a href="people.html?skill=${encodeURIComponent(val)}" class="tag-pill" style="text-decoration:none;cursor:pointer;" title="Find people who share this">${icon} ${val}</a>`;
 
   const momentRow = (emoji, label, val) => val ? `
     <div class="moment-row">
