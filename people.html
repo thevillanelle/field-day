@@ -606,8 +606,31 @@ function renderPeople(people, highlight='') {
 // ── INIT ─────────────────────────────────────────────────────────────────
 buildTicker();
 renderPeople(PEOPLE);
-// defer map until after DOM paint
-setTimeout(() => renderMap('all'), 100);
+
+// Render map once the SVG container has real dimensions.
+// requestAnimationFrame alone isn't enough after a fixed-nav layout shift,
+// so we wait for the wrap to have a positive width before drawing.
+function initMap() {
+  const wrap = document.getElementById('map-svg-wrap');
+  if (!wrap) return;
+  if (wrap.clientWidth > 0) {
+    renderMap('all');
+  } else {
+    // Container not sized yet — observe it
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) {
+        if (e.contentRect.width > 0) {
+          ro.disconnect();
+          renderMap('all');
+          return;
+        }
+      }
+    });
+    ro.observe(wrap);
+  }
+}
+// Two rAF frames gives the browser time to apply all layout after DOMContentLoaded
+requestAnimationFrame(() => requestAnimationFrame(initMap));
 
 // Handle ?skill= URL param (from profile page skill pills)
 const urlSkill = new URLSearchParams(location.search).get('skill');
