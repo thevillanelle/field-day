@@ -296,3 +296,75 @@ footer p { font-size: 12px; color: var(--cream-dim); opacity: 0.4; letter-spacin
   .nav-links { display: none; }
   footer { padding: 24px; flex-direction: column; gap: 8px; }
 }
+
+/* ═══════════════════════════════════════════════
+   GLOBAL TICKER — shared across all pages
+═══════════════════════════════════════════════ */
+#global-ticker {
+  position: fixed;
+  top: 64px; left: 0; right: 0; z-index: 90;
+  height: 48px;
+  background: rgba(11,21,35,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+  overflow: hidden;
+}
+#global-ticker::before,
+#global-ticker::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 80px;
+  pointer-events: none; z-index: 2;
+}
+#global-ticker::before { left: 0;  background: linear-gradient(90deg, rgba(11,21,35,1), transparent); }
+#global-ticker::after  { right: 0; background: linear-gradient(-90deg, rgba(11,21,35,1), transparent); }
+
+.gr-ticker-track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: max-content;
+  /* 320s = slow and readable */
+  animation: grTickerScroll 320s linear infinite;
+}
+.gr-ticker-track:hover { animation-play-state: paused; }
+
+@keyframes grTickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.gr-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 26px;
+  height: 100%;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.gr-ticker-item:hover { background: rgba(201,168,76,0.05); }
+
+.gr-ticker-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800; color: #0b1523; flex-shrink: 0;
+}
+.gr-ticker-label {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--cream-dim); opacity: 0.4; flex-shrink: 0;
+}
+.gr-ticker-name {
+  font-size: 12px; font-weight: 700; color: var(--gold); flex-shrink: 0;
+}
+.gr-ticker-text {
+  font-size: 12px; color: var(--cream-dim);
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Pages that have the ticker need extra top padding */
+.has-ticker { padding-top: 168px !important; }

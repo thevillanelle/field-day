@@ -8,16 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
 
-  /* ── DISCOVERY TICKER ── */
-  .discovery-bar {
-    position: fixed; top: 64px; left: 0; right: 0; z-index: 90;
-    background: rgba(10,15,23,0.94); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-dim); overflow: hidden; height: 52px;
-  }
-  .discovery-track {
-    display: flex; align-items: center; height: 100%; width: max-content;
-    animation: tickerScroll 180s linear infinite;
-  }
+  
   .discovery-track:hover { animation-play-state: paused; }
   @keyframes tickerScroll {
     from { transform: translateX(0); }
@@ -47,7 +38,7 @@
   .discovery-bar::after  { right:0; background: linear-gradient(-90deg, rgba(10,15,23,1), transparent); }
 
   /* ── PAGE ── */
-  .people-page { padding-top: 168px; padding-bottom: 80px; }
+  .people-page { padding-bottom: 80px; }
   .people-hero { padding: 40px 0 28px; }
   .people-hero h1 { font-size: clamp(30px,4.5vw,48px); font-weight:700; margin-bottom:6px; }
   .people-hero p  { font-size:14px; color:var(--cream-dim); max-width:480px; }
@@ -225,12 +216,13 @@
   </ul>
 </nav>
 
-<!-- DISCOVERY TICKER -->
-<div class="discovery-bar">
-  <div class="discovery-track" id="discovery-track"></div>
+<!-- GLOBAL TICKER -->
+<div id="global-ticker"></div>
+<script src="data/people.js"></script>
+<script src="ticker.js"></script>
 </div>
 
-<main class="people-page">
+<main class="people-page has-ticker">
   <div class="container">
 
     <section class="people-hero">

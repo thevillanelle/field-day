@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Learn — Find Your Learning Match</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .quiz-page { padding-bottom: 80px; }
+  .quiz-shell { width:100%; max-width:640px; margin:0 auto; }
+  .quiz-header { margin-bottom:32px; }
+  .quiz-header h1 { font-size:30px; font-weight:700; margin-bottom:6px; }
+  .quiz-header p  { font-size:14px; color:var(--cream-dim); line-height:1.6; }
+  .v-tag {
+    display:inline-flex; align-items:center; gap:8px; padding:5px 14px;
+    border-radius:20px; margin-bottom:16px; font-size:11px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase;
+    background:rgba(100,130,200,0.12); color:#8aabec; border:1px solid rgba(100,130,200,0.25);
+  }
+  .progress-bar { height:2px; background:var(--border-dim); border-radius:2px; overflow:hidden; margin-bottom:36px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,#8aabec,var(--gold)); border-radius:2px; transition:width 0.5s ease; }
+  .q-card { background:var(--navy-card); border:1px solid var(--border-dim); border-radius:20px; padding:40px; animation:fadeUp 0.35s ease both; }
+  .q-number { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#8aabec; margin-bottom:14px; }
+  .q-text   { font-size:clamp(18px,3vw,24px); font-weight:600; line-height:1.4; margin-bottom:28px; }
+  .options  { display:flex; flex-direction:column; gap:10px; }
+  .option {
+    background:var(--navy-mid); border:1px solid var(--border-dim); border-radius:12px;
+    padding:15px 20px; cursor:pointer; display:flex; align-items:center; gap:12px;
+    font-size:14px; color:var(--cream); user-select:none;
+    transition:border-color 0.2s, background 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .option:hover   { border-color:rgba(100,130,200,0.4); background:rgba(100,130,200,0.06); transform:translateX(4px); }
+  .option.selected{ border-color:#8aabec; background:rgba(100,130,200,0.1); }
+  .opt-icon  { font-size:20px; flex-shrink:0; }
+  .opt-label { font-weight:600; }
+  .opt-sub   { font-size:12px; color:var(--cream-dim); display:block; margin-top:2px; }
+  .quiz-nav  { display:flex; justify-content:space-between; align-items:center; margin-top:24px; }
+  .type-reveal { display:none; animation:fadeUp 0.4s ease both; }
+  .type-reveal.active { display:block; }
+  .reveal-card { background:var(--navy-card); border:1px solid var(--border); border-radius:24px; padding:48px 40px; text-align:center; position:relative; overflow:hidden; }
+  .reveal-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, rgba(100,130,200,0.08) 0%, transparent 65%); pointer-events:none; }
+  .reveal-stamp { font-size:64px; margin-bottom:16px; animation:stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .reveal-label { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#8aabec; margin-bottom:10px; }
+  .reveal-type  { font-size:42px; font-weight:800; margin-bottom:12px; }
+  .reveal-desc  { font-size:15px; color:var(--cream-dim); max-width:380px; margin:0 auto 16px; line-height:1.7; }
+  .reveal-pair  { font-size:13px; color:var(--cream-dim); margin-bottom:28px; }
+  .reveal-pair strong { color:#8aabec; }
+
+  /* skill exchange section */
+  .skill-exchange {
+    background:var(--navy-mid); border:1px solid var(--border-dim);
+    border-radius:14px; padding:24px; margin:0 auto 28px; max-width:440px; text-align:left;
+  }
+  .skill-exchange h4 { font-size:14px; font-weight:700; margin-bottom:14px; }
+  .skill-input-row { display:flex; gap:10px; margin-bottom:10px; align-items:flex-end; }
+  .skill-input-row .form-group { flex:1; margin-bottom:0; }
+  .skill-tag-area { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .skill-tag {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:4px 10px; border-radius:16px; font-size:12px;
+    border:1px solid var(--border-dim); background:var(--navy-card);
+  }
+  .skill-tag .rm { cursor:pointer; opacity:0.5; margin-left:2px; }
+  .skill-tag .rm:hover { opacity:1; }
+
+  .info-step.active { display:block; } .info-step { display:none; }
+  .submitted-msg { text-align:center; padding:16px 0 8px; }
+  @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes stampIn { 0%{opacity:0;transform:scale(1.4) rotate(-6deg)} 60%{transform:scale(0.95)} 100%{opacity:1;transform:scale(1) rotate(-3deg)} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Play Quiz →</a></li>
+  </ul>
+</nav>
+
+<!-- GLOBAL TICKER -->
+<div id="global-ticker"></div>
+<script src="data/people.js"></script>
+<script src="ticker.js"></script>
+
+<main class="quiz-page has-ticker">
+<div class="container">
+<div class="quiz-shell">
+
+  <div class="quiz-header">
+    <div class="v-tag">📚 Passport: Learn</div>
+    <h1>Find your learning match.</h1>
+    <p>Six questions about how you teach, learn, and exchange knowledge. Then you'll tell us what you can offer — and what you want to learn.</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <div id="quiz-container">
+
+    <!-- Q1 -->
+    <div class="q-card" id="q1">
+      <div class="q-number">Question 1 of 6</div>
+      <div class="q-text">When you learn something new, you retain it best when…</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q1','doing')"><span class="opt-icon">🛠️</span><div><span class="opt-label">I'm doing it — hands-on, trial and error</span><span class="opt-sub">Show don't tell</span></div></div>
+        <div class="option" onclick="sel(this,'q1','reading')"><span class="opt-icon">📖</span><div><span class="opt-label">I read about it first, then try</span><span class="opt-sub">Context before action</span></div></div>
+        <div class="option" onclick="sel(this,'q1','talking')"><span class="opt-icon">💬</span><div><span class="opt-label">Someone explains it to me conversationally</span><span class="opt-sub">I can ask questions</span></div></div>
+        <div class="option" onclick="sel(this,'q1','watching')"><span class="opt-icon">👁️</span><div><span class="opt-label">I watch someone who's good at it</span><span class="opt-sub">Observation first</span></div></div>
+      </div>
+      <div class="quiz-nav"><span></span><button class="btn btn-primary" id="next1" style="display:none" onclick="nextQ(1)">Next →</button></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-card" id="q2" style="display:none">
+      <div class="q-number">Question 2 of 6</div>
+      <div class="q-text">When you teach something you know well, what do you lead with?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q2','why')"><span class="opt-icon">🤔</span><div><span class="opt-label">Why it matters — the context before the content</span></div></div>
+        <div class="option" onclick="sel(this,'q2','how')"><span class="opt-icon">🔧</span><div><span class="opt-label">How to do it — practical steps first</span></div></div>
+        <div class="option" onclick="sel(this,'q2','story')"><span class="opt-icon">📖</span><div><span class="opt-label">A story — how I learned it myself</span></div></div>
+        <div class="option" onclick="sel(this,'q2','question')"><span class="opt-icon">❓</span><div><span class="opt-label">A question — what do they already know?</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(2)">← Back</button><button class="btn btn-primary" id="next2" style="display:none" onclick="nextQ(2)">Next →</button></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-card" id="q3" style="display:none">
+      <div class="q-number">Question 3 of 6</div>
+      <div class="q-text">What's the best compliment someone could give you after you teach them something?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q3','clear')"><span class="opt-icon">💡</span><div><span class="opt-label">"That finally made sense — nobody explained it that way before"</span></div></div>
+        <div class="option" onclick="sel(this,'q3','inspired')"><span class="opt-icon">🔥</span><div><span class="opt-label">"I want to go try this right now"</span></div></div>
+        <div class="option" onclick="sel(this,'q3','question')"><span class="opt-icon">🌊</span><div><span class="opt-label">"This gave me ten more questions I want to explore"</span></div></div>
+        <div class="option" onclick="sel(this,'q3','human')"><span class="opt-icon">🤝</span><div><span class="opt-label">"It meant something that you shared this with me"</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(3)">← Back</button><button class="btn btn-primary" id="next3" style="display:none" onclick="nextQ(3)">Next →</button></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-card" id="q4" style="display:none">
+      <div class="q-number">Question 4 of 6</div>
+      <div class="q-text">What kind of knowledge exchange are you most drawn to?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q4','skill')"><span class="opt-icon">🎯</span><div><span class="opt-label">A tangible skill — something I can practice</span><span class="opt-sub">Python, chess, a language, a technique</span></div></div>
+        <div class="option" onclick="sel(this,'q4','perspective')"><span class="opt-icon">🌍</span><div><span class="opt-label">A perspective — how someone sees their world</span><span class="opt-sub">What their culture, work, or life has taught them</span></div></div>
+        <div class="option" onclick="sel(this,'q4','process')"><span class="opt-icon">🔁</span><div><span class="opt-label">A process — how someone actually does what they do</span><span class="opt-sub">Behind the scenes, not the polished version</span></div></div>
+        <div class="option" onclick="sel(this,'q4','obsession')"><span class="opt-icon">🔮</span><div><span class="opt-label">Someone's obsession — whatever they can't stop thinking about</span><span class="opt-sub">Passion is contagious</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(4)">← Back</button><button class="btn btn-primary" id="next4" style="display:none" onclick="nextQ(4)">Next →</button></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-card" id="q5" style="display:none">
+      <div class="q-number">Question 5 of 6</div>
+      <div class="q-text">How do you feel about being a beginner at something in front of someone else?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q5','fine')"><span class="opt-icon">😄</span><div><span class="opt-label">Totally fine — not knowing is where learning starts</span></div></div>
+        <div class="option" onclick="sel(this,'q5','context')"><span class="opt-icon">📝</span><div><span class="opt-label">Fine if they know I'm a beginner going in</span><span class="opt-sub">Just set expectations</span></div></div>
+        <div class="option" onclick="sel(this,'q5','private')"><span class="opt-icon">🔒</span><div><span class="opt-label">I prefer to try privately first, then share</span><span class="opt-sub">I learn better with a little dignity intact</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(5)">← Back</button><button class="btn btn-primary" id="next5" style="display:none" onclick="nextQ(5)">Next →</button></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-card" id="q6" style="display:none">
+      <div class="q-number">Question 6 of 6</div>
+      <div class="q-text">What would a successful Learn match feel like?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q6','new')"><span class="opt-icon">🚪</span><div><span class="opt-label">I walked into a world I didn't know existed</span></div></div>
+        <div class="option" onclick="sel(this,'q6','useful')"><span class="opt-icon">🔧</span><div><span class="opt-label">I have something I can actually use now</span></div></div>
+        <div class="option" onclick="sel(this,'q6','connection')"><span class="opt-icon">🔗</span><div><span class="opt-label">The knowledge was secondary — the connection was the thing</span></div></div>
+        <div class="option" onclick="sel(this,'q6','more')"><span class="opt-icon">📈</span><div><span class="opt-label">I want to keep going — one exchange wasn't enough</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(6)">← Back</button><button class="btn btn-primary" id="next6" style="display:none" onclick="showResults()">See My Type →</button></div>
+    </div>
+
+  </div>
+
+  <!-- REVEAL -->
+  <div class="type-reveal" id="type-reveal">
+    <div class="reveal-card">
+      <div class="reveal-stamp" id="reveal-emoji">📚</div>
+      <div class="reveal-label">Your Learning Type</div>
+      <div class="reveal-type"  id="reveal-type">The Practitioner</div>
+      <div class="reveal-desc"  id="reveal-desc"></div>
+      <div class="reveal-pair">Best matched with a <strong id="reveal-pair">The Theorist</strong></div>
+      <div id="reveal-badge" style="margin-bottom:24px;"></div>
+
+      <!-- SKILL EXCHANGE INPUT -->
+      <div class="skill-exchange" id="skill-form">
+        <h4>Now tell us the swap.</h4>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">I can teach…</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="teach-input" class="filter-input" style="flex:1;" placeholder="e.g. Python, chess, Carnatic music" onkeydown="if(event.key==='Enter'){addSkill('teach');event.preventDefault()}">
+            <button class="btn btn-outline" style="padding:8px 14px;font-size:13px;" onclick="addSkill('teach')">Add</button>
+          </div>
+          <div class="skill-tag-area" id="teach-tags"></div>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">I want to learn…</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="learn-input" class="filter-input" style="flex:1;" placeholder="e.g. photography, Mandarin, bouldering" onkeydown="if(event.key==='Enter'){addSkill('learn');event.preventDefault()}">
+            <button class="btn btn-outline" style="padding:8px 14px;font-size:13px;" onclick="addSkill('learn')">Add</button>
+          </div>
+          <div class="skill-tag-area" id="learn-tags"></div>
+        </div>
+      </div>
+
+      <div class="info-step active" id="info-form">
+        <div style="text-align:left;max-width:420px;margin:0 auto;">
+          <h3 style="font-size:17px;font-weight:600;margin-bottom:6px;text-align:center;">Almost there.</h3>
+          <p style="font-size:13px;color:var(--cream-dim);text-align:center;margin-bottom:20px;">We need your info to find your skill swap match.</p>
+          <div class="form-group"><label>Your Full Name</label><input type="text" id="f-name" placeholder="First Last"></div>
+          <div class="form-group"><label>Work Email</label><input type="email" id="f-email" placeholder="you@yourorg.com"></div>
+          <div class="form-group"><label>Your Location</label>
+            <select id="f-location">
+              <option value="">Select…</option>
+              <option>Elk Grove</option><option>Santa Clara Valley</option><option>Seattle</option>
+              <option>New York</option><option>Raleigh</option><option>Cork</option>
+              <option>Singapore</option><option>Bangalore</option><option>Shanghai</option><option>Vietnam</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="submitEntry()">📚 Submit My Entry →</button>
+        </div>
+      </div>
+      <div class="info-step" id="submitted-state">
+        <div class="submitted-msg">
+          <div style="font-size:44px;margin-bottom:12px;">📬</div>
+          <div style="font-weight:700;font-size:18px;margin-bottom:8px;">You're in.</div>
+          <p style="font-size:14px;color:var(--cream-dim);max-width:360px;margin:0 auto 20px;">Your learning type and skill swap are locked in. You'll hear from us on Slack when your match drops.</p>
+          <a href="passport-learn.html" class="btn btn-outline">← Back to Learn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div></div></main>
+<footer><p>Global Recess · Passport: Learn</p><p>global-recess.vercel.app</p></footer>
+<script>
+const answers={};
+const TOTAL=6;
+const teachSkills=[], learnSkills=[];
+
+function updateProgress(q){ document.getElementById('progress').style.width=((q-1)/TOTAL*100)+'%'; }
+function sel(el,qId,val){
+  el.closest('.options').querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); answers[qId]=val;
+  const nb=document.getElementById('next'+qId.replace('q',''));
+  if(nb) nb.style.display='inline-flex';
+  const n6=document.getElementById('next6');
+  if(n6&&qId==='q6') n6.style.display='inline-flex';
+}
+function nextQ(from){
+  if(!answers['q'+from]) return;
+  document.getElementById('q'+from).style.display='none';
+  const next=from+1,el=document.getElementById('q'+next);
+  if(el){el.style.display='block';el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='';}); }
+  updateProgress(next);
+}
+function prevQ(from){ document.getElementById('q'+from).style.display='none'; document.getElementById('q'+(from-1)).style.display='block'; updateProgress(from-1); }
+
+function addSkill(which){
+  const input=document.getElementById(which+'-input');
+  const val=input.value.trim(); if(!val) return;
+  const arr=which==='teach'?teachSkills:learnSkills;
+  if(arr.includes(val)){input.value='';return;}
+  arr.push(val); input.value=''; renderTags(which);
+}
+function removeSkill(which,val){
+  const arr=which==='teach'?teachSkills:learnSkills;
+  const idx=arr.indexOf(val); if(idx>-1) arr.splice(idx,1); renderTags(which);
+}
+function renderTags(which){
+  const arr=which==='teach'?teachSkills:learnSkills;
+  document.getElementById(which+'-tags').innerHTML=arr.map(v=>
+    `<span class="skill-tag">${v}<span class="rm" onclick="removeSkill('${which}','${v.replace(/'/g,"\\'")}')">×</span></span>`
+  ).join('');
+}
+
+const TYPES={
+  practitioner:{ emoji:'🛠️', name:'The Practitioner', desc:'You learn by doing and teach by showing. You distill knowledge into things people can actually try. Practical, grounded, effective.', pair:'The Theorist' },
+  theorist:    { emoji:'🌊', name:'The Theorist',     desc:'You lead with context, history, and the "why." You give people the mental model before the mechanics. Understanding first, application second.', pair:'The Practitioner' },
+  guide:       { emoji:'🗺️', name:'The Guide',        desc:'You meet people where they are. You ask first, teach second. You\'re good at making the unfamiliar feel approachable.', pair:'The Explorer' },
+  explorer:    { emoji:'🔭', name:'The Explorer',     desc:'You learn sideways — one curiosity leads to ten others. You\'re not after mastery, you\'re after aliveness. Your matches leave with more questions.', pair:'The Guide' },
+};
+
+function computeType(){
+  let s={practitioner:0,theorist:0,guide:0,explorer:0};
+  const a=answers;
+  if(a.q1==='doing')   s.practitioner+=2;
+  if(a.q1==='reading') s.theorist+=2;
+  if(a.q1==='talking') s.guide+=2;
+  if(a.q1==='watching') s.explorer+=2;
+  if(a.q2==='why')      s.theorist+=2;
+  if(a.q2==='how')      s.practitioner+=2;
+  if(a.q2==='question') s.guide+=2;
+  if(a.q2==='story')    s.explorer+=2;
+  if(a.q3==='clear')    s.theorist+=2;
+  if(a.q3==='inspired') s.practitioner+=2;
+  if(a.q3==='question') s.explorer+=2;
+  if(a.q3==='human')    s.guide+=2;
+  if(a.q4==='skill')    s.practitioner+=2;
+  if(a.q4==='perspective') s.explorer+=2;
+  if(a.q4==='process')  s.guide+=2;
+  if(a.q4==='obsession') s.explorer+=2;
+  if(a.q6==='new')      s.explorer+=2;
+  if(a.q6==='useful')   s.practitioner+=2;
+  if(a.q6==='connection') s.guide+=2;
+  if(a.q6==='more')     s.explorer+=1; s.practitioner+=1;
+  return Object.entries(s).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function showResults(){
+  if(!answers.q6) return;
+  document.getElementById('q6').style.display='none';
+  document.getElementById('progress').style.width='100%';
+  const key=computeType(),t=TYPES[key];
+  window._learnType=key; window._learnTypeName=t.name;
+  document.getElementById('reveal-emoji').textContent=t.emoji;
+  document.getElementById('reveal-type').textContent=t.name;
+  document.getElementById('reveal-desc').textContent=t.desc;
+  document.getElementById('reveal-pair').textContent=t.pair;
+  document.getElementById('reveal-badge').innerHTML=`<span class="type-badge badge-wanderer" style="font-size:12px;">${t.emoji} ${t.name}</span>`;
+  document.getElementById('type-reveal').classList.add('active');
+}
+
+const API_BASE=window.API_BASE||'';
+async function submitEntry(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const loc=document.getElementById('f-location').value;
+  if(!name||!email||!loc){alert('Please fill in all fields.');return;}
+  const btn=document.querySelector('[onclick="submitEntry()"]');
+  btn.textContent='Submitting…';btn.disabled=true;
+  try{
+    await fetch(`${API_BASE}/api/players`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,location:loc,vibe_type:window._learnType||null,
+        quiz_answers:{...answers,teach_skills:teachSkills,learn_skills:learnSkills},
+        drawing_pref:'fine',duration_pref:'medium'})});
+    document.getElementById('info-form').classList.remove('active');
+    document.getElementById('submitted-state').classList.add('active');
+  }catch{btn.textContent='📚 Submit My Entry →';btn.disabled=false;alert('Something went wrong.');}
+}
+</script>
+</body>
+</html>

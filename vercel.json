@@ -1,16 +1,21 @@
 {
   "builds": [
-    { "src": "api/main.py", "use": "@vercel/python" },
-    { "src": "*.html",      "use": "@vercel/static" },
-    { "src": "*.css",       "use": "@vercel/static" },
-    { "src": "data/*.js",   "use": "@vercel/static" }
+    { "src": "api/main.py",  "use": "@vercel/python" },
+    { "src": "*.html",       "use": "@vercel/static" },
+    { "src": "*.css",        "use": "@vercel/static" },
+    { "src": "*.js",         "use": "@vercel/static" },
+    { "src": "data/*.js",    "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/(.*)",            "dest": "api/main.py"           },
     { "src": "/data/people.js",      "dest": "/data/people.js"       },
+    { "src": "/ticker.js",           "dest": "/ticker.js"            },
     { "src": "/commons.css",         "dest": "/commons.css"          },
     { "src": "/games.html",          "dest": "/games.html"           },
     { "src": "/quiz.html",           "dest": "/quiz.html"            },
+    { "src": "/quiz-meet.html",      "dest": "/quiz-meet.html"       },
+    { "src": "/quiz-make.html",      "dest": "/quiz-make.html"       },
+    { "src": "/quiz-learn.html",     "dest": "/quiz-learn.html"      },
     { "src": "/pair.html",           "dest": "/pair.html"            },
     { "src": "/faq.html",            "dest": "/faq.html"             },
     { "src": "/people.html",         "dest": "/people.html"          },

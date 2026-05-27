@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: Make — Find Your Creative Match</title>
+<link rel="stylesheet" href="commons.css">
+<style>
+  .quiz-page { padding-bottom: 80px; }
+  .quiz-shell { width:100%; max-width:640px; margin:0 auto; }
+  .quiz-header { margin-bottom:32px; }
+  .quiz-header h1 { font-size:30px; font-weight:700; margin-bottom:6px; }
+  .quiz-header p  { font-size:14px; color:var(--cream-dim); line-height:1.6; }
+  .v-tag {
+    display:inline-flex; align-items:center; gap:8px; padding:5px 14px;
+    border-radius:20px; margin-bottom:16px; font-size:11px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase;
+    background:rgba(193,68,14,0.12); color:#e07850; border:1px solid rgba(193,68,14,0.25);
+  }
+  .progress-bar { height:2px; background:var(--border-dim); border-radius:2px; overflow:hidden; margin-bottom:36px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,#e07850,var(--gold)); border-radius:2px; transition:width 0.5s ease; }
+  .q-card { background:var(--navy-card); border:1px solid var(--border-dim); border-radius:20px; padding:40px; animation:fadeUp 0.35s ease both; }
+  .q-number { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#e07850; margin-bottom:14px; }
+  .q-text   { font-size:clamp(18px,3vw,24px); font-weight:600; line-height:1.4; margin-bottom:28px; }
+  .options  { display:flex; flex-direction:column; gap:10px; }
+  .option {
+    background:var(--navy-mid); border:1px solid var(--border-dim); border-radius:12px;
+    padding:15px 20px; cursor:pointer; display:flex; align-items:center; gap:12px;
+    font-size:14px; color:var(--cream); user-select:none;
+    transition:border-color 0.2s, background 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .option:hover   { border-color:rgba(193,68,14,0.4); background:rgba(193,68,14,0.06); transform:translateX(4px); }
+  .option.selected{ border-color:#e07850; background:rgba(193,68,14,0.1); }
+  .opt-icon  { font-size:20px; flex-shrink:0; }
+  .opt-label { font-weight:600; }
+  .opt-sub   { font-size:12px; color:var(--cream-dim); display:block; margin-top:2px; }
+  .quiz-nav  { display:flex; justify-content:space-between; align-items:center; margin-top:24px; }
+  .type-reveal { display:none; animation:fadeUp 0.4s ease both; }
+  .type-reveal.active { display:block; }
+  .reveal-card { background:var(--navy-card); border:1px solid var(--border); border-radius:24px; padding:48px 40px; text-align:center; position:relative; overflow:hidden; }
+  .reveal-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, rgba(193,68,14,0.08) 0%, transparent 65%); pointer-events:none; }
+  .reveal-stamp { font-size:64px; margin-bottom:16px; animation:stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .reveal-label { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#e07850; margin-bottom:10px; }
+  .reveal-type  { font-size:42px; font-weight:800; margin-bottom:12px; }
+  .reveal-desc  { font-size:15px; color:var(--cream-dim); max-width:380px; margin:0 auto 16px; line-height:1.7; }
+  .reveal-pair  { font-size:13px; color:var(--cream-dim); margin-bottom:28px; }
+  .reveal-pair strong { color:#e07850; }
+  .info-step.active { display:block; } .info-step { display:none; }
+  .submitted-msg { text-align:center; padding:16px 0 8px; }
+  @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes stampIn { 0%{opacity:0;transform:scale(1.4) rotate(-6deg)} 60%{transform:scale(0.95)} 100%{opacity:1;transform:scale(1) rotate(-3deg)} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
+  <ul class="nav-links">
+    <li><a href="people.html">People</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Play Quiz →</a></li>
+  </ul>
+</nav>
+
+<!-- GLOBAL TICKER -->
+<div id="global-ticker"></div>
+<script src="data/people.js"></script>
+<script src="ticker.js"></script>
+
+<main class="quiz-page has-ticker">
+<div class="container">
+<div class="quiz-shell">
+
+  <div class="quiz-header">
+    <div class="v-tag">🎨 Passport: Make</div>
+    <h1>Find your creative match.</h1>
+    <p>Six questions about how you create and collaborate. Your creative type shapes which activity — and which partner — you'll be matched with.</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <div id="quiz-container">
+
+    <!-- Q1 -->
+    <div class="q-card" id="q1">
+      <div class="q-number">Question 1 of 6</div>
+      <div class="q-text">When you make something, what's the part that matters most to you?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q1','process')"><span class="opt-icon">🛠️</span><div><span class="opt-label">The process — doing it is the point</span><span class="opt-sub">The result is secondary</span></div></div>
+        <div class="option" onclick="sel(this,'q1','result')"><span class="opt-icon">🏆</span><div><span class="opt-label">The result — I want to make something good</span><span class="opt-sub">Quality matters to me</span></div></div>
+        <div class="option" onclick="sel(this,'q1','share')"><span class="opt-icon">🤝</span><div><span class="opt-label">Sharing it — the reaction is what drives me</span><span class="opt-sub">Making things for people, not just myself</span></div></div>
+        <div class="option" onclick="sel(this,'q1','explore')"><span class="opt-icon">🔭</span><div><span class="opt-label">The discovery — finding out what I'll make</span><span class="opt-sub">I don't know until I start</span></div></div>
+      </div>
+      <div class="quiz-nav"><span></span><button class="btn btn-primary" id="next1" style="display:none" onclick="nextQ(1)">Next →</button></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-card" id="q2" style="display:none">
+      <div class="q-number">Question 2 of 6</div>
+      <div class="q-text">Which of these feels most like creative play to you?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q2','visual')"><span class="opt-icon">🖼️</span><div><span class="opt-label">Visual — images, photos, drawings, design</span></div></div>
+        <div class="option" onclick="sel(this,'q2','words')"><span class="opt-icon">✍️</span><div><span class="opt-label">Words — writing, stories, descriptions</span></div></div>
+        <div class="option" onclick="sel(this,'q2','music')"><span class="opt-icon">🎵</span><div><span class="opt-label">Sound — music, playlists, atmosphere</span></div></div>
+        <div class="option" onclick="sel(this,'q2','physical')"><span class="opt-icon">🏺</span><div><span class="opt-label">Physical — making objects, cooking, craft</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(2)">← Back</button><button class="btn btn-primary" id="next2" style="display:none" onclick="nextQ(2)">Next →</button></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-card" id="q3" style="display:none">
+      <div class="q-number">Question 3 of 6</div>
+      <div class="q-text">You're collaborating with someone you've never met. Your instinct is to…</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q3','lead')"><span class="opt-icon">🎬</span><div><span class="opt-label">Set a direction and invite them in</span><span class="opt-sub">I have a vision and I want to share it</span></div></div>
+        <div class="option" onclick="sel(this,'q3','respond')"><span class="opt-icon">🎭</span><div><span class="opt-label">Wait to see what they bring and respond to it</span><span class="opt-sub">I'm a great yes-and person</span></div></div>
+        <div class="option" onclick="sel(this,'q3','together')"><span class="opt-icon">🌀</span><div><span class="opt-label">Build something neither of us could have planned</span><span class="opt-sub">The collision is the whole point</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(3)">← Back</button><button class="btn btn-primary" id="next3" style="display:none" onclick="nextQ(3)">Next →</button></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-card" id="q4" style="display:none">
+      <div class="q-number">Question 4 of 6</div>
+      <div class="q-text">How do you feel about showing unfinished work?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q4','fine')"><span class="opt-icon">🔓</span><div><span class="opt-label">Totally fine — process is interesting too</span><span class="opt-sub">Done is the enemy of good anyway</span></div></div>
+        <div class="option" onclick="sel(this,'q4','context')"><span class="opt-icon">📝</span><div><span class="opt-label">Fine with context — just let me explain it</span><span class="opt-sub">Don't judge the rough draft without the vision</span></div></div>
+        <div class="option" onclick="sel(this,'q4','nervous')"><span class="opt-icon">😬</span><div><span class="opt-label">Makes me nervous — I'd rather it be ready</span><span class="opt-sub">I'll share it when it's done</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(4)">← Back</button><button class="btn btn-primary" id="next4" style="display:none" onclick="nextQ(4)">Next →</button></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-card" id="q5" style="display:none">
+      <div class="q-number">Question 5 of 6</div>
+      <div class="q-text">Where does making something get interesting for you?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q5','constraints')"><span class="opt-icon">🧩</span><div><span class="opt-label">When there are constraints — limits make me creative</span></div></div>
+        <div class="option" onclick="sel(this,'q5','freedom')"><span class="opt-icon">🌊</span><div><span class="opt-label">When there's total freedom — no rules, no brief</span></div></div>
+        <div class="option" onclick="sel(this,'q5','surprise')"><span class="opt-icon">🎲</span><div><span class="opt-label">When something unexpected happens mid-way</span></div></div>
+        <div class="option" onclick="sel(this,'q5','craft')"><span class="opt-icon">⚒️</span><div><span class="opt-label">When I'm pushing my own skill somewhere new</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(5)">← Back</button><button class="btn btn-primary" id="next5" style="display:none" onclick="nextQ(5)">Next →</button></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-card" id="q6" style="display:none">
+      <div class="q-number">Question 6 of 6</div>
+      <div class="q-text">What would a successful Make match look like to you?</div>
+      <div class="options">
+        <div class="option" onclick="sel(this,'q6','artifact')"><span class="opt-icon">🎁</span><div><span class="opt-label">We made something that couldn't exist without both of us</span></div></div>
+        <div class="option" onclick="sel(this,'q6','surprise')"><span class="opt-icon">😲</span><div><span class="opt-label">What they made surprised me</span></div></div>
+        <div class="option" onclick="sel(this,'q6','inspired')"><span class="opt-icon">🔥</span><div><span class="opt-label">Their approach made me want to try something different</span></div></div>
+        <div class="option" onclick="sel(this,'q6','joy')"><span class="opt-icon">😄</span><div><span class="opt-label">It was just fun — the result doesn't even matter</span></div></div>
+      </div>
+      <div class="quiz-nav"><button class="btn btn-ghost" onclick="prevQ(6)">← Back</button><button class="btn btn-primary" id="next6" style="display:none" onclick="showResults()">See My Type →</button></div>
+    </div>
+
+  </div>
+
+  <!-- REVEAL -->
+  <div class="type-reveal" id="type-reveal">
+    <div class="reveal-card">
+      <div class="reveal-stamp" id="reveal-emoji">🎨</div>
+      <div class="reveal-label">Your Creative Type</div>
+      <div class="reveal-type" id="reveal-type">The Visionary</div>
+      <div class="reveal-desc"  id="reveal-desc"></div>
+      <div class="reveal-pair">Best matched with a <strong id="reveal-pair">The Craftsperson</strong></div>
+      <div id="reveal-badge" style="margin-bottom:28px;"></div>
+
+      <div class="info-step active" id="info-form">
+        <div style="text-align:left;max-width:420px;margin:0 auto;">
+          <h3 style="font-size:17px;font-weight:600;margin-bottom:6px;text-align:center;">One more thing.</h3>
+          <p style="font-size:13px;color:var(--cream-dim);text-align:center;margin-bottom:20px;">We need your info to send you your match.</p>
+          <div class="form-group"><label>Your Full Name</label><input type="text" id="f-name" placeholder="First Last"></div>
+          <div class="form-group"><label>Work Email</label><input type="email" id="f-email" placeholder="you@yourorg.com"></div>
+          <div class="form-group"><label>Your Location</label>
+            <select id="f-location">
+              <option value="">Select…</option>
+              <option>Elk Grove</option><option>Santa Clara Valley</option><option>Seattle</option>
+              <option>New York</option><option>Raleigh</option><option>Cork</option>
+              <option>Singapore</option><option>Bangalore</option><option>Shanghai</option><option>Vietnam</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="submitEntry()">🎨 Submit My Entry →</button>
+        </div>
+      </div>
+      <div class="info-step" id="submitted-state">
+        <div class="submitted-msg">
+          <div style="font-size:44px;margin-bottom:12px;">📬</div>
+          <div style="font-weight:700;font-size:18px;margin-bottom:8px;">You're in.</div>
+          <p style="font-size:14px;color:var(--cream-dim);max-width:360px;margin:0 auto 20px;">Your creative type is locked in. You'll hear from us on Slack when your match drops.</p>
+          <a href="passport-make.html" class="btn btn-outline">← Back to Make</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div></div></main>
+<footer><p>Global Recess · Passport: Make</p><p>global-recess.vercel.app</p></footer>
+<script>
+const answers = {};
+const TOTAL   = 6;
+function updateProgress(q){ document.getElementById('progress').style.width=((q-1)/TOTAL*100)+'%'; }
+function sel(el,qId,val){
+  el.closest('.options').querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); answers[qId]=val;
+  const nb=document.getElementById('next'+qId.replace('q',''));
+  if(nb) nb.style.display='inline-flex';
+  const n6=document.getElementById('next6');
+  if(n6&&qId==='q6') n6.style.display='inline-flex';
+}
+function nextQ(from){
+  if(!answers['q'+from]) return;
+  document.getElementById('q'+from).style.display='none';
+  const next=from+1, el=document.getElementById('q'+next);
+  if(el){el.style.display='block';el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='';}); }
+  updateProgress(next);
+}
+function prevQ(from){ document.getElementById('q'+from).style.display='none'; document.getElementById('q'+(from-1)).style.display='block'; updateProgress(from-1); }
+
+const TYPES = {
+  visionary:    { emoji:'🌟', name:'The Visionary',    desc:'You have a clear creative vision and the instinct to bring others into it. You lead with intention but stay open to where it goes.', pair:'The Interpreter' },
+  interpreter:  { emoji:'🎭', name:'The Interpreter',  desc:'You take what someone else starts and transform it into something neither of you expected. You\'re the ultimate creative responder.', pair:'The Visionary' },
+  craftsperson: { emoji:'⚒️', name:'The Craftsperson', desc:'Quality and care define your work. You\'re deliberate, precise, and deeply invested in the thing you make being genuinely good.', pair:'The Free Agent' },
+  free_agent:   { emoji:'🌊', name:'The Free Agent',   desc:'You make without a plan and discover what you\'re doing mid-way. The constraints are the enemy. The process is the art.', pair:'The Craftsperson' },
+};
+
+function computeType(){
+  let s={visionary:0,interpreter:0,craftsperson:0,free_agent:0};
+  const a=answers;
+  if(a.q1==='result')  s.craftsperson+=2;
+  if(a.q1==='share')   s.visionary+=2;
+  if(a.q1==='explore') s.free_agent+=2;
+  if(a.q1==='process') s.interpreter+=2;
+  if(a.q3==='lead')    s.visionary+=2;
+  if(a.q3==='respond') s.interpreter+=2;
+  if(a.q3==='together') s.free_agent+=2;
+  if(a.q4==='fine')    s.free_agent+=2;
+  if(a.q4==='nervous') s.craftsperson+=2;
+  if(a.q5==='constraints') s.craftsperson+=2;
+  if(a.q5==='freedom')     s.free_agent+=2;
+  if(a.q5==='craft')       s.craftsperson+=1; s.visionary+=1;
+  if(a.q6==='artifact')    s.visionary+=2;
+  if(a.q6==='inspired')    s.interpreter+=2;
+  if(a.q6==='joy')         s.free_agent+=2;
+  return Object.entries(s).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function showResults(){
+  if(!answers.q6) return;
+  document.getElementById('q6').style.display='none';
+  document.getElementById('progress').style.width='100%';
+  const key=computeType(), t=TYPES[key];
+  window._makeType=key; window._makeTypeName=t.name;
+  document.getElementById('reveal-emoji').textContent=t.emoji;
+  document.getElementById('reveal-type').textContent=t.name;
+  document.getElementById('reveal-desc').textContent=t.desc;
+  document.getElementById('reveal-pair').textContent=t.pair;
+  document.getElementById('reveal-badge').innerHTML=`<span class="type-badge badge-rival" style="font-size:12px;">${t.emoji} ${t.name}</span>`;
+  document.getElementById('type-reveal').classList.add('active');
+}
+
+const API_BASE=window.API_BASE||'';
+async function submitEntry(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const loc=document.getElementById('f-location').value;
+  if(!name||!email||!loc){alert('Please fill in all three fields.');return;}
+  const btn=document.querySelector('[onclick="submitEntry()"]');
+  btn.textContent='Submitting…';btn.disabled=true;
+  try{
+    await fetch(`${API_BASE}/api/players`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,location:loc,vibe_type:window._makeType||null,quiz_answers:answers,drawing_pref:'fine',duration_pref:'medium'})});
+    document.getElementById('info-form').classList.remove('active');
+    document.getElementById('submitted-state').classList.add('active');
+  }catch{btn.textContent='🎨 Submit My Entry →';btn.disabled=false;alert('Something went wrong.');}
+}
+</script>
+</body>
+</html>
