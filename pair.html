@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commons: Prototype — Game Pairing Tool</title>
+<title>Commons — Game Pairing Tool</title>
 <link rel="stylesheet" href="commons.css">
 <style>
   .admin-page { padding: 120px 0 80px; }
@@ -88,7 +88,7 @@
 <nav>
   <a class="nav-logo" href="index.html">
     <div class="stamp">✈</div>
-    <span>Commons: Prototype</span>
+    <span>Commons</span>
   </a>
   <ul class="nav-links">
     <li><a href="how-to-play.html">How It Works</a></li>
@@ -110,9 +110,9 @@
   <div class="container">
     <div class="admin-shell">
 
-      <div class="section-label">Commons: Prototype</div>
-      <h1 style="font-size:clamp(32px,5vw,52px); font-weight:700; margin-bottom:24px;">Find your game.</h1>
-      <p style="font-size:17px; color:var(--cream-dim); max-width:560px; margin-bottom:40px;">Already know your player type? Enter yours and your match's — the tool suggests the right game for your specific combo and writes the Slack message for you.</p>
+      <div class="section-label">Commons</div>
+      <h1 style="font-size:clamp(32px,5vw,52px); font-weight:700; margin-bottom:24px;">Already matched? Find your game.</h1>
+      <p style="font-size:17px; color:var(--cream-dim); max-width:560px; margin-bottom:40px;">Already know your match's player type? Enter both and we'll suggest the right game for your specific pairing.</p>
 
       <!-- PAIRING TOOL -->
       <div class="pair-tool">
@@ -275,8 +275,8 @@
 </main>
 
 <footer>
-  <p>Commons · Passport: Play · Prototype</p>
-  <p>Global Recess</p>
+  <p>Commons · Prototype</p>
+  <p>Commons</p>
 </footer>
 
 <script>
@@ -425,7 +425,7 @@ function suggest() {
     : `• This one runs over Slack — no app needed\n• One person starts, the other responds whenever they have a moment\n• Screenshot or copy the thread when you're done`;
 
   const dm =
-`✈️ Commons: Prototype — your game suggestion is ready.
+`✈️ Commons — your game suggestion is ready.
 
 ${game.icon} ${game.name}
 ${game.url || 'Via Slack — no link needed'}
