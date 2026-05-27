@@ -6,82 +6,175 @@
 <title>Global Recess — People</title>
 <link rel="stylesheet" href="commons.css">
 <style>
-  .people-page { padding-top: 120px; padding-bottom: 80px; }
 
-  .people-hero { padding: 60px 0 40px; }
-  .people-hero h1 { font-size: clamp(36px,5vw,56px); font-weight:700; margin-bottom:10px; }
-  .people-hero p  { font-size:16px; color:var(--cream-dim); max-width:520px; }
+  /* ── DISCOVERY TICKER ── */
+  .discovery-bar {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    z-index: 90;
+    background: rgba(10,15,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-dim);
+    overflow: hidden;
+    height: 52px;
+  }
+  .discovery-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 0;
+    will-change: transform;
+  }
+  .discovery-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 32px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-dim);
+    height: 100%;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+  }
+  .discovery-item:hover { background: rgba(201,168,76,0.06); }
+
+  .di-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; color: var(--navy);
+    flex-shrink: 0;
+  }
+  .di-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    opacity: 0.45; margin-right: 2px; flex-shrink: 0;
+  }
+  .di-name { font-size: 13px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+  .di-text { font-size: 13px; color: var(--cream-dim); max-width: 280px;
+             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* fade masks on edges */
+  .discovery-bar::before,
+  .discovery-bar::after {
+    content: '';
+    position: absolute; top: 0; bottom: 0; width: 80px;
+    pointer-events: none; z-index: 2;
+  }
+  .discovery-bar::before { left: 0;  background: linear-gradient(90deg, rgba(10,15,23,1), transparent); }
+  .discovery-bar::after  { right: 0; background: linear-gradient(-90deg, rgba(10,15,23,1), transparent); }
+
+  /* ── PAGE ── */
+  .people-page { padding-top: 168px; padding-bottom: 80px; }
+
+  .people-hero { padding: 48px 0 32px; }
+  .people-hero h1 { font-size: clamp(32px,5vw,52px); font-weight:700; margin-bottom:8px; }
+  .people-hero p  { font-size:15px; color:var(--cream-dim); max-width:520px; }
 
   /* ── FILTERS ── */
   .filters {
-    display: flex; gap: 12px; flex-wrap: wrap;
-    margin: 32px 0 24px; align-items: center;
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin: 24px 0 8px; align-items: center;
   }
   .filter-input {
     background: var(--navy-card); border: 1px solid var(--border-dim);
     border-radius: 8px; padding: 10px 16px;
     color: var(--cream); font-size: 13px; font-family: inherit;
-    outline: none; min-width: 220px;
+    outline: none; min-width: 200px;
     transition: border-color 0.2s;
   }
   .filter-input:focus { border-color: var(--gold); }
-  .filter-input::placeholder { color: var(--muted); opacity: 0.6; }
+  .filter-input::placeholder { color: var(--muted); opacity: 0.5; }
 
   /* ── PEOPLE GRID ── */
   .people-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
   }
 
   /* ── PERSON CARD ── */
   .person-card {
     background: var(--navy-card);
     border: 1px solid var(--border-dim);
-    border-radius: 16px; padding: 24px;
-    display: flex; flex-direction: column; gap: 14px;
+    border-radius: 18px; padding: 22px;
+    display: flex; flex-direction: column; gap: 12px;
     cursor: pointer; text-decoration: none; color: inherit;
     transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
                 border-color 0.25s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
   }
-  .person-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--border);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  .person-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 0% 0%, var(--card-accent, rgba(201,168,76,0.05)) 0%, transparent 65%);
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
   }
-  .person-card-top { display: flex; align-items: center; gap: 14px; }
+  .person-card:hover { transform: translateY(-8px); border-color: var(--border); box-shadow: 0 20px 48px rgba(0,0,0,0.45); }
+  .person-card:hover::before { opacity: 1; }
+
+  .card-top { display: flex; align-items: center; gap: 12px; }
   .avatar {
-    width: 48px; height: 48px; border-radius: 50%;
+    width: 52px; height: 52px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 800; color: var(--navy);
-    flex-shrink: 0;
+    font-size: 17px; font-weight: 800; color: var(--navy); flex-shrink: 0;
   }
-  .person-name   { font-size: 16px; font-weight: 700; }
-  .person-loc    { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .person-bio    { font-size: 13px; color: var(--cream-dim); line-height: 1.6;
-                   display: -webkit-box; -webkit-line-clamp: 2;
-                   -webkit-box-orient: vertical; overflow: hidden; }
-  .person-tags   { display: flex; flex-wrap: wrap; gap: 6px; }
-  .person-tag {
-    font-size: 11px; padding: 3px 10px; border-radius: 8px;
+  .card-name { font-size: 15px; font-weight: 700; }
+  .card-loc  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* current status pill */
+  .card-status {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-dim);
+    border-radius: 8px; padding: 8px 12px;
+    font-size: 12px; color: var(--cream-dim);
+    line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-status .status-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--sage-light);
+    margin-right: 6px; vertical-align: middle;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  /* current moments row */
+  .card-currents {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .current-row {
+    display: flex; align-items: baseline; gap: 6px;
+    font-size: 11px; line-height: 1.4;
+    overflow: hidden;
+  }
+  .current-label { color: var(--muted); flex-shrink: 0; opacity: 0.6; }
+  .current-val   { color: var(--cream-dim);
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .card-tag {
+    font-size: 10px; padding: 3px 9px; border-radius: 8px;
     background: rgba(255,255,255,0.05); border: 1px solid var(--border-dim);
     color: var(--cream-dim);
   }
-  .person-footer {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11px; color: var(--muted); padding-top: 8px;
-    border-top: 1px solid var(--border-dim);
-  }
-  .connection-count { display: flex; align-items: center; gap: 4px; }
 
-  /* ── EMPTY / LOADING ── */
-  .state-msg {
-    grid-column: 1/-1; text-align: center;
-    padding: 60px; color: var(--muted); font-size: 15px;
+  .card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 8px; border-top: 1px solid var(--border-dim);
+    font-size: 11px; color: var(--muted);
   }
-  .count-label {
-    font-size: 12px; color: var(--muted); margin-bottom: 16px;
-    letter-spacing: 0.06em;
+
+  /* ── STATES ── */
+  .state-msg { grid-column:1/-1; text-align:center; padding:60px; color:var(--muted); font-size:15px; }
+  .count-label { font-size:11px; color:var(--muted); letter-spacing:0.08em; }
+
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  @keyframes scrollLeft {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
   }
 </style>
 </head>
@@ -90,14 +183,19 @@
 <nav>
   <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Global Recess</span></a>
   <ul class="nav-links">
-    <li><a href="how-to-play.html">How It Works</a></li>
     <li><a href="people.html">People</a></li>
-    <li><a href="quiz.html">Take the Quiz</a></li>
-    <li><a href="games.html">Games</a></li>
-    <li><a href="pair.html">Find Your Game</a></li>
-    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="quiz.html" style="color:var(--gold);">Take the Quiz →</a></li>
   </ul>
 </nav>
+
+<!-- DISCOVERY TICKER -->
+<div class="discovery-bar">
+  <div class="discovery-track" id="discovery-track"></div>
+</div>
 
 <main class="people-page">
   <div class="container">
@@ -105,17 +203,25 @@
     <section class="people-hero">
       <div class="section-label">The Community</div>
       <h1>People</h1>
-      <p>Everyone who's joined Global Recess. Browse by location, vibe type, or what they're into.</p>
+      <p>Everyone in Global Recess. Browse by location, vibe type, or what they're into right now.</p>
     </section>
 
     <div class="filters">
-      <input class="filter-input" type="text" id="search" placeholder="🔍  Search by name, skill, hobby…" oninput="filterPeople()">
+      <input class="filter-input" type="text" id="search"
+             placeholder="🔍  Search by name, skill, hobby, song…"
+             oninput="filterPeople()">
       <select class="filter-input" id="filter-location" onchange="filterPeople()" style="min-width:160px;">
         <option value="">All locations</option>
-        <option>Austin</option>
         <option>Elk Grove</option>
+        <option>Santa Clara Valley</option>
+        <option>Seattle</option>
+        <option>New York</option>
         <option>Raleigh</option>
+        <option>Cork</option>
         <option>Singapore</option>
+        <option>Bangalore</option>
+        <option>Shanghai</option>
+        <option>Vietnam</option>
       </select>
       <select class="filter-input" id="filter-type" onchange="filterPeople()" style="min-width:160px;">
         <option value="">All types</option>
@@ -128,44 +234,90 @@
 
     <div class="count-label" id="count-label"></div>
     <div class="people-grid" id="people-grid">
-      <div class="state-msg">Loading people…</div>
+      <div class="state-msg">Loading…</div>
     </div>
 
   </div>
 </main>
 
 <footer>
-  <p>Global Recess · Passport: Play</p>
+  <p>Global Recess · Passport Platform</p>
   <p>global-recess.vercel.app</p>
 </footer>
 
+<script src="data/people.js"></script>
 <script>
-const API_BASE = window.API_BASE || '';
-
 const TYPE_META = {
   explorer: { emoji:'🗺️', label:'Explorer', badge:'badge-explorer' },
   rival:    { emoji:'⚔️', label:'Rival',    badge:'badge-rival'    },
   creator:  { emoji:'🎨', label:'Creator',  badge:'badge-creator'  },
   wanderer: { emoji:'🌀', label:'Wanderer', badge:'badge-wanderer' },
 };
-
-let ALL_PEOPLE = [];
-
-async function loadPeople() {
-  try {
-    const res = await fetch(`${API_BASE}/api/profiles`);
-    if (!res.ok) throw new Error();
-    ALL_PEOPLE = await res.json();
-    renderPeople(ALL_PEOPLE);
-  } catch {
-    document.getElementById('people-grid').innerHTML =
-      '<div class="state-msg">Couldn\'t load people right now. Try refreshing.</div>';
-  }
-}
+const FLAGS = {
+  'Elk Grove':'🇺🇸','Santa Clara Valley':'🇺🇸','Seattle':'🇺🇸',
+  'New York':'🇺🇸','Raleigh':'🇺🇸','Cork':'🇮🇪',
+  'Singapore':'🇸🇬','Bangalore':'🇮🇳','Shanghai':'🇨🇳','Vietnam':'🇻🇳'
+};
 
 function initials(name) {
-  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
 }
+
+// ── DISCOVERY TICKER ──────────────────────────────────────────────────────
+
+// All the "current" moment types we pull from
+const MOMENT_TYPES = [
+  { key:'status',       label:'Right now',         emoji:'●'  },
+  { key:'song',         label:'Stuck in my head',  emoji:'🎵' },
+  { key:'hyperfixation',label:'Currently obsessed',emoji:'🔮' },
+  { key:'book',         label:'Reading',           emoji:'📖' },
+  { key:'show',         label:'Watching',          emoji:'📺' },
+];
+
+function buildTicker() {
+  // Build a shuffled pool of moments — one random type per person
+  const pool = PEOPLE
+    .map(p => {
+      const mt = MOMENT_TYPES[Math.floor(Math.random() * MOMENT_TYPES.length)];
+      const val = p[mt.key];
+      if (!val) return null;
+      return { person: p, label: mt.label, emoji: mt.emoji, val };
+    })
+    .filter(Boolean);
+
+  // Shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  const track = document.getElementById('discovery-track');
+
+  // Render twice for seamless loop
+  const renderItems = (items) => items.map(m => `
+    <a class="discovery-item" href="profile.html?id=${m.person.id}">
+      <div class="di-avatar" style="background:${m.person.avatar_color}">${initials(m.person.name)}</div>
+      <span class="di-label">${m.emoji} ${m.label}</span>
+      <span class="di-name">${m.person.name.split(' ')[0]}</span>
+      <span class="di-text">${m.val}</span>
+    </a>
+  `).join('');
+
+  track.innerHTML = renderItems(pool) + renderItems(pool);
+
+  // Calculate total width of one set and animate
+  requestAnimationFrame(() => {
+    const totalW = track.scrollWidth / 2;
+    const duration = totalW / 60; // px per second
+    track.style.animation = `scrollLeft ${duration}s linear infinite`;
+  });
+
+  // Pause on hover
+  track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
+  track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+}
+
+// ── PEOPLE GRID ────────────────────────────────────────────────────────────
 
 function renderPeople(people) {
   const grid = document.getElementById('people-grid');
@@ -173,55 +325,82 @@ function renderPeople(people) {
     `${people.length} member${people.length !== 1 ? 's' : ''}`;
 
   if (!people.length) {
-    grid.innerHTML = '<div class="state-msg">No people match your filters.</div>';
+    grid.innerHTML = '<div class="state-msg">No one matches those filters.</div>';
     return;
   }
 
   grid.innerHTML = people.map(p => {
-    const tm  = TYPE_META[p.vibe_type] || {};
-    const tags = [...(p.skills||[]), ...(p.hobbies||[])].slice(0,3);
-    const flagMap = { Austin:'🇺🇸', 'Elk Grove':'🇺🇸', Raleigh:'🇺🇸', Singapore:'🇸🇬' };
-    const flag = flagMap[p.location] || '🌍';
+    const tm   = TYPE_META[p.vibe_type] || {};
+    const flag = FLAGS[p.location] || '🌍';
+    const tags = [...(p.work_skills||[])].slice(0, 2)
+               .concat([...(p.hobbies||[])].slice(0, 1));
+
+    // Pick two random current fields to show on card
+    const cardCurrents = [
+      p.song         ? { label:'🎵', val: p.song }          : null,
+      p.book         ? { label:'📖', val: p.book }          : null,
+      p.show         ? { label:'📺', val: p.show }          : null,
+      p.hyperfixation? { label:'🔮', val: p.hyperfixation } : null,
+    ].filter(Boolean).sort(() => Math.random() - 0.5).slice(0, 2);
 
     return `
-    <a class="person-card" href="profile.html?id=${p.id}">
-      <div class="person-card-top">
-        <div class="avatar" style="background:${p.avatar_color || '#c9a84c'}">
-          ${initials(p.name)}
-        </div>
+    <a class="person-card" href="profile.html?id=${p.id}"
+       style="--card-accent: ${p.avatar_color}22">
+      <div class="card-top">
+        <div class="avatar" style="background:${p.avatar_color}">${initials(p.name)}</div>
         <div>
-          <div class="person-name">${p.name}</div>
-          <div class="person-loc">${flag} ${p.location}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-loc">${flag} ${p.location}</div>
         </div>
+        ${tm.emoji ? `<span class="type-badge ${tm.badge}" style="margin-left:auto;font-size:10px;">${tm.emoji} ${tm.label}</span>` : ''}
       </div>
-      ${p.bio ? `<div class="person-bio">${p.bio}</div>` : ''}
+
+      ${p.status ? `
+      <div class="card-status">
+        <span class="status-dot"></span>${p.status}
+      </div>` : ''}
+
+      ${cardCurrents.length ? `
+      <div class="card-currents">
+        ${cardCurrents.map(c => `
+          <div class="current-row">
+            <span class="current-label">${c.label}</span>
+            <span class="current-val">${c.val}</span>
+          </div>`).join('')}
+      </div>` : ''}
+
       ${tags.length ? `
-        <div class="person-tags">
-          ${tags.map(t => `<span class="person-tag">${t}</span>`).join('')}
-        </div>` : ''}
-      <div class="person-footer">
-        ${tm.emoji ? `<span class="type-badge ${tm.badge}">${tm.emoji} ${tm.label}</span>` : '<span></span>'}
-        <span class="connection-count">🔗 ${p.connection_count || 0} connection${p.connection_count !== 1 ? 's' : ''}</span>
+      <div class="card-tags">
+        ${tags.map(t => `<span class="card-tag">${t}</span>`).join('')}
+      </div>` : ''}
+
+      <div class="card-footer">
+        <span>${p.bio ? p.bio.split('.')[0] + '.' : ''}</span>
       </div>
     </a>`;
   }).join('');
 }
 
 function filterPeople() {
-  const q    = document.getElementById('search').value.toLowerCase();
-  const loc  = document.getElementById('filter-location').value;
-  const type = document.getElementById('filter-type').value;
+  const q   = document.getElementById('search').value.toLowerCase();
+  const loc = document.getElementById('filter-location').value;
+  const typ = document.getElementById('filter-type').value;
 
-  const filtered = ALL_PEOPLE.filter(p => {
-    const text = [p.name, p.bio, ...(p.skills||[]), ...(p.hobbies||[]), ...(p.interests||[])].join(' ').toLowerCase();
-    return (!q    || text.includes(q))
-        && (!loc  || p.location === loc)
-        && (!type || p.vibe_type === type);
+  const filtered = PEOPLE.filter(p => {
+    const text = [
+      p.name, p.bio, p.status, p.song, p.book, p.show, p.hyperfixation,
+      ...(p.work_skills||[]), ...(p.hobbies||[]), ...(p.non_work||[])
+    ].join(' ').toLowerCase();
+    return (!q   || text.includes(q))
+        && (!loc || p.location === loc)
+        && (!typ || p.vibe_type === typ);
   });
   renderPeople(filtered);
 }
 
-loadPeople();
+// ── INIT ───────────────────────────────────────────────────────────────────
+buildTicker();
+renderPeople(PEOPLE);
 </script>
 </body>
 </html>
