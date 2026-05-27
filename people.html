@@ -527,9 +527,19 @@ function renderMap(filter='all') {
 
   nodeG.append('title').text(d => `${d.label} — ${d.count} people`);
 
+  // Pre-run simulation ticks so nodes are already spread on first paint.
+  // Without this, all nodes start at (0,0) and the map looks blank
+  // until a mouse event nudges the simulation.
+  mmSim.stop();
+  for (let i = 0; i < 120; i++) mmSim.tick();
+
+  // Apply pre-computed positions immediately
+  nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
+
+  // Then let the simulation continue animating to final positions
   mmSim.on('tick', () => {
     nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
-  });
+  }).restart();
 
   // Legend
   const usedCats = [...new Set(nodes.map(n => n.category))];
