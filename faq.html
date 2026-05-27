@@ -3,80 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commons — FAQ</title>
+<title>Commons — How It Works</title>
 <link rel="stylesheet" href="commons.css">
 <style>
-  .faq-page { padding-top: 120px; padding-bottom: 80px; }
-  .faq-hero  { padding: 60px 0 48px; }
-  .faq-hero h1 { font-size: clamp(36px,5vw,56px); font-weight:700; margin-bottom:12px; }
-  .faq-hero p  { font-size:17px; color:var(--cream-dim); max-width:520px; }
+  .faq-page { padding-bottom: 80px; }
 
-  .faq-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 16px;
+  .faq-hero { padding: 60px 0 48px; }
+  .faq-hero h1 { font-size: clamp(36px,5vw,56px); font-weight:700; margin-bottom:10px; }
+  .faq-hero p  { font-size:17px; color:var(--cream-dim); max-width:540px; line-height:1.7; }
+
+  /* ── HOW IT WORKS — big steps ── */
+  .how-steps { margin-bottom: 64px; }
+  .how-step {
+    display: flex; gap: 32px; align-items: flex-start;
+    padding: 36px 0; border-bottom: 1px solid var(--border-dim);
   }
+  .how-step:last-child { border-bottom: none; }
+  .step-num-big {
+    font-size: 56px; font-weight: 900; color: var(--gold); opacity: 0.2;
+    line-height: 1; flex-shrink: 0; width: 60px; text-align: right;
+    padding-top: 4px;
+  }
+  .step-body h3   { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .step-body p    { font-size: 15px; color: var(--cream-dim); line-height: 1.75; max-width: 560px; }
 
+  /* ── PASSPORT CARDS ── */
+  .passport-grid {
+    display: grid; grid-template-columns: repeat(2,1fr); gap: 16px;
+    margin-bottom: 64px;
+  }
+  .passport-card {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 12px;
+    text-decoration: none; color: inherit;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, box-shadow 0.3s;
+  }
+  .passport-card:hover { transform: translateY(-6px); border-color: var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .passport-card.play  { border-top: 2px solid var(--gold); }
+  .passport-card.meet  { border-top: 2px solid var(--sage-light); }
+  .passport-card.make  { border-top: 2px solid #e07850; }
+  .passport-card.learn { border-top: 2px solid #8aabec; }
+  .pc-icon  { font-size: 32px; }
+  .pc-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .passport-card.play  .pc-label { color: var(--gold); }
+  .passport-card.meet  .pc-label { color: var(--sage-light); }
+  .passport-card.make  .pc-label { color: #e07850; }
+  .passport-card.learn .pc-label { color: #8aabec; }
+  .pc-title { font-size: 18px; font-weight: 700; }
+  .pc-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; flex: 1; }
+  .pc-types { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .pc-type  { font-size: 11px; padding: 3px 10px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-dim); color: var(--cream-dim); }
+  .pc-cta   { font-size: 13px; font-weight: 600; margin-top: auto; }
+  .passport-card.play  .pc-cta { color: var(--gold); }
+  .passport-card.meet  .pc-cta { color: var(--sage-light); }
+  .passport-card.make  .pc-cta { color: #e07850; }
+  .passport-card.learn .pc-cta { color: #8aabec; }
+
+  /* ── FAQ ACCORDION ── */
+  .faq-section { margin-bottom: 64px; }
+  .faq-section h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+
+  .faq-grid { display: flex; flex-direction: column; gap: 10px; }
   .faq-item {
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: border-color 0.2s;
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 14px; overflow: hidden; transition: border-color 0.2s;
   }
   .faq-item:hover { border-color: var(--border); }
-
   .faq-q {
-    padding: 22px 24px;
-    cursor: pointer;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 16px;
-    font-size: 15px; font-weight: 600; line-height: 1.4;
-    user-select: none;
+    padding: 20px 24px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    font-size: 15px; font-weight: 600; line-height: 1.4; user-select: none;
   }
-  .faq-q .arrow {
-    font-size: 12px; color: var(--gold); flex-shrink: 0;
-    transition: transform 0.3s;
-  }
-  .faq-item.open .arrow { transform: rotate(90deg); }
-
+  .faq-arrow { font-size: 12px; color: var(--gold); flex-shrink: 0; transition: transform 0.3s; }
+  .faq-item.open .faq-arrow { transform: rotate(90deg); }
   .faq-a {
-    max-height: 0; overflow: hidden;
+    max-height: 0; overflow: hidden; padding: 0 24px;
+    font-size: 14px; color: var(--cream-dim); line-height: 1.75;
     transition: max-height 0.35s ease, padding 0.3s;
-    padding: 0 24px;
-    font-size: 14px; color: var(--cream-dim); line-height: 1.7;
   }
-  .faq-item.open .faq-a {
-    max-height: 300px;
-    padding: 0 24px 22px;
-  }
+  .faq-item.open .faq-a { max-height: 400px; padding: 0 24px 22px; }
 
-  .faq-section-label {
-    grid-column: 1 / -1;
-    padding-top: 24px;
+  /* ── POSTCARD EXPLAINER ── */
+  .postcard-section {
+    background: var(--navy-card); border: 1px solid var(--border-dim);
+    border-radius: 20px; padding: 40px; margin-bottom: 64px;
   }
+  .postcard-section h2 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .postcard-section > p { font-size: 15px; color: var(--cream-dim); line-height: 1.75; margin-bottom: 28px; max-width: 560px; }
+  .postcard-types { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .postcard-type {
+    background: var(--navy-mid); border: 1px solid var(--border-dim);
+    border-radius: 12px; padding: 16px; text-align: center;
+    transition: border-color 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .postcard-type:hover { border-color: var(--gold); transform: translateY(-4px); }
+  .postcard-type .pt-icon  { font-size: 26px; margin-bottom: 8px; }
+  .postcard-type .pt-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .postcard-type .pt-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
   @media (max-width: 768px) {
-    .faq-grid { grid-template-columns: 1fr; }
+    .passport-grid { grid-template-columns: 1fr; }
+    .how-step { flex-direction: column; gap: 12px; }
+    .step-num-big { font-size: 36px; width: auto; text-align: left; }
   }
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">
-    <div class="stamp">✈</div>
-    <span>Commons</span>
-  </a>
+  <a class="nav-logo" href="index.html"><div class="stamp">✈</div><span>Commons</span></a>
   <ul class="nav-links">
-    <li><a href="how-to-play.html">How It Works</a></li>
     <li><a href="people.html">People</a></li>
-    <li><a href="quiz.html">Take the Quiz</a></li>
-    <li><a href="games.html">Games</a></li>
-    <li><a href="pair.html">Find Your Game</a></li>
-    <li><a href="connections.html">Connections</a></li>
-    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="passport-play.html">Play</a></li>
+    <li><a href="passport-meet.html">Meet</a></li>
+    <li><a href="passport-make.html">Make</a></li>
+    <li><a href="passport-learn.html">Learn</a></li>
+    <li><a href="faq.html" style="color:var(--gold);">How It Works →</a></li>
   </ul>
 </nav>
 
@@ -86,105 +128,212 @@
 <script src="ticker.js"></script>
 
 <main class="faq-page has-ticker">
-  <div class="container">
+<div class="container">
 
-    <section class="faq-hero">
-      <div class="section-label">FAQ</div>
-      <h1>Got questions about Commons?</h1>
-      <p>Everything you need to know about how matching works, what to do with your game, and how to send a postcard.</p>
-    </section>
+  <section class="faq-hero">
+    <div class="section-label">Commons</div>
+    <h1>How It Works</h1>
+    <p>Commons connects colleagues across locations through four different ways to meet. Here's everything you need to know to get started.</p>
+  </section>
 
+  <!-- THE FOUR STEPS -->
+  <section class="how-steps">
+    <div class="how-step">
+      <div class="step-num-big">1</div>
+      <div class="step-body">
+        <h3>Pick your Passport.</h3>
+        <p>Commons has four ways to connect — Play, Meet, Make, and Learn. Each one is a different kind of match. Pick whichever sounds like you right now. You can do all four eventually, but start with one.</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="step-num-big">2</div>
+      <div class="step-body">
+        <h3>Take the quiz.</h3>
+        <p>Each Passport has its own short quiz — six questions about how you connect, what you're into, and what you're looking for. This shapes who you're matched with. It takes about two minutes and you only do it once per Passport.</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="step-num-big">3</div>
+      <div class="step-body">
+        <h3>We find your match.</h3>
+        <p>Our algorithm pairs you with someone from a different location whose vibe complements yours. You'll never be matched with someone from your own city — the distance is the whole point. Matches drop on Mondays and you'll hear via Slack.</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="step-num-big">4</div>
+      <div class="step-body">
+        <h3>Connect on your time.</h3>
+        <p>Everything in Commons is async. No scheduling. No live calls. You go when it works for you — whether that's a Tuesday at midnight or a Sunday afternoon. Your match is doing the same thing on their side of the world.</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="step-num-big">5</div>
+      <div class="step-body">
+        <h3>Leave a postcard.</h3>
+        <p>When you've done the thing — played the game, answered the prompt, made something, shared a lesson — send your match a postcard. A screenshot, a score, a message, a photo. Something small that says you showed up. That's your stamp.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE FOUR PASSPORTS -->
+  <section style="margin-bottom:64px;">
+    <div class="section-label">The Four Passports</div>
+    <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:700;margin-bottom:8px;">Pick whichever feels like you.</h2>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:28px;">You can do more than one. But start with one.</p>
+
+    <div class="passport-grid">
+      <a class="passport-card play" href="passport-play.html">
+        <div class="pc-icon">🎮</div>
+        <div class="pc-label">Passport: Play</div>
+        <div class="pc-title">A game is a great excuse.</div>
+        <div class="pc-desc">Get matched and receive a game suggestion built for your specific pairing. Play on your own time, share your result as a postcard. No live session needed.</div>
+        <div class="pc-types">
+          <span class="pc-type">🗺️ Explorer</span>
+          <span class="pc-type">⚔️ Rival</span>
+          <span class="pc-type">🎨 Creator</span>
+          <span class="pc-type">🌀 Wanderer</span>
+        </div>
+        <div class="pc-cta">Take the Play quiz →</div>
+      </a>
+
+      <a class="passport-card meet" href="passport-meet.html">
+        <div class="pc-icon">💬</div>
+        <div class="pc-label">Passport: Meet</div>
+        <div class="pc-title">Some conversations just need the right prompt.</div>
+        <div class="pc-desc">Get matched and receive a question worth answering. Both of you answer it independently. No small talk, no scheduling. Just two people actually getting to know each other.</div>
+        <div class="pc-types">
+          <span class="pc-type">🚪 The Opener</span>
+          <span class="pc-type">🪞 The Reflector</span>
+          <span class="pc-type">✨ The Spark</span>
+          <span class="pc-type">⚓ The Anchor</span>
+        </div>
+        <div class="pc-cta">Take the Meet quiz →</div>
+      </a>
+
+      <a class="passport-card make" href="passport-make.html">
+        <div class="pc-icon">🎨</div>
+        <div class="pc-label">Passport: Make</div>
+        <div class="pc-title">Two people. Two places. One thing.</div>
+        <div class="pc-desc">Get matched and build something together — a playlist, a mood board, a two-voice story, a photo from your corner of the world. No skill required.</div>
+        <div class="pc-types">
+          <span class="pc-type">🌟 Visionary</span>
+          <span class="pc-type">🎭 Interpreter</span>
+          <span class="pc-type">⚒️ Craftsperson</span>
+          <span class="pc-type">🌊 Free Agent</span>
+        </div>
+        <div class="pc-cta">Take the Make quiz →</div>
+      </a>
+
+      <a class="passport-card learn" href="passport-learn.html">
+        <div class="pc-icon">📚</div>
+        <div class="pc-label">Passport: Learn</div>
+        <div class="pc-title">You know something they'd love to learn.</div>
+        <div class="pc-desc">Get matched across skill gaps. You teach them one thing you actually know. They teach you one thing you've always wanted to learn.</div>
+        <div class="pc-types">
+          <span class="pc-type">🛠️ Practitioner</span>
+          <span class="pc-type">🌊 Theorist</span>
+          <span class="pc-type">🗺️ Guide</span>
+          <span class="pc-type">🔭 Explorer</span>
+        </div>
+        <div class="pc-cta">Take the Learn quiz →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- POSTCARD EXPLAINER -->
+  <div class="postcard-section">
+    <h2>What's a postcard?</h2>
+    <p>A postcard is how you close the loop with your match. It's not a formal submission — it's just something small that says you showed up and the connection was real. Whatever format makes sense for what you did.</p>
+    <div class="postcard-types">
+      <div class="postcard-type"><div class="pt-icon">📸</div><div class="pt-label">Screenshot</div><div class="pt-desc">Your score, your result, your game moment.</div></div>
+      <div class="postcard-type"><div class="pt-icon">💬</div><div class="pt-label">A message</div><div class="pt-desc">Your answer to the prompt, in your own words.</div></div>
+      <div class="postcard-type"><div class="pt-icon">🎵</div><div class="pt-label">A playlist</div><div class="pt-desc">The songs you chose for the Make challenge.</div></div>
+      <div class="postcard-type"><div class="pt-icon">📷</div><div class="pt-label">A photo</div><div class="pt-desc">Something from your corner of the world.</div></div>
+      <div class="postcard-type"><div class="pt-icon">🎓</div><div class="pt-label">A lesson</div><div class="pt-desc">A resource, an explainer, a how-to.</div></div>
+      <div class="postcard-type"><div class="pt-icon">😄</div><div class="pt-label">A reaction</div><div class="pt-desc">Just a response. That counts too.</div></div>
+    </div>
+  </div>
+
+  <!-- FAQ ACCORDION -->
+  <div class="faq-section">
+    <h2>Common questions</h2>
     <div class="faq-grid">
 
-      <div class="faq-section-label"><div class="section-label">The Basics</div></div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What is Commons? <span class="arrow">›</span></div>
-        <div class="faq-a">Commons is a cross-geo connection event for the SDS team. You take a short quiz, get matched with a colleague from a different location, get a game suggestion built for your pairing, and play on your own time. The game is the excuse — the connection is the point.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Do I have to be online at the same time as my match? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">No. Everything in Commons is async by design. You and your match will never need to schedule a call or be online at the same time. You go when it works for you — they do the same.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Do I have to be online at the same time as my match? <span class="arrow">›</span></div>
-        <div class="faq-a">Nope. That's the whole design. Every game in the library is async — you play on your own time, share a screenshot or score, and your match picks it up when it works for them. No scheduling, no live calls.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Will I be matched with someone from my own city? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">Never. Cross-geo is a hard rule. If you're in Singapore, you'll be matched with someone in Raleigh, Cork, New York, or another location on the opposite side of the map. The distance is intentional — it's what makes the connection interesting.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">How long does the event run? <span class="arrow">›</span></div>
-        <div class="faq-a">One week. You get your match on Monday, the play window runs through Friday, and postcard submissions close end of day Sunday. Plenty of time to fit it in around your queue.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">How does matching actually work? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">The quiz results feed an algorithm that pairs people based on complementary vibe types, overlapping interests, and timezone proximity — with a bonus for fresh pairings (you'll never be matched with the same person twice). Matches are globally optimal, not just locally good: the algorithm finds the best set of pairings across everyone registered, not just the best match for each individual.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Can I participate even if I'm not on a specific location team? <span class="arrow">›</span></div>
-        <div class="faq-a">Yes — as long as you're in SDS. The matching is location-aware but all four sites (Austin, Elk Grove, Raleigh, Singapore) are in the pool. If your location isn't listed, reach out to the event organiser on Slack.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">When do matches drop? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">Matches drop on Mondays. You'll get a message via Slack with your match's name, location, type, and your suggested activity or prompt. The play window stays open for a full week, so there's no pressure to move fast.</div>
       </div>
 
-      <div class="faq-section-label"><div class="section-label">Matching</div></div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">How does the matching actually work? <span class="arrow">›</span></div>
-        <div class="faq-a">The quiz captures your player type, game preferences, session length, and whether drawing games are your thing. Matches are paired cross-location (you won't be matched with someone at the same site) and cross-vibe (Explorers with Rivals, Creators with Wanderers). The game suggestion is built from the combination of both players' answers.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">What if my match doesn't respond? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">Reach out to the event organiser on Slack and they'll follow up. If your match genuinely can't participate that week, a replacement can usually be sorted. It happens — don't stress it.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Will I ever get matched with someone from my own office? <span class="arrow">›</span></div>
-        <div class="faq-a">No. Cross-geo is a hard rule. If you're in Austin, you'll match with someone in Singapore, Elk Grove, or Raleigh. That's the point — the distance is the feature.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Do I have to play the suggested game or use the suggested activity? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">The suggestions are exactly that — suggestions. If you and your match agree on something different from the library, go for it. The only requirement is that it works async and both of you can participate independently.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">When do matches drop? <span class="arrow">›</span></div>
-        <div class="faq-a">Match drop happens on Monday of the event week. You'll get a DM from the event organiser on Slack with your match's name, location, player type, and your suggested game. That's your starting pistol.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Can I do more than one Passport at the same time? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">Yes. Each Passport is its own separate quiz and match pool. You can register for Play and Meet simultaneously, for example. We'd recommend starting with one to get the feel for it — but there's no restriction.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What if my quiz says I hate drawing but my match loves it? <span class="arrow">›</span></div>
-        <div class="faq-a">The game suggestion takes both answers into account. If one person said no to drawing, drawing games are filtered out of the suggestion. You won't get Gartic Phone if either of you opted out.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Is there a prize for participating? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">For Passport: Play events, yes — there are usually prize tracks for most activities completed (Activity Passport Champion), highest scores (High Score Heroes), and a random draw from all participants who submit (Raffle). Other Passports may have their own recognition. Check the active event details for specifics.</div>
       </div>
 
-      <div class="faq-section-label"><div class="section-label">Playing & Postcards</div></div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What's a postcard? <span class="arrow">›</span></div>
-        <div class="faq-a">A postcard is anything you send your match from the game — a screenshot of your score, a photo of your Wordle grid, a voice note, or just a message. It's the "I was here" moment. Small, low pressure, personal. You send it via the Submit page and the organiser forwards it along.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">What's the People page for? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">The People page is the full community directory. You can browse everyone in Commons, see what they're into right now, filter by location or vibe type, and click any skill pill to find people who share it. Click anyone's card to see their full profile. It's also where the connections map lives — a D3 force graph showing what skills and interests cluster across the community.</div>
       </div>
 
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Do I have to play the suggested game? <span class="arrow">›</span></div>
-        <div class="faq-a">The suggestion is exactly that — a suggestion. If you and your match vibe on a different game from the library, go for it. The only rule is it has to be something both of you can play async.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What if my match doesn't respond? <span class="arrow">›</span></div>
-        <div class="faq-a">Hit up the event organiser on Slack. She'll follow up. If your match is genuinely unavailable that week, she'll sort a replacement if there's time. It happens — don't stress it.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Is there a prize? <span class="arrow">›</span></div>
-        <div class="faq-a">Yes! Submit at least one postcard and you're automatically entered into the raffle. There are also prizes for the most unique games played (Activity Passport Champion) and the highest scores in the score-compare category (High Score Heroes). Details in your match drop DM.</div>
-      </div>
-
-      <div class="faq-section-label"><div class="section-label">Contact</div></div>
-
-      <div class="faq-item" style="grid-column: 1 / -1;" onclick="toggleFaq(this)">
-        <div class="faq-q">What's the best way to reach out with questions? <span class="arrow">›</span></div>
-        <div class="faq-a">Fastest way is to reach out to the event organiser directly — check the event page for contact details or post in your team Slack channel.</div>
+      <div class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">How do I update my profile? <span class="faq-arrow">›</span></div>
+        <div class="faq-a">Go to People, find your card, click it to open your profile, and use the Edit button. You can update your bio, skills, interests, and hobbies at any time. The "right now" fields — status, song stuck in your head, current book, show, and hyperfixation — show up on the ticker and on your card for everyone to see.</div>
       </div>
 
     </div>
-
-    <div style="margin-top: 60px; text-align:center;">
-      <a href="quiz.html" class="btn btn-primary">✈ Take the Quiz →</a>
-    </div>
-
   </div>
+
+  <!-- FINAL CTA -->
+  <div class="cta-band">
+    <h2>Ready to get started?</h2>
+    <p>Pick a Passport and take the quiz. Your match is already here.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="quiz.html"       class="btn btn-primary">🎮 Play →</a>
+      <a href="quiz-meet.html"  class="btn btn-outline">💬 Meet →</a>
+      <a href="quiz-make.html"  class="btn btn-outline">🎨 Make →</a>
+      <a href="quiz-learn.html" class="btn btn-outline">📚 Learn →</a>
+    </div>
+  </div>
+
+</div>
 </main>
 
 <footer>
-  <p>Commons · Prototype</p>
-  <p>Commons</p>
+  <p>Commons · Where work friends become real ones.</p>
+  <p>global-recess.vercel.app</p>
 </footer>
 
 <script>
-function toggleFaq(el) {
+function toggle(el) {
   const isOpen = el.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
   if (!isOpen) el.classList.add('open');
