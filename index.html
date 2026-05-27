@@ -333,14 +333,20 @@
 </footer>
 
 <script>
-// Live people count from API
-fetch('/api/profiles')
-  .then(r => r.ok ? r.json() : [])
-  .then(p => {
+// Read member count directly from static PEOPLE data — no API needed
+(function () {
+  function setCount() {
     const el = document.getElementById('stat-people');
-    if (el) el.textContent = p.length || '—';
-  })
-  .catch(() => {});
+    if (el && typeof PEOPLE !== 'undefined') {
+      el.textContent = PEOPLE.length;
+    }
+  }
+  if (typeof PEOPLE !== 'undefined') {
+    setCount();
+  } else {
+    document.addEventListener('DOMContentLoaded', setCount);
+  }
+})();
 </script>
 </body>
 </html>
