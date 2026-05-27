@@ -303,7 +303,6 @@
   <p>global-recess.vercel.app</p>
 </footer>
 
-<script src="data/people.js"></script>
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
 const TYPE_META = {
@@ -370,33 +369,6 @@ function applyFilters() {
     return matchQ && matchLoc && matchVibe && matchSkill;
   });
   renderPeople(filtered, activeSkill);
-}
-
-// ── DISCOVERY TICKER ──────────────────────────────────────────────────────
-const MOMENT_TYPES = [
-  { key:'status',        label:'Right now',         emoji:'●'  },
-  { key:'song',          label:'Stuck in head',     emoji:'🎵' },
-  { key:'hyperfixation', label:'Obsessed with',     emoji:'🔮' },
-  { key:'book',          label:'Reading',           emoji:'📖' },
-  { key:'show',          label:'Watching',          emoji:'📺' },
-];
-
-function buildTicker() {
-  const pool = PEOPLE.map(p => {
-    const mt  = MOMENT_TYPES[Math.floor(Math.random() * MOMENT_TYPES.length)];
-    const val = p[mt.key];
-    return val ? { person:p, label:mt.label, emoji:mt.emoji, val } : null;
-  }).filter(Boolean).sort(() => Math.random() - 0.5);
-
-  const html = (items) => items.map(m => `
-    <a class="discovery-item" href="profile.html?id=${m.person.id}">
-      <div class="di-avatar" style="background:${m.person.avatar_color}">${initials(m.person.name)}</div>
-      <span class="di-label">${m.emoji} ${m.label}</span>
-      <span class="di-name">${m.person.name.split(' ')[0]}</span>
-      <span class="di-text">${m.val}</span>
-    </a>`).join('');
-
-  document.getElementById('discovery-track').innerHTML = html(pool) + html(pool);
 }
 
 // ── D3 CONNECTIONS MAP ────────────────────────────────────────────────────
@@ -617,7 +589,7 @@ function renderPeople(people, highlight='') {
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────
-buildTicker();
+// Ticker is handled by ticker.js via #global-ticker — no buildTicker() needed here
 renderPeople(PEOPLE);
 
 // Render map once the SVG container has real dimensions.
