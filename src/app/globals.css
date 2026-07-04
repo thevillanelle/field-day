@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Field Day Design Tokens ─────────────────────────────────────── */
+@theme inline {
+  /* Semantic color aliases (required by shadcn) */
+  --color-background:          var(--background);
+  --color-foreground:          var(--foreground);
+  --color-card:                var(--card);
+  --color-card-foreground:     var(--card-foreground);
+  --color-popover:             var(--popover);
+  --color-popover-foreground:  var(--popover-foreground);
+  --color-primary:             var(--primary);
+  --color-primary-foreground:  var(--primary-foreground);
+  --color-secondary:           var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:               var(--muted);
+  --color-muted-foreground:    var(--muted-foreground);
+  --color-accent:              var(--accent);
+  --color-accent-foreground:   var(--accent-foreground);
+  --color-destructive:         var(--destructive);
+  --color-border:              var(--border);
+  --color-input:               var(--input);
+  --color-ring:                var(--ring);
+
+  /* Radius scale */
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+
+  /* Field Day brand palette */
+  --color-grass:         #3a7d44;
+  --color-grass-light:   #52a85f;
+  --color-sky:           #4a90d9;
+  --color-sun:           #f5c842;
+  --color-clay:          #c1440e;
+  --color-cream:         #faf8f3;
+  --color-bark:          #2d1a0e;
+
+  /* Vertical accents */
+  --color-dating:        #e85d8a;
+  --color-school:        #4a90d9;
+  --color-friends:       #d4a017;
+  --color-work:          #2d6a4f;
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background:           #faf8f3;
+  --foreground:           #2d1a0e;
+  --card:                 #ffffff;
+  --card-foreground:      #2d1a0e;
+  --popover:              #ffffff;
+  --popover-foreground:   #2d1a0e;
+  --primary:              #3a7d44;
+  --primary-foreground:   #ffffff;
+  --secondary:            #f0ece4;
+  --secondary-foreground: #2d1a0e;
+  --muted:                #f0ece4;
+  --muted-foreground:     #7a6e65;
+  --accent:               #f5c842;
+  --accent-foreground:    #2d1a0e;
+  --destructive:          #c1440e;
+  --border:               #e0d8ce;
+  --input:                #e0d8ce;
+  --ring:                 #3a7d44;
+  --radius:               0.75rem;
+}
+
+.dark {
+  --background:           #1a1208;
+  --foreground:           #faf8f3;
+  --card:                 #2a1f12;
+  --card-foreground:      #faf8f3;
+  --popover:              #2a1f12;
+  --popover-foreground:   #faf8f3;
+  --primary:              #52a85f;
+  --primary-foreground:   #1a1208;
+  --secondary:            #3a2d1e;
+  --secondary-foreground: #faf8f3;
+  --muted:                #3a2d1e;
+  --muted-foreground:     #a09588;
+  --accent:               #d4a017;
+  --accent-foreground:    #1a1208;
+  --destructive:          #e05c30;
+  --border:               oklch(1 0 0 / 10%);
+  --input:                oklch(1 0 0 / 15%);
+  --ring:                 #52a85f;
+}
+
+/* Vertical surface tints — apply to a container to theme its content */
+.vertical-dating  { --vertical-color: #e85d8a; --vertical-bg: #fdf0f5; }
+.vertical-school  { --vertical-color: #4a90d9; --vertical-bg: #eff6fd; }
+.vertical-friends { --vertical-color: #d4a017; --vertical-bg: #fdf9e8; }
+.vertical-work    { --vertical-color: #2d6a4f; --vertical-bg: #eef6f2; }
+
+.vertical-accent    { color: var(--vertical-color, #3a7d44); }
+.vertical-accent-bg { background-color: var(--vertical-bg, #faf8f3); }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
