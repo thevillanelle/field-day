@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ThisOrThatGame } from "./this-or-that-game";
+import { SafetyMenu } from "./safety-menu";
 import { reportExternalGameDone, signalPlayAgain } from "@/app/actions/match";
 
 const BUILT_NATIVE_GAMES = new Set(["this-or-that"]);
@@ -57,6 +58,8 @@ export function MatchView({ matchId, detail }: { matchId: string; detail: MatchD
           {partner.bio && <p className="text-sm text-[#7a6e65] line-clamp-2">{partner.bio}</p>}
         </div>
       </Card>
+
+      <SafetyMenu matchId={matchId} partnerFirstName={partner.firstName} />
 
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-[#3a7d44] mb-1">

@@ -158,6 +158,24 @@ export interface DbSchoolProfile {
   verified_at: string;
 }
 
+export interface DbReport {
+  id: string;
+  reporter_id: string;
+  reported_user_id: string;
+  match_id: string | null;
+  reason: string;
+  details: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface DbBlock {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+}
+
 export interface DbPlayAgainSignal {
   id: string;
   match_id: string;
