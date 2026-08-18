@@ -90,6 +90,9 @@ export function MatchView({ matchId, detail }: { matchId: string; detail: MatchD
               Play again with {partner.firstName}?
             </Button>
           )}
+          <Link href={`/field-notes/${matchId}`} className="text-sm text-[#3a7d44] underline underline-offset-2 mt-1">
+            Leave a field note →
+          </Link>
         </Card>
       ) : myDone ? (
         <Card className="rounded-2xl border border-[#e0d8ce] p-8 flex flex-col items-center gap-3 text-center">
