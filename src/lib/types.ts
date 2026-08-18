@@ -40,6 +40,7 @@ export interface DbProfile {
   bio: string | null;
   age: number | null;
   location: string | null;
+  gender: string | null;
   vibe_type: VibeType | null;
   quiz_answers: Record<string, string> | null;
   skills: string[];
@@ -54,6 +55,7 @@ export interface DbVerticalEnrollment {
   vertical: Vertical;
   intent: string | null;
   orientation: string | null;
+  seeking: string[];
   enrolled_at: string;
 }
 

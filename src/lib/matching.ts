@@ -37,6 +37,11 @@ const GAME_SUGGESTIONS: Partial<Record<VibeCombo, { slug: string; why: string }>
 export interface MatchCandidate {
   user: DbUser;
   profile: DbProfile;
+  // Who this candidate wants to be matched with, for this vertical's
+  // enrollment (vertical_enrollments.seeking). Required to clear the dating
+  // hard filter below — missing data excludes the candidate from Dating
+  // pairing rather than defaulting to "compatible with anyone".
+  seeking?: string[];
   preferShortGames?: boolean;
   preferNoDrawing?: boolean;
 }
@@ -153,12 +158,40 @@ function isDrawingGame(slug: string): boolean {
   return ["gartic-phone", "skribbl", "story-chain"].includes(slug);
 }
 
+// ─── Canonical pair key, for blocked-pair lookups ─────────────────────────
+
+export function pairKey(userIdA: string, userIdB: string): string {
+  return [userIdA, userIdB].sort().join(":");
+}
+
+// ─── Dating hard filter ────────────────────────────────────────────────────
+// Gender/seeking compatibility is a hard gate, not a scoring weight — an
+// incompatible pair must never be matched, regardless of how well their
+// vibes/interests score. Fails closed: if either side is missing gender or
+// seeking data, the pair is excluded rather than assumed compatible.
+
+function datingCompatible(a: MatchCandidate, b: MatchCandidate): boolean {
+  const genderA = a.profile.gender;
+  const genderB = b.profile.gender;
+  const seekingA = a.seeking ?? [];
+  const seekingB = b.seeking ?? [];
+
+  if (!genderA || !genderB || seekingA.length === 0 || seekingB.length === 0) {
+    return false;
+  }
+
+  const aWantsB = seekingA.includes("everyone") || seekingA.includes(genderB);
+  const bWantsA = seekingB.includes("everyone") || seekingB.includes(genderA);
+  return aWantsB && bWantsA;
+}
+
 // ─── Greedy matching (Hungarian is overkill for <1000 candidates) ─────────────
 
 export function runMatching(
   pool: MatchCandidate[],
   vertical: Vertical,
-  gameUrlMap: Map<string, string | null>
+  gameUrlMap: Map<string, string | null>,
+  blockedPairs: Set<string> = new Set()
 ): MatchPair[] {
   const unmatched = [...pool];
   const pairs: MatchPair[] = [];
@@ -170,7 +203,22 @@ export function runMatching(
 
     for (let i = 0; i < unmatched.length; i++) {
       const b = unmatched[i];
-      // Hard constraint: never same-domain in school/work (cross-dept) if possible
+
+      // Hard constraints: never matched, regardless of pass.
+      if (blockedPairs.has(pairKey(a.user.id, b.user.id))) continue;
+      if (vertical === "dating" && !datingCompatible(a, b)) continue;
+
+      // Soft-in-fallback constraint: never same-domain in school/work
+      // (cross-dept) if possible.
+      //
+      // NOTE: this constraint assumes Work spans multiple companies. Work is
+      // actually planned as an intra-company tool (see RUBRIC.md), where
+      // every candidate shares one email domain — so this rule will always
+      // fall through to the second pass below once Work ships real users.
+      // It needs to become a department/team diversity check instead, once
+      // a department/team field exists on the schema. Left as-is
+      // intentionally for now since Work isn't launching yet — don't "fix"
+      // this without adding that field first.
       if (
         (vertical === "school" || vertical === "work") &&
         a.user.email_domain === b.user.email_domain &&
@@ -185,10 +233,15 @@ export function runMatching(
       }
     }
 
-    // Fallback: if no cross-domain pair found, just take best overall
+    // Fallback: if no cross-domain pair found, relax the domain constraint
+    // only — blocked pairs and dating compatibility remain hard constraints.
     if (bestIdx === -1) {
       for (let i = 0; i < unmatched.length; i++) {
-        const s = scorePair(a, unmatched[i], vertical);
+        const b = unmatched[i];
+        if (blockedPairs.has(pairKey(a.user.id, b.user.id))) continue;
+        if (vertical === "dating" && !datingCompatible(a, b)) continue;
+
+        const s = scorePair(a, b, vertical);
         if (s > bestScore) {
           bestScore = s;
           bestIdx = i;
