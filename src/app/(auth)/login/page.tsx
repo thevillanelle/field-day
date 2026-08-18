@@ -2,6 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
@@ -48,7 +49,15 @@ function LoginForm() {
             Continue with Google
           </Button>
           <p className="text-xs text-center text-[#7a6e65]">
-            By signing in you agree to play nice.
+            By signing in you agree to our{" "}
+            <Link href="/terms" className="underline underline-offset-2 hover:text-[#2d1a0e]">
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-[#2d1a0e]">
+              Privacy Policy
+            </Link>
+            . You must be 18+ to join.
           </p>
         </div>
 
