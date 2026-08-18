@@ -2,13 +2,22 @@ export const dynamic = "force-dynamic";
 
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/user-menu";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session) redirect("/login");
+  const cookieStore = await cookies();
+  const devBypass =
+    process.env.NEXT_PUBLIC_DEV_BYPASS === "true" &&
+    cookieStore.get("dev_preview")?.value === "1";
+
+  if (!session && !devBypass) redirect("/login");
+
+  const displayName = session?.user?.name ?? "Elle (preview)";
+  const userId = session?.user?.id ?? "dev-preview";
 
   return (
     <div className="min-h-screen bg-[#faf8f3] flex flex-col">
@@ -27,10 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Button variant="ghost" size="sm">Dashboard</Button>
           </Link>
           <div className="w-px h-5 bg-[#e0d8ce]" />
-          <UserMenu
-            name={session.user?.name ?? "You"}
-            userId={session.user?.id ?? ""}
-          />
+          <UserMenu name={displayName} userId={userId} />
         </div>
       </nav>
       <main className="flex-1 flex flex-col">{children}</main>

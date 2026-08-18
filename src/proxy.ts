@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/", "/login", "/games", "/api/auth"];
+const PUBLIC_PATHS = ["/", "/login", "/games", "/api/auth", "/api/dev-preview"];
 
 export function proxy(req: NextRequest & { auth: unknown }) {
   const { pathname } = req.nextUrl;
@@ -11,7 +11,11 @@ export function proxy(req: NextRequest & { auth: unknown }) {
     (p) => pathname === p || pathname.startsWith(`${p}/`)
   );
 
-  if (!isPublic && !req.auth) {
+  const devBypass =
+    process.env.NEXT_PUBLIC_DEV_BYPASS === "true" &&
+    req.cookies.get("dev_preview")?.value === "1";
+
+  if (!isPublic && !req.auth && !devBypass) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);

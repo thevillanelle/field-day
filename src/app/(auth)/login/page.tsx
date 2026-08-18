@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 
+const DEV_BYPASS = process.env.NEXT_PUBLIC_DEV_BYPASS === "true";
+
 function LoginForm() {
   const params = useSearchParams();
   const callbackUrl = params.get("callbackUrl") ?? "/dashboard";
@@ -49,6 +51,15 @@ function LoginForm() {
             By signing in you agree to play nice.
           </p>
         </div>
+
+        {DEV_BYPASS && (
+          <a
+            href="/api/dev-preview"
+            className="text-xs text-[#b0a89f] underline underline-offset-2 hover:text-[#7a6e65] transition-colors"
+          >
+            Preview the app without signing in →
+          </a>
+        )}
       </div>
     </div>
   );

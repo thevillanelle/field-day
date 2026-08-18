@@ -8,3 +8,10 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
+
+declare module "@auth/core/jwt" {
+  interface JWT {
+    dbUserId?: string;
+    emailDomain?: string;
+  }
+}
