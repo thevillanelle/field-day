@@ -169,9 +169,13 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#e0d8ce] mt-auto">
-        <div className="max-w-5xl mx-auto flex items-center justify-between text-sm text-[#7a6e65]">
+        <div className="max-w-5xl mx-auto flex items-center justify-between text-sm text-[#7a6e65] flex-wrap gap-2">
           <span className="font-semibold text-[#2d1a0e]">Field Day</span>
-          <span>by VILE LLC</span>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-[#2d1a0e]">Terms</Link>
+            <Link href="/privacy" className="hover:text-[#2d1a0e]">Privacy</Link>
+            <span>by VILE LLC</span>
+          </div>
         </div>
       </footer>
     </div>
