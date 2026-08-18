@@ -1,5 +1,7 @@
 export type Vertical = "dating" | "school" | "friends" | "work";
 
+export type EnrollmentStatus = "active" | "waitlist";
+
 export type VibeType = "explorer" | "challenger" | "creator" | "wanderer";
 
 export type GameType =
@@ -56,6 +58,7 @@ export interface DbVerticalEnrollment {
   intent: string | null;
   orientation: string | null;
   seeking: string[];
+  status: EnrollmentStatus;
   enrolled_at: string;
 }
 

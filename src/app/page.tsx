@@ -10,6 +10,7 @@ const VERTICALS = [
     description: "Meet someone through a game before you ever meet IRL.",
     color: "#e85d8a",
     bg: "#fdf0f5",
+    comingSoon: false,
   },
   {
     id: "school",
@@ -19,6 +20,7 @@ const VERTICALS = [
     description: "Connect across majors, dorms, and clubs without the awkward intro.",
     color: "#4a90d9",
     bg: "#eff6fd",
+    comingSoon: true,
   },
   {
     id: "friends",
@@ -28,6 +30,7 @@ const VERTICALS = [
     description: "Find your kind of person through the games you love.",
     color: "#d4a017",
     bg: "#fdf9e8",
+    comingSoon: false,
   },
   {
     id: "work",
@@ -37,6 +40,7 @@ const VERTICALS = [
     description: "Break the Zoom ice. Cross departments. Actually enjoy it.",
     color: "#2d6a4f",
     bg: "#eef6f2",
+    comingSoon: true,
   },
 ] as const;
 
@@ -92,12 +96,21 @@ export default function LandingPage() {
           Choose your field
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {VERTICALS.map((v) => (
-            <Link key={v.id} href={`/login?vertical=${v.id}`}>
+          {VERTICALS.map((v) => {
+            const card = (
               <div
-                className="rounded-2xl p-6 border border-[#e0d8ce] hover:border-transparent hover:shadow-md transition-all cursor-pointer group"
+                className={`relative rounded-2xl p-6 border border-[#e0d8ce] transition-all ${
+                  v.comingSoon
+                    ? "opacity-90"
+                    : "hover:border-transparent hover:shadow-md cursor-pointer group"
+                }`}
                 style={{ background: v.bg }}
               >
+                {v.comingSoon && (
+                  <span className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wide text-[#7a6e65] bg-white/70 rounded-full px-2 py-1">
+                    Coming soon
+                  </span>
+                )}
                 <div className="text-3xl mb-3">{v.emoji}</div>
                 <div className="font-bold text-lg text-[#2d1a0e] mb-1">{v.label}</div>
                 <div className="text-sm font-medium mb-2" style={{ color: v.color }}>
@@ -107,8 +120,16 @@ export default function LandingPage() {
                   {v.description}
                 </p>
               </div>
-            </Link>
-          ))}
+            );
+
+            return v.comingSoon ? (
+              <div key={v.id}>{card}</div>
+            ) : (
+              <Link key={v.id} href={`/login?vertical=${v.id}`}>
+                {card}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
