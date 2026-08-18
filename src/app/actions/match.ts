@@ -62,9 +62,14 @@ export async function getMatchDetail(matchId: string) {
 
   const game = GAME_BY_SLUG.get(match.suggested_game);
   const result = (session.result ?? {}) as Record<string, unknown>;
-  const myDone = Boolean(result[userId]);
-  const theirDone = Boolean(result[otherUserId]);
-  const bothDone = myDone && theirDone;
+
+  // Story Chain is turn-based, not "both submit independently" — done-ness
+  // comes from the session status (set once all turns are written), not
+  // from result[userId] presence like the other native games.
+  const isStoryChain = match.suggested_game === "story-chain";
+  const myDone = isStoryChain ? session.status === "complete" : Boolean(result[userId]);
+  const theirDone = isStoryChain ? session.status === "complete" : Boolean(result[otherUserId]);
+  const bothDone = isStoryChain ? session.status === "complete" : myDone && theirDone;
 
   const signaledUserIds = new Set((signals ?? []).map((s) => s.from_user_id));
 
@@ -82,10 +87,11 @@ export async function getMatchDetail(matchId: string) {
   };
 }
 
-export async function submitThisOrThatAnswers(
-  matchId: string,
-  answers: Record<string, "a" | "b">
-) {
+// Shared by every "both players answer independently, then compare" native
+// game (This or That, Hot Take, Wavelength) and by the external-game
+// self-report flow. The shape of `answers` is opaque here — each game's UI
+// component and its own read of session.result interpret it.
+export async function submitGameAnswers(matchId: string, answers: Record<string, unknown>) {
   const { supabase, userId, match, otherUserId } = await requireParticipant(matchId);
 
   const { data: session } = await supabase
@@ -114,7 +120,46 @@ export async function submitThisOrThatAnswers(
 }
 
 export async function reportExternalGameDone(matchId: string) {
-  return submitThisOrThatAnswers(matchId, {});
+  return submitGameAnswers(matchId, {});
+}
+
+const STORY_CHAIN_TURNS = 8;
+
+export async function submitStoryChainTurn(matchId: string, text: string) {
+  const trimmed = text.trim();
+  if (!trimmed) return { error: "Write something first." };
+  if (trimmed.length > 280) return { error: "Keep each line under 280 characters." };
+
+  const { supabase, userId, match } = await requireParticipant(matchId);
+
+  const { data: session } = await supabase
+    .from("game_sessions")
+    .select("id, result, status")
+    .eq("match_id", matchId)
+    .single<Pick<DbGameSession, "id" | "result" | "status">>();
+
+  if (!session) return { error: "Session not found." };
+  if (session.status === "complete") return { error: "This story is already finished." };
+
+  const turns = ((session.result as { turns?: { userId: string; text: string }[] } | null)?.turns) ?? [];
+  const expectedTurnUserId = turns.length % 2 === 0 ? match.player_1_id : match.player_2_id;
+
+  if (userId !== expectedTurnUserId) return { error: "It's not your turn yet." };
+
+  const nextTurns = [...turns, { userId, text: trimmed }];
+  const complete = nextTurns.length >= STORY_CHAIN_TURNS;
+
+  const { error } = await supabase
+    .from("game_sessions")
+    .update({
+      result: { turns: nextTurns },
+      status: complete ? "complete" : "waiting",
+      completed_at: complete ? new Date().toISOString() : null,
+    })
+    .eq("id", session.id);
+
+  if (error) return { error: error.message };
+  return { success: true, complete };
 }
 
 export async function signalPlayAgain(matchId: string) {
@@ -176,5 +221,6 @@ export async function getLiveSession(matchId: string) {
     userId,
     partnerFirstName: otherUser?.name?.split(" ")[0] ?? "Your match",
     vertical: match.vertical,
+    suggestedGame: match.suggested_game,
   };
 }
