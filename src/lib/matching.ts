@@ -185,7 +185,104 @@ function datingCompatible(a: MatchCandidate, b: MatchCandidate): boolean {
   return aWantsB && bWantsA;
 }
 
-// ─── Greedy matching (Hungarian is overkill for <1000 candidates) ─────────────
+// ─── Shared eligibility check ──────────────────────────────────────────────
+// Hard constraints that apply regardless of batch (runMatching) or on-demand
+// (findBestMatch) matching: never matched, no exceptions.
+
+function isEligiblePair(
+  a: MatchCandidate,
+  b: MatchCandidate,
+  vertical: Vertical,
+  blockedPairs: Set<string>
+): boolean {
+  if (blockedPairs.has(pairKey(a.user.id, b.user.id))) return false;
+  if (vertical === "dating" && !datingCompatible(a, b)) return false;
+  return true;
+}
+
+// Soft-in-fallback constraint: never same-domain in school/work (cross-dept)
+// if another option exists.
+//
+// NOTE: this constraint assumes Work spans multiple companies. Work is
+// actually planned as an intra-company tool (see RUBRIC.md), where every
+// candidate shares one email domain — so this rule will always fall through
+// to the relaxed pass once Work ships real users. It needs to become a
+// department/team diversity check instead, once a department/team field
+// exists on the schema. Left as-is intentionally for now since Work isn't
+// launching yet — don't "fix" this without adding that field first.
+function sameDomainSoftBlock(
+  a: MatchCandidate,
+  b: MatchCandidate,
+  vertical: Vertical,
+  poolSizeRemaining: number
+): boolean {
+  return (
+    (vertical === "school" || vertical === "work") &&
+    a.user.email_domain === b.user.email_domain &&
+    poolSizeRemaining > 2
+  );
+}
+
+function buildMatchResult(
+  a: MatchCandidate,
+  b: MatchCandidate,
+  score: number,
+  gameUrlMap: Map<string, string | null>
+): MatchPair {
+  const game = suggestGame(a, b);
+  const vibeA = a.profile.vibe_type ?? "wanderer";
+  const vibeB = b.profile.vibe_type ?? "wanderer";
+
+  return {
+    player1: a,
+    player2: b,
+    score,
+    suggested_game: game.slug,
+    match_reason: {
+      score,
+      game_name: game.slug,
+      game_url: gameUrlMap.get(game.slug) ?? null,
+      why: game.why,
+      type_combo: `${vibeA}+${vibeB}`,
+    },
+  };
+}
+
+// ─── On-demand single match (Discover) ─────────────────────────────────────
+// Finds the single best candidate for one user against a candidate pool,
+// rather than pairing up an entire batch. Used by the Discover flow, where
+// a user asks to be matched right now rather than waiting for a scheduled
+// batch drop.
+
+export function findBestMatch(
+  user: MatchCandidate,
+  pool: MatchCandidate[],
+  vertical: Vertical,
+  gameUrlMap: Map<string, string | null>,
+  blockedPairs: Set<string> = new Set()
+): MatchPair | null {
+  for (const relaxDomain of [false, true]) {
+    let best: MatchCandidate | null = null;
+    let bestScore = -1;
+
+    for (const candidate of pool) {
+      if (!isEligiblePair(user, candidate, vertical, blockedPairs)) continue;
+      if (!relaxDomain && sameDomainSoftBlock(user, candidate, vertical, pool.length)) continue;
+
+      const s = scorePair(user, candidate, vertical);
+      if (s > bestScore) {
+        bestScore = s;
+        best = candidate;
+      }
+    }
+
+    if (best) return buildMatchResult(user, best, bestScore, gameUrlMap);
+  }
+
+  return null;
+}
+
+// ─── Greedy batch matching (Hungarian is overkill for <1000 candidates) ────
 
 export function runMatching(
   pool: MatchCandidate[],
@@ -201,45 +298,11 @@ export function runMatching(
     let bestScore = -1;
     let bestIdx = -1;
 
-    for (let i = 0; i < unmatched.length; i++) {
-      const b = unmatched[i];
-
-      // Hard constraints: never matched, regardless of pass.
-      if (blockedPairs.has(pairKey(a.user.id, b.user.id))) continue;
-      if (vertical === "dating" && !datingCompatible(a, b)) continue;
-
-      // Soft-in-fallback constraint: never same-domain in school/work
-      // (cross-dept) if possible.
-      //
-      // NOTE: this constraint assumes Work spans multiple companies. Work is
-      // actually planned as an intra-company tool (see RUBRIC.md), where
-      // every candidate shares one email domain — so this rule will always
-      // fall through to the second pass below once Work ships real users.
-      // It needs to become a department/team diversity check instead, once
-      // a department/team field exists on the schema. Left as-is
-      // intentionally for now since Work isn't launching yet — don't "fix"
-      // this without adding that field first.
-      if (
-        (vertical === "school" || vertical === "work") &&
-        a.user.email_domain === b.user.email_domain &&
-        unmatched.length > 2
-      ) {
-        continue;
-      }
-      const s = scorePair(a, b, vertical);
-      if (s > bestScore) {
-        bestScore = s;
-        bestIdx = i;
-      }
-    }
-
-    // Fallback: if no cross-domain pair found, relax the domain constraint
-    // only — blocked pairs and dating compatibility remain hard constraints.
-    if (bestIdx === -1) {
+    for (const relaxDomain of [false, true]) {
       for (let i = 0; i < unmatched.length; i++) {
         const b = unmatched[i];
-        if (blockedPairs.has(pairKey(a.user.id, b.user.id))) continue;
-        if (vertical === "dating" && !datingCompatible(a, b)) continue;
+        if (!isEligiblePair(a, b, vertical, blockedPairs)) continue;
+        if (!relaxDomain && sameDomainSoftBlock(a, b, vertical, unmatched.length)) continue;
 
         const s = scorePair(a, b, vertical);
         if (s > bestScore) {
@@ -247,28 +310,13 @@ export function runMatching(
           bestIdx = i;
         }
       }
+      if (bestIdx !== -1) break;
     }
 
     if (bestIdx === -1) break;
 
     const b = unmatched.splice(bestIdx, 1)[0];
-    const game = suggestGame(a, b);
-    const vibeA = a.profile.vibe_type ?? "wanderer";
-    const vibeB = b.profile.vibe_type ?? "wanderer";
-
-    pairs.push({
-      player1: a,
-      player2: b,
-      score: bestScore,
-      suggested_game: game.slug,
-      match_reason: {
-        score: bestScore,
-        game_name: game.slug,
-        game_url: gameUrlMap.get(game.slug) ?? null,
-        why: game.why,
-        type_combo: `${vibeA}+${vibeB}`,
-      },
-    });
+    pairs.push(buildMatchResult(a, b, bestScore, gameUrlMap));
   }
 
   return pairs;
