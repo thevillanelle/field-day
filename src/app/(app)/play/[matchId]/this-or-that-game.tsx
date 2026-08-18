@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { THIS_OR_THAT_PROMPTS } from "@/lib/this-or-that";
-import { submitThisOrThatAnswers } from "@/app/actions/match";
+import { submitGameAnswers } from "@/app/actions/match";
 
 export function ThisOrThatGame({
   matchId,
@@ -28,7 +28,7 @@ export function ThisOrThatGame({
     }
 
     setSubmitting(true);
-    await submitThisOrThatAnswers(matchId, next);
+    await submitGameAnswers(matchId, next);
     setSubmitting(false);
     onComplete();
   }

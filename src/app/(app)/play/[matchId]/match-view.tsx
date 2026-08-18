@@ -7,15 +7,23 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ThisOrThatGame } from "./this-or-that-game";
+import { HotTakeGame } from "./hot-take-game";
+import { WavelengthGame } from "./wavelength-game";
+import { StoryChainGame } from "./story-chain-game";
 import { SafetyMenu } from "./safety-menu";
 import { reportExternalGameDone, signalPlayAgain } from "@/app/actions/match";
 
-const BUILT_NATIVE_GAMES = new Set(["this-or-that"]);
+// Every native game currently built. Anything native but not listed here
+// (shouldn't happen — GAMES_SEED's four native slugs are all covered) falls
+// back to This or That rather than dead-ending.
+const NATIVE_GAMES_WITH_OWN_COMPONENT = new Set(["this-or-that", "hot-take", "wavelength", "story-chain"]);
 
 interface MatchDetail {
   match: { suggested_game: string; match_reason: { why: string } };
   game?: { name: string; description: string; is_native: boolean; external_url: string | null };
+  session: { result: unknown };
   partner: { firstName: string; avatarUrl: string | null; bio: string | null };
+  isPlayer1: boolean;
   myDone: boolean;
   theirDone: boolean;
   bothDone: boolean;
@@ -29,8 +37,8 @@ export function MatchView({ matchId, detail }: { matchId: string; detail: MatchD
   const { game, partner, myDone, theirDone, bothDone, myPlayAgain, partnerPlayAgain } = detail;
 
   const isNative = game?.is_native ?? false;
-  const playingBuiltNative = isNative && BUILT_NATIVE_GAMES.has(detail.match.suggested_game);
-  const showThisOrThatFallback = isNative && !BUILT_NATIVE_GAMES.has(detail.match.suggested_game);
+  const suggestedGame = detail.match.suggested_game;
+  const showThisOrThatFallback = isNative && !NATIVE_GAMES_WITH_OWN_COMPONENT.has(suggestedGame);
 
   async function handleExternalDone() {
     setPending(true);
@@ -106,8 +114,22 @@ export function MatchView({ matchId, detail }: { matchId: string; detail: MatchD
             Check again
           </Button>
         </Card>
-      ) : playingBuiltNative ? (
+      ) : suggestedGame === "this-or-that" ? (
         <ThisOrThatGame matchId={matchId} onComplete={() => router.refresh()} />
+      ) : suggestedGame === "hot-take" ? (
+        <HotTakeGame matchId={matchId} onComplete={() => router.refresh()} />
+      ) : suggestedGame === "wavelength" ? (
+        <WavelengthGame matchId={matchId} onComplete={() => router.refresh()} />
+      ) : suggestedGame === "story-chain" ? (
+        <StoryChainGame
+          matchId={matchId}
+          isPlayer1={detail.isPlayer1}
+          partnerFirstName={partner.firstName}
+          initialTurns={
+            ((detail.session.result as { turns?: { userId: string; text: string }[] } | null)?.turns) ?? []
+          }
+          onComplete={() => router.refresh()}
+        />
       ) : showThisOrThatFallback ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-[#7a6e65]">
